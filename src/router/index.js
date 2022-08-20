@@ -178,5 +178,24 @@ export function resetRouter() {
   router.matcher = newRouter.matcher // reset router
 }
 
-export const asyncRoutes = []
+export const asyncRoutes = [
+  {
+    path: '/components',
+    component: Layout,
+    redirect: 'noRedirect',
+    name: 'ComponentDemo',
+    meta: {
+      title: 'Components',
+      icon: 'dashboard'
+    },
+    children: [
+      {
+        path: 'drag-dialog',
+        component: () => import('@/views/components-demo/drag-dialog'),
+        name: 'DragDialogDemo',
+        meta: { title: 'Drag Dialog' }
+      }
+    ]
+  }
+]
 export default router
