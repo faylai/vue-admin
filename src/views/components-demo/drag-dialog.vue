@@ -3,14 +3,18 @@
     <el-button type="primary" @click="dialogTableVisible = true">
       open a Drag Dialog
     </el-button>
+
+    <el-button type="primary" @click="showDashBoard">
+      使用service 形式打开
+    </el-button>
     <el-dialog v-el-drag-dialog :visible.sync="dialogTableVisible" title="Shipping address" @dragDialog="handleDrag">
       <el-select ref="select" v-model="value" placeholder="请选择">
-        <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
+        <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"/>
       </el-select>
       <el-table :data="gridData">
-        <el-table-column property="date" label="Date" width="150" />
-        <el-table-column property="name" label="Name" width="200" />
-        <el-table-column property="address" label="Address" />
+        <el-table-column property="date" label="Date" width="150"/>
+        <el-table-column property="name" label="Name" width="200"/>
+        <el-table-column property="address" label="Address"/>
       </el-table>
     </el-dialog>
   </div>
@@ -18,6 +22,7 @@
 
 <script>
 import elDragDialog from '@/directive/el-drag-dialog' // base on element-ui
+import dashboard from '@/views/dashboard'
 
 export default {
   name: 'DragDialogDemo',
@@ -55,7 +60,19 @@ export default {
     // v-el-drag-dialog onDrag callback function
     handleDrag() {
       this.$refs.select.blur()
+    },
+    showDashBoard() {
+      const dialog = this.$dialog(dashboard)
+      dialog.show({
+        title: '这是Service 形式打开的Dialog'
+      })
     }
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.components-container {
+  padding: 10px;
+}
+</style>
