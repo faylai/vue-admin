@@ -63,6 +63,7 @@ export default {
     },
     showDashBoard() {
       const dialog = this.$dialog(dashboard)
+      debugger
       dialog.show({
         title: '这是Service 形式打开的Dialog'
       })
