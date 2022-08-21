@@ -147,7 +147,7 @@ export const constantRoutes = [
         meta: { title: 'menu2' }
       }
     ]
-  },
+  }/*,
 
   {
     path: 'external-link',
@@ -158,7 +158,7 @@ export const constantRoutes = [
         meta: { title: 'External Link', icon: 'link' }
       }
     ]
-  }
+  }*/
 
   // 404 page must be placed at the end !!!
   // { path: '*', redirect: '/404', hidden: true }
