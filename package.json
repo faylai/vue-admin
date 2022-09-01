@@ -23,8 +23,11 @@
     "nprogress": "0.2.0",
     "path-to-regexp": "2.4.0",
     "vue": "2.6.10",
+    "vue-hoc": "^0.4.7",
     "vue-router": "3.0.6",
-    "vuex": "3.1.0"
+    "vuex": "3.1.0",
+    "vxe-table": "^3.6.1",
+    "xe-utils": "^3.5.6"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "4.4.4",
@@ -36,6 +39,7 @@
     "babel-eslint": "10.1.0",
     "babel-jest": "23.6.0",
     "babel-plugin-dynamic-import-node": "2.3.3",
+    "babel-plugin-import": "^1.13.5",
     "chalk": "2.4.2",
     "connect": "3.6.6",
     "eslint": "6.7.2",

@@ -1,7 +1,7 @@
 <template>
   <div class="components-container">
     <el-button type="primary" @click="dialogTableVisible = true">
-      open a Drag Dialog
+      普通的形式打开（drag）
     </el-button>
 
     <el-button type="primary" @click="showDashBoard">
@@ -63,7 +63,6 @@ export default {
     },
     showDashBoard() {
       const dialog = this.$dialog(dashboard)
-      debugger
       dialog.show({
         title: '这是Service 形式打开的Dialog'
       })
