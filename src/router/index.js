@@ -194,6 +194,12 @@ export const asyncRoutes = [
         component: () => import('@/views/components-demo/drag-dialog'),
         name: 'DragDialogDemo',
         meta: { title: 'Drag Dialog' }
+      },
+      {
+        path: 'edit-table',
+        component: () => import('@/views/components-demo/edit-table'),
+        name: 'edit-table',
+        meta: { title: 'edit-table' }
       }
     ]
   },

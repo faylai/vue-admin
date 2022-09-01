@@ -1,0 +1,75 @@
+.vxe-grid {
+  .vxe-toolbar {
+    .toolbar-tip {
+      color: #F58B0D;
+
+      font-size: 13px;
+      padding-left: 20px;
+
+      > i {
+        padding-right: 5px;
+      }
+    }
+
+    .vxe-buttons--wrapper {
+      padding-left: 10px;
+    }
+
+    .vxe-tools--wrapper {
+      padding-right: 10px;
+    }
+  }
+
+  &.is--loading {
+    > .vxe-table {
+      > .vxe-loading {
+        .vxe-loading--spinner {
+          width: auto;
+
+          &:before,
+          &:after {
+            border-radius: 0;
+            background-color: transparent;
+            display: inline-block;
+            width: auto;
+            height: auto;
+            position: static;
+            opacity: 1;
+            font-size: 16px;
+          }
+
+          &:before {
+            content: "\E61E";
+            font-family: 'element-icons' !important;
+            -webkit-animation: rotating 2s linear infinite;
+            animation: rotating 2s linear infinite;
+          }
+
+          &:after {
+            animation: none;
+            margin-left: 6px;
+            content: '加载中...';
+          }
+        }
+      }
+    }
+  }
+
+
+}
+
+.vxe-grid.is--loading:before {
+  background-color: white;
+  opacity: 0.8;
+}
+
+
+// 解决表单验证的统一样式问题
+.el-form-item.is-error {
+  .vxe-table--render-default .vxe-cell {
+    .el-input__inner, .el-input__inner:focus, .el-textarea__inner, .el-textarea__inner:focus {
+      border-color: #1374F2;
+
+    }
+  }
+}

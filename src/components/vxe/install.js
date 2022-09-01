@@ -1,6 +1,7 @@
 
 import Vue from 'vue'
 import XEUtils from 'xe-utils'
+import './override.scss'
 import {
   // 全局对象
   VXETable,
@@ -8,17 +9,17 @@ import {
   // 功能模块
   // Filter,
   // Menu,
-  // Edit,
+  Edit,
   // Export,
   // Keyboard,
-  // Validator,
+  Validator,
 
   // 可选组件
   Icon,
   Column,
   // Colgroup,
-  // Grid,
-  // Toolbar,
+  Grid,
+  Toolbar,
   // Pager,
   // Checkbox,
   // CheckboxGroup,
@@ -27,13 +28,13 @@ import {
   // RadioButton,
   // Input,
   // Textarea,
-  // Button,
+  Button,
   // Modal,
   // Tooltip,
   // Form,
   // FormItem,
   // FormGather,
-  // Select,
+  Select,
   // Optgroup,
   // Option,
   // Switch,
@@ -51,18 +52,18 @@ VXETable.setup({
 
 // 表格功能
 // Vue.use(Filter)
-// .use(Edit)
+Vue.use(Edit)
 // .use(Menu)
 // .use(Export)
 // .use(Keyboard)
-// .use(Validator)
+Vue.use(Validator)
 
 // 可选组件
 Vue.use(Icon)
   .use(Column)
   // .use(Colgroup)
-  // .use(Grid)
-  // .use(Toolbar)
+  .use(Grid)
+  .use(Toolbar)
   // .use(Pager)
   // .use(Checkbox)
   // .use(CheckboxGroup)
@@ -71,13 +72,13 @@ Vue.use(Icon)
   // .use(RadioButton)
   // .use(Input)
   // .use(Textarea)
-  // .use(Button)
+  .use(Button)
   // .use(Modal)
   // .use(Tooltip)
   // .use(Form)
   // .use(FormItem)
   // .use(FormGather)
-  // .use(Select)
+  .use(Select)
   // .use(Optgroup)
   // .use(Option)
   // .use(Switch)

@@ -196,8 +196,9 @@ module.exports = {
     'array-bracket-spacing': [2, 'never'],
     'vue/html-closing-bracket-spacing': ['error', {
       'startTag': 'never',
-      'endTag': 'always',
+      'endTag': 'never',
       'selfClosingTag': 'never'
-    }]
+    }],
+    'vue/attribute-hyphenation':'off'
   }
 }

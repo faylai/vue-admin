@@ -1,6 +1,4 @@
-/**
- * Created by PanJiaChen on 16/11/18.
- */
+import lodash from 'lodash'
 
 /**
  * Parse the time to string
@@ -45,7 +43,9 @@ export function parseTime(time, cFormat) {
   const time_str = format.replace(/{([ymdhisa])+}/g, (result, key) => {
     const value = formatObj[key]
     // Note: getDay() returns 0 on Sunday
-    if (key === 'a') { return ['日', '一', '二', '三', '四', '五', '六'][value ] }
+    if (key === 'a') {
+      return ['日', '一', '二', '三', '四', '五', '六'][value]
+    }
     return value.toString().padStart(2, '0')
   })
   return time_str
@@ -114,4 +114,19 @@ export function param2Obj(url) {
     }
   })
   return obj
+}
+
+export function isStringEmpty(str) {
+  const fStr = String(str).trim()
+  return fStr === '' || fStr === 'undefined' || fStr === 'null' || fStr === 'Infinity'
+}
+
+export function validObjEmpty(obj) {
+  if (lodash.isEmpty(obj)) {
+    return true
+  } else {
+    return lodash.reduce(lodash.keys(obj), function(key, mem) {
+      return mem && isStringEmpty(obj[key])
+    }, true)
+  }
 }
