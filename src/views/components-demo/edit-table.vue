@@ -1,5 +1,8 @@
 <template>
   <div style="padding: 10px;">
+
+    <BaseFilterPanel></BaseFilterPanel>
+
     <FieldGrid
       ref="xGrid"
       :gridOptions="gridOptions"
@@ -16,15 +19,19 @@
         </vxe-select>
       </template>
     </FieldGrid>
+
+
   </div>
 </template>
 <script>
 import FieldGrid from '@/components/vxe/FieldGrid'
+import BaseFilterPanel from '@/components/BaseFilterPanel'
 
 export default {
   name: 'EditTable',
   components: {
-    FieldGrid
+    FieldGrid,
+    BaseFilterPanel
   },
   data() {
     return {

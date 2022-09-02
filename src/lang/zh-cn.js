@@ -40,7 +40,6 @@ export default {
     documentation: '文档',
     tips: 'Tips'
   },
-
   message: {
     deleteSuccess: '删除成功',
     pleaseSelDate: '请选择日期',
@@ -123,18 +122,14 @@ export default {
     duty: '职务',
     email: '邮件',
     telephone: '电话',
-    avatar: '头像',
-    userDefined: '自定义',
-    pwdRequire: '请输入密码',
-    pwdRule: '6~15位字母和数字组合',
-    roleNumLimited: '分配的角色数目不能超过50个',
-    tip: '提示',
-    tipInfo: '锁定后该用户将无法登录，是否锁定？',
-    confirm: '确认',
-    cancel: '取消'
+    avatar: '头像'
   },
   time: {
     startTime: '开始时间',
     endTime: '结束时间'
+  },
+  components: {
+    query: '查询',
+    reset: '重置'
   }
 }
