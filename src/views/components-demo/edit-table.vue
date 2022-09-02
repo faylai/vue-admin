@@ -91,20 +91,20 @@ export default {
           width: 50
         }, {
           type: 'seq',
-          title: 'index',
+          title: '序号',
           width: 60
         }, {
           field: 'name',
-          title: 'Name',
+          title: '姓名',
           slots: { default: 'name' },
           editRender: { name: 'input' }
         }, {
           field: 'nickname',
-          title: 'Nickname',
+          title: '昵称',
           editRender: { name: 'input' }
         }, {
           field: 'sex',
-          title: 'Sex',
+          title: '性别',
           editRender: {},
           slots: { edit: 'sex_edit' }
         }, {
@@ -115,11 +115,11 @@ export default {
           }
         }, {
           field: 'role',
-          title: 'Role',
+          title: '角色',
           editRender: { name: 'input' }
         }, {
           field: 'address',
-          title: 'address'
+          title: '地址'
         }]
       }, queryOptions: {
         queryPromise: this.createQuery,
@@ -136,7 +136,7 @@ export default {
         }
       } else if (code === 'addMe') {
         instance.insert({
-          name: '请输入名称'
+          name: ''
         })
       } else if (code === 'deleteMe') {
         const rows = instance.getCheckboxRecords()

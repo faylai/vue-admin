@@ -4,6 +4,8 @@ import { validObjEmpty } from '@/utils'
 import service from '@/api/service'
 import { createHOC } from 'vue-hoc'
 import { Grid } from 'vxe-table'
+import lodash from 'lodash'
+
 const inner = 'inner'
 const outer = 'outer'
 export default createHOC(Grid, {
@@ -205,11 +207,19 @@ export default createHOC(Grid, {
     'class': 'field-grid',
     'ref': 'instance'
   },
-  listeners: function() {
-    return {
-      'edit-closed': this.onEditClosed,
-      'edit-actived': this.onActive
+  listeners: function(config) {
+    const onEditClose = config['edit-closed'] || lodash.noop
+    const onEditActived = config['edit-actived'] || lodash.noop
+    const that = this
+    config['edit-closed'] = function(params) {
+      that.onEditClosed.call(this, params)
+      onEditClose.apply(this, params)
     }
+    config['edit-actived'] = function(params) {
+      that.onActive.apply(this, params)
+      onEditActived.apply(this, params)
+    }
+    return config
   }
 })
 </script>
