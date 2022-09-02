@@ -198,7 +198,7 @@ export const asyncRoutes = [
       {
         path: 'edit-table',
         component: () => import('@/views/components-demo/edit-table'),
-        name: 'edit-table',
+        name: 'EditTable',
         meta: { title: 'edit-table' }
       }
     ]

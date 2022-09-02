@@ -11,7 +11,7 @@
         <span> {{ row.name }}</span>
       </template>
       <template #sex_edit="{ row }">
-        <vxe-select v-model="row.sex" type="text" transfer>
+        <vxe-select v-model="row.sex" transfer>
           <vxe-option v-for="item in sexOptions" :key="item.value" :value="item.value" :label="item.label"></vxe-option>
         </vxe-select>
       </template>
@@ -22,6 +22,7 @@
 import FieldGrid from '@/components/vxe/FieldGrid'
 
 export default {
+  name: 'EditTable',
   components: {
     FieldGrid
   },
