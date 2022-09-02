@@ -5,7 +5,6 @@ import './override.scss'
 import {
   // 全局对象
   VXETable,
-
   // 功能模块
   // Filter,
   // Menu,
@@ -26,7 +25,7 @@ import {
   // Radio,
   // RadioGroup,
   // RadioButton,
-  // Input,
+  Input,
   // Textarea,
   Button,
   // Modal,
@@ -36,7 +35,7 @@ import {
   // FormGather,
   Select,
   // Optgroup,
-  // Option,
+  Option,
   // Switch,
   // List,
   // Pulldown,
@@ -70,7 +69,7 @@ Vue.use(Icon)
   // .use(Radio)
   // .use(RadioGroup)
   // .use(RadioButton)
-  // .use(Input)
+  .use(Input)
   // .use(Textarea)
   .use(Button)
   // .use(Modal)
@@ -80,11 +79,10 @@ Vue.use(Icon)
   // .use(FormGather)
   .use(Select)
   // .use(Optgroup)
-  // .use(Option)
+  .use(Option)
   // .use(Switch)
   // .use(List)
   // .use(Pulldown)
-
   // 安装表格
   .use(Table)
 

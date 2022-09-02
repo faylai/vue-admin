@@ -173,6 +173,7 @@ export default {
         this.dispatch('ElFormItem', 'el.form.change', [values])
       })
     },
+    // expose validate api for outer invoke
     showIfError() {
       this.instance.fullValidate(function() {
       })

@@ -10,6 +10,11 @@
         <span>@</span>
         <span> {{ row.name }}</span>
       </template>
+      <template #sex_edit="{ row }">
+        <vxe-select v-model="row.sex" type="text" transfer>
+          <vxe-option v-for="item in sexOptions" :key="item.value" :value="item.value" :label="item.label"></vxe-option>
+        </vxe-select>
+      </template>
     </FieldGrid>
   </div>
 </template>
@@ -22,6 +27,15 @@ export default {
   },
   data() {
     return {
+      sexOptions: [
+        {
+          value: '1',
+          label: '男'
+        }, {
+          value: '0',
+          label: '女'
+        }
+      ],
       gridOptions: {
         border: true,
         resizable: true,
@@ -90,10 +104,8 @@ export default {
         }, {
           field: 'sex',
           title: 'Sex',
-          editRender: {
-            name: '$select',
-            options: []
-          }
+          editRender: {},
+          slots: { edit: 'sex_edit' }
         }, {
           field: 'age',
           title: '年龄',
@@ -113,21 +125,6 @@ export default {
         queryParams: {}
       }
     }
-  },
-  created() {
-    setTimeout(() => {
-      // 异步更新下拉选项
-      if (this.$refs.xGrid) {
-        const column = this.$refs.xGrid.instance.getColumnByField('sex')
-        column.editRender.options = [{
-          value: '1',
-          label: '男'
-        }, {
-          value: '0',
-          label: '女'
-        }]
-      }
-    }, 300)
   },
   methods: {
     toolbarButtonClickEvent({ code }) {
