@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="padding: 10px;">
     <FieldGrid
       ref="xGrid"
       :gridOptions="gridOptions"
@@ -111,7 +111,7 @@ export default {
           field: 'age',
           title: '年龄',
           editRender: {
-            name: 'ElInputNumber'
+            name: 'input'
           }
         }, {
           field: 'role',

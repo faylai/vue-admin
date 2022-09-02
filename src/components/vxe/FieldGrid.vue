@@ -204,8 +204,7 @@ export default createHOC(Grid, {
     return this.packagedGridOptions
   },
   attrs: {
-    'class': 'field-grid',
-    'ref': 'instance'
+    'class': 'field-grid'
   },
   listeners: function(config) {
     const onEditClose = config['edit-closed'] || lodash.noop

@@ -1,5 +1,7 @@
 import AsyncValidator from 'async-validator'
 import _ from 'lodash'
+import { validObjEmpty } from '@/utils'
+import { translate } from '@/utils/i18n'
 
 /**
  * @param {string} path
@@ -56,12 +58,12 @@ AsyncValidator.register('rangeNumber', (rule, value, callback) => {
 // 编辑表格验证
 AsyncValidator.register('fieldGrid', (rule, value, callback) => {
   if (value && value.error) {
-    const message = rule.gridMsg || translate('wms.tableFillErrorTip')
+    const message = rule.gridMsg || translate('table.tableFillErrorTip')
     callback(new Error(message))
   } else {
     if (rule.hasOwn('minRow') && rule.minRow >= 1) {
       if (value && value.all && value.all.filter(item => !validObjEmpty(item)).length < rule.minRow) {
-        callback(new Error(rule.message || translate('wms.leastAddRowTip', [rule.minRow])))
+        callback(new Error(rule.message || translate('table.leastAddRowTip', [rule.minRow])))
       } else {
         callback()
       }
@@ -69,5 +71,5 @@ AsyncValidator.register('fieldGrid', (rule, value, callback) => {
       callback()
     }
   }
-
 })
+

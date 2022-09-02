@@ -15,6 +15,7 @@ import '@/permission' // permission control
 import DialogService from '@/components/DialogService'
 import './components/vxe/install.js'
 import lodash from 'lodash'
+
 window.$ = window.jQuery = require('jquery')
 /**
  * If you don't want to use mock-server

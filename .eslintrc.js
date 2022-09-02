@@ -8,7 +8,7 @@ module.exports = {
     browser: true,
     node: true,
     es6: true,
-    "jquery": true
+    'jquery': true
   },
   extends: ['plugin:vue/recommended', 'eslint:recommended'],
 
@@ -200,6 +200,8 @@ module.exports = {
       'endTag': 'never',
       'selfClosingTag': 'never'
     }],
-    'vue/attribute-hyphenation':'off'
+    'vue/attribute-hyphenation': 'off',
+    'vue/max-attributes-per-line':'off',
+    'vue/html-self-closing':'off'
   }
 }
