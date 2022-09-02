@@ -2,10 +2,11 @@
 import elEmitter from 'element-ui/lib/mixins/emitter'
 import { validObjEmpty } from '@/utils'
 import service from '@/api/service'
-
+import { createHOC } from 'vue-hoc'
+import { Grid } from 'vxe-table'
 const inner = 'inner'
 const outer = 'outer'
-export default {
+export default createHOC(Grid, {
   name: 'FieldGrid',
   mixins: [elEmitter],
   model: {
@@ -40,17 +41,69 @@ export default {
   },
   computed: {
     instance: function() {
-      return this.$refs.instance
+      return this.$children[0]
+    },
+    packagedGridOptions() {
+      const gridOptions = this._.defaultsDeep({}, this.gridOptions || {})
+      if (!this._.isUndefined(gridOptions.pagerConfig) && this.queryOptions.queryPromise) {
+        if (gridOptions.pagerConfig === true) {
+          gridOptions.pagerConfig = {
+            total: 0,
+            currentPage: 1,
+            pageSize: 10
+          }
+        } else {
+          gridOptions.pagerConfig = {}
+          this._.defaultsDeep(gridOptions.pagerConfig, {
+            total: 0,
+            currentPage: 1,
+            enabled: false,
+            pageSize: 1000
+          })
+        }
+      }
+      if (this.queryOptions && this.queryOptions.queryPromise) {
+        gridOptions.proxyConfig = gridOptions.proxyConfig || {}
+        this._.defaultsDeep(gridOptions.proxyConfig, {
+          seq: true,
+          props: {
+            result: 'data.data',
+            message: 'msg',
+            list: 'data.data',
+            total: 'data.totalCount'
+          },
+          ajax: {
+            query: ({ page }) => {
+              const params = {
+                page: page.currentPage,
+                pageIndex: page.currentPage,
+                pageSize: page.pageSize
+              }
+              this._.defaultsDeep(params, this.queryOptions.queryParams || {})
+              const queryPromise = this._.isFunction(this.queryOptions.queryPromise) ? this.queryOptions.queryPromise(
+                params) : service.requestByKey(this.queryOptions.queryPromise, params)
+              return new Promise((resolve, reject) => {
+                queryPromise.then((data) => {
+                  resolve(data)
+                  this.$nextTick(() => {
+                    const values = this.getValue()
+                    this.$emit('change', values)
+                    this.dispatch('ElFormItem', 'el.form.change', [values])
+                  })
+                }, (err) => {
+                  reject(err)
+                })
+              })
+            }
+          }
+        })
+      }
+      return gridOptions
     }
   },
-
   data() {
     return {
-      editType: false,
-      listeners: {
-        'edit-closed': this.onEditClosed,
-        'edit-actived': this.onActive
-      }
+      editType: false
     }
   },
   watch: {
@@ -62,69 +115,13 @@ export default {
     }
   },
   created() {
-    if (!this._.isUndefined(this.gridOptions.pagerConfig) && this.queryOptions.queryPromise) {
-      if (this.gridOptions.pagerConfig === true) {
-        this.gridOptions.pagerConfig = {
-          total: 0,
-          currentPage: 1,
-          pageSize: 10
-        }
-      } else {
-        this.gridOptions.pagerConfig = {}
-        this._.defaultsDeep(this.gridOptions.pagerConfig, {
-          total: 0,
-          currentPage: 1,
-          enabled: false,
-          pageSize: 1000
-        })
-      }
-    }
-    if (this.queryOptions && this.queryOptions.queryPromise) {
-      this.gridOptions.proxyConfig = this.gridOptions.proxyConfig || {}
-      this._.defaultsDeep(this.gridOptions.proxyConfig, {
-        seq: true,
-        props: {
-          result: 'data.data',
-          message: 'msg',
-          list: 'data.data',
-          total: 'data.totalCount'
-        },
-        ajax: {
-          query: ({ page }) => {
-            const params = {
-              page: page.currentPage,
-              pageIndex: page.currentPage,
-              pageSize: page.pageSize
-            }
-            this._.defaultsDeep(params, this.queryOptions.queryParams || {})
-            const queryPromise = this._.isFunction(this.queryOptions.queryPromise) ? this.queryOptions.queryPromise(
-              params) : service.requestByKey(this.queryOptions.queryPromise, params)
-            return new Promise((resolve, reject) => {
-              queryPromise.then((data) => {
-                resolve(data)
-                this.$nextTick(() => {
-                  const values = this.getValue()
-                  this.$emit('change', values)
-                  /*
-                  this.dispatch('ElFormItem', 'el.form.change', [values])
-                  */
-                })
-              }, (err) => {
-                reject(err)
-              })
-            })
-          }
-        }
+    if (this.queryOptions && this.queryOptions.queryPromise && this.queryOptions.queryParams) {
+      const unwatchQueryParams = this.$watch('queryOptions.queryParams', function() {
+        this.instance.commitProxy('reload')
+      }, { deep: true })
+      this.$on('hook:beforeDestroy', function() {
+        unwatchQueryParams()
       })
-
-      if (this.queryOptions && this.queryOptions.queryParams) {
-        const unwatchQueryParams = this.$watch('queryOptions.queryParams', function() {
-          this.instance.commitProxy('reload')
-        }, { deep: true })
-        this.$on('hook:beforeDestroy', function() {
-          unwatchQueryParams()
-        })
-      }
     }
   },
   methods: {
@@ -139,20 +136,17 @@ export default {
     },
     onEditClosed(params) {
       // console.log('editType =' + this.editType + ' & contains  ')
-      if (params.$event && params.$event.target) {
-        /*        if ($.contains(this.$el, params.$event.target)) {
-                if ($(params.$event.target).closest('tr.vxe-body--row').length) {
-                  this.setInnerType()
-                } else {
-                  if (this.editType === inner || this.editType === false) {
-                    this.setOuterType()
-                    this.onBlur()
-                  } else {
-                    this.setOuterType()
-                  }
-                }*/
-        this.setOuterType()
-        // this.onBlur()
+      if (params.$event && params.$event.target && $.contains(this.$el, params.$event.target)) {
+        if ($(params.$event.target).closest('tr.vxe-body--row').length) {
+          this.setInnerType()
+        } else {
+          if (this.editType === inner || this.editType === false) {
+            this.setOuterType()
+            this.onBlur()
+          } else {
+            this.setOuterType()
+          }
+        }
       }
     },
     getValue() {
@@ -194,29 +188,28 @@ export default {
       }
     }
   },
-  render: function(h) {
-    const listeners = Object.assign({}, this.$listeners, this.listeners)
-    return h('vxe-grid', {
-      props: this.gridOptions,
-      on: listeners,
-      scopedSlots: this.$scopedSlots || {},
-      slots: this.$slots || {},
-      ref: 'instance',
-      class: {
-        'field-grid': true
-      }
-    })
-  },
   mounted() {
     if (this.gridOptions.data) {
       this.$nextTick(() => {
         const values = this.getValue()
         this.$emit('change', values)
-        /*
         this.dispatch('ElFormItem', 'el.form.change', [values])
-        */
       })
     }
   }
-}
+}, {
+  props: function() {
+    return this.packagedGridOptions
+  },
+  attrs: {
+    'class': 'field-grid',
+    'ref': 'instance'
+  },
+  listeners: function() {
+    return {
+      'edit-closed': this.onEditClosed,
+      'edit-actived': this.onActive
+    }
+  }
+})
 </script>
