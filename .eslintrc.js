@@ -201,7 +201,13 @@ module.exports = {
       'selfClosingTag': 'never'
     }],
     'vue/attribute-hyphenation': 'off',
-    'vue/max-attributes-per-line':'off',
-    'vue/html-self-closing':'off'
+    'vue/max-attributes-per-line': 'off',
+    'vue/html-self-closing': 'off',
+    'vue/html-closing-bracket-newline': ['error', {
+      'singleline': 'never',
+      'multiline': 'never'
+    }],
+    'vue/order-in-components': 'off',
+    'vue/html-indent':'off'
   }
 }

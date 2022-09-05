@@ -1,38 +1,37 @@
 <template>
   <div class="base-filter-panel">
-    <div class="button-list" ref="buttonList">
+    <div ref="buttonList" class="button-list">
       <el-button
-        v-for="(item,key) in constButtonList"
-        :key="key"
-        v-show="item.show"
-        v-bind="item.props"
-        @click="item.click"
-      >
+          v-for="(item,key) in constButtonList"
+          v-show="item.show"
+          :key="key"
+          v-bind="item.props"
+          @click="item.click">
         {{ $t(item.label) }}
       </el-button>
 
     </div>
 
-    <div class="filter-list" ref="filterList">
+    <div ref="filterList" class="filter-list">
       <div
-        class="list-item"
-        v-show="item.hide === false"
-        ref="listItems"
-        v-for="(item,$index) in filterComponentList" :key="$index"
-      >
+          v-for="(item,$index) in filterComponentList"
+          v-show="item.hide === false || foldConfig.isExpand" ref="listItems"
+          :key="$index"
+          class="list-item">
+
         <div
-          :style="{width:item.width/2 +'px' ,textAlign:'center',fontSize:'20px',padding:'10px',backgroundColor:'blue'}"
-        >
+            :style="{width:item.width/2 +'px' ,textAlign:'center',fontSize:'20px',padding:'10px',backgroundColor:'blue'}">
+
           <span>{{ item.label }}</span>
         </div>
       </div>
-      <div class="list-item" ref="foldBtn">
+      <div ref="foldBtn" class="list-item">
         <el-button
-          class="foldBtn"
-          v-show="foldConfig.show"
-          v-bind="foldConfig.props"
-          @click="handleExpand(foldConfig)"
-        >
+            v-show="foldConfig.show"
+            class="foldBtn"
+            v-bind="foldConfig.props"
+            @click="handleExpand(foldConfig)">
+
         </el-button>
       </div>
     </div>
@@ -105,6 +104,7 @@ export default {
       ],
       foldConfig: {
         show: true,
+        isExpand: false,
         props: {
           disabled: false,
           icon: 'el-icon-plus'
@@ -114,8 +114,8 @@ export default {
   },
   methods: {
     handleExpand(item) {
-      this.isExpand = !this.isExpand
-      if (this.isExpand) {
+      item.isExpand = !item.isExpand
+      if (item.isExpand) {
         item.props.icon = 'el-icon-minus'
       } else {
         item.props.icon = 'el-icon-plus'
@@ -205,6 +205,7 @@ export default {
       padding-right: 4px;
       margin-bottom: 8px;
       vertical-align: middle;
+
       .el-radio-group {
         label {
           line-height: 32px;

@@ -12,11 +12,9 @@ const whiteList = ['/login', '/auth-redirect'] // no redirect whitelist
 
 router.beforeEach(function(to, from, next) {
   // start progress bar
-  NProgress.start()
 
   // set page title
   document.title = getPageTitle(to.meta.title)
-
   // determine whether the user has logged in
   const hasToken = getToken()
 
@@ -34,6 +32,7 @@ router.beforeEach(function(to, from, next) {
       } else {
         // get user info
         // note: roles must be a object array! such as: ['admin'] or ,['developer','editor']
+        NProgress.start()
         store.dispatch('user/getInfo').then(function(data) {
           return Promise.resolve(data.roles)
         }).then(function(roles) {
