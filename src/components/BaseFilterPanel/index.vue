@@ -194,7 +194,7 @@ export default {
     }
 
     .foldBtn {
-      padding: 6px 8px;
+      padding:  8px;
 
       &:focus, &:visited {
         background: #fff;
