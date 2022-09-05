@@ -9,33 +9,19 @@
           @click="item.click">
         {{ $t(item.label) }}
       </el-button>
-
     </div>
 
-    <div ref="filterList" class="filter-list">
-      <div
-          v-for="(item,$index) in filterComponentList"
-          v-show="item.hide === false || foldConfig.isExpand" ref="listItems"
-          :key="$index"
-          class="list-item">
-
-        <div
-            :style="{width:item.width/2 +'px' ,textAlign:'center',fontSize:'20px',padding:'10px',backgroundColor:'blue'}">
-
-          <span>{{ item.label }}</span>
-        </div>
-      </div>
+    <el-form ref="filterList" :inline="true" v-bind="formConfig" class="filter-list">
+      <slot></slot>
       <div ref="foldBtn" class="list-item">
         <el-button
             v-show="foldConfig.show"
             class="foldBtn"
             v-bind="foldConfig.props"
             @click="handleExpand(foldConfig)">
-
         </el-button>
       </div>
-    </div>
-
+    </el-form>
   </div>
 </template>
 
@@ -44,38 +30,21 @@ import lodash from 'lodash'
 
 export default {
   name: 'BaseFilterPanel',
+  props: {
+    formConfig: Object,
+    default() {
+      return {
+        model: {},
+        rules: {}
+      }
+    }
+  },
   data() {
     return {
       filterListWidth: 0,
       buttonListWidth: 0,
       foldButtonWidth: 0,
-      filterComponentList: [
-        {
-          hide: false,
-          width: 150,
-          label: '150'
-        },
-        {
-          hide: false,
-          width: 100,
-          label: '100'
-        },
-        {
-          hide: false,
-          width: 200,
-          label: '200'
-        },
-        {
-          hide: false,
-          width: 100,
-          label: '100'
-        },
-        {
-          hide: false,
-          width: 200,
-          label: '200'
-        }
-      ],
+      filterComponentList: [],
       constButtonList: [
         {
           ref: 'queryButton',
@@ -109,7 +78,8 @@ export default {
           disabled: false,
           icon: 'el-icon-plus'
         }
-      }
+      },
+      backupModel: {}
     }
   },
   methods: {
@@ -117,43 +87,51 @@ export default {
       item.isExpand = !item.isExpand
       if (item.isExpand) {
         item.props.icon = 'el-icon-minus'
+        this._.each(this.filterComponentList, (item) => {
+          if (!item.$el || item._isDestroyed) {
+            return
+          }
+          $(item.$el).css('display', item._display)
+        })
       } else {
         item.props.icon = 'el-icon-plus'
+        this.responsiveFilerList(true)
       }
     },
     handleQuery() {
-
+      this.$refs.filterList.validate((valid) => {
+        if (valid) {
+          this.$emit('query', lodash.cloneDeep(this.formConfig.model))
+        }
+      })
     },
     handleReset() {
-
+      this.$refs.filterList.resetFields()
+      this.$emit('reset')
     },
     bindResizeEvent() {
-      window.addEventListener('resize', this.responsiveFilerListWithMemory)
+      window.addEventListener('resize', this.responsiveFilerList)
     },
     unbindResizeEvent() {
-      window.removeEventListener('resize', this.responsiveFilerListWithMemory)
+      window.removeEventListener('resize', this.responsiveFilerList)
     },
-    responsiveFilerListWithMemory() {
-      this.responsiveFilerList(true)
-    },
-    responsiveFilerList: lodash.debounce(function(isMemory) {
-      // isMemory 为true 会记忆宽度 否则强制更新
+    responsiveFilerList: lodash.debounce(function(foreLayout) {
       // 获取总的宽度 filterListWidth(监听是否是 x 的窗口变动)
-      const filterListDom = this.$refs.filterList
-      if (!filterListDom) return
-      const filterListWidth = Math.floor(filterListDom.offsetWidth)
-      if (!isMemory || filterListWidth !== this.filterListWidth) {
+      const filterListDom = this.$refs.filterList.$el
+      if (!filterListDom || this.foldConfig.isExpand) return
+      const filterListWidth = filterListDom.offsetWidth
+      if (filterListWidth !== this.filterListWidth) {
         this.filterListWidth = filterListWidth
       } else {
-        // 不进行重新计算
-        return
+        // 宽度没有变化不进行重新计算
+        if (!foreLayout) return
       }
       // 初始化赋值宽度 按钮组组合(默认最后一排)
       let sumW = this.foldButtonWidth + this.buttonListWidth
       this.foldConfig.show = false
+      let isWrapped = false
       this._.each(this.filterComponentList, (item) => {
-        if (item.show === false) {
-          item.hide = item.show && true
+        if (!item.$el || item._isDestroyed) {
           return
         }
         console.log(sumW, item._cacheWidth, filterListWidth)
@@ -162,28 +140,37 @@ export default {
           console.log(`过滤条件计算错误component:${item.component}`)
         }
         if (sumW > filterListWidth) {
-          item.hide = true
-          this.foldConfig.show = true
+          isWrapped = true
+          $(item.$el).css('display', 'none')
         } else {
-          item.hide = false
-          this.foldConfig.show = false
+          $(item.$el).css('display', item._display)
         }
       })
-    }, 150)
+      this.foldConfig.show = isWrapped === true
+    }, 150),
+    // 提供给插槽对象用
+    registerFilterItem(item) {
+      this.filterComponentList.push(item)
+    }
   },
   mounted() {
     // 获取的原生的dom 这里来获取宽度数据
     this.$nextTick(function() {
       this.buttonListWidth = this.$refs.buttonList.offsetWidth
-      this.filterListWidth = this.$refs.filterList.offsetWidth
       this.foldButtonWidth = this.$refs.foldBtn.offsetWidth
-      const $listItems = this.$refs.listItems
       this._.each(this.filterComponentList, function(item, index) {
-        item._cacheWidth = $listItems[index].offsetWidth
+        // 10为margin 的值
+        item._cacheWidth = item.$el.offsetWidth + 10
+        item._display = $(item.$el).css('display')
       })
       this.bindResizeEvent()
-      this.responsiveFilerList(false)
+      this.responsiveFilerList()
     })
+  },
+  provide() {
+    return {
+      'baseFilterPanel': this
+    }
   },
   destroyed() {
     this.unbindResizeEvent()
@@ -198,19 +185,12 @@ export default {
 
   .filter-list {
     text-align: left;
-    font-size: 0;
 
     .list-item {
       display: inline-block;
       padding-right: 4px;
       margin-bottom: 8px;
       vertical-align: middle;
-
-      .el-radio-group {
-        label {
-          line-height: 32px;
-        }
-      }
     }
 
     .foldBtn {

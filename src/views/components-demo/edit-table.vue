@@ -1,14 +1,25 @@
 <template>
   <div style="padding: 10px;">
-
-    <BaseFilterPanel></BaseFilterPanel>
+    <BaseFilterPanel :form-config="formConfig" @query="handleQuery">
+      <FilterItem prop="name1">
+        <el-input v-model="formConfig.model.name1" placeholder="请输入内容1"></el-input>
+      </FilterItem>
+      <FilterItem prop="name2">
+        <el-input v-model="formConfig.model.name2" placeholder="请输入内容2"></el-input>
+      </FilterItem>
+      <FilterItem prop="name3">
+        <el-input v-model="formConfig.model.name3" placeholder="请输入内容3"></el-input>
+      </FilterItem>
+      <FilterItem prop="name4">
+        <el-input v-model="formConfig.model.name4" placeholder="请输入内容4"></el-input>
+      </FilterItem>
+    </BaseFilterPanel>
 
     <FieldGrid
-      ref="xGrid"
-      :gridOptions="gridOptions"
-      :queryOptions="queryOptions"
-      @toolbar-button-click="toolbarButtonClickEvent"
-    >
+        ref="xGrid"
+        :gridOptions="gridOptions"
+        :queryOptions="queryOptions"
+        @toolbar-button-click="toolbarButtonClickEvent">
       <template #name="{ row }">
         <span>@</span>
         <span> {{ row.name }}</span>
@@ -20,21 +31,35 @@
       </template>
     </FieldGrid>
 
-
   </div>
 </template>
 <script>
 import FieldGrid from '@/components/vxe/FieldGrid'
 import BaseFilterPanel from '@/components/BaseFilterPanel'
+import FilterItem from '@/components/BaseFilterPanel/FilterItem'
 
 export default {
   name: 'EditTable',
   components: {
     FieldGrid,
+    FilterItem,
     BaseFilterPanel
   },
   data() {
     return {
+      formConfig: {
+        model: {
+          name1: '11',
+          name2: '22',
+          name3: '',
+          name4: ''
+        },
+        rules: {
+          name1: [
+            { required: true, message: '请输入活动名称', trigger: 'blur' }
+          ]
+        }
+      },
       sexOptions: [
         {
           value: '1',
@@ -135,12 +160,17 @@ export default {
     }
   },
   methods: {
+    handleQuery(params) {
+      console.log('查询参数', params)
+      this.queryOptions.queryParams = {
+        a: new Date().getTime(),
+        ...params
+      }
+    },
     toolbarButtonClickEvent({ code }) {
       const instance = this.$refs.xGrid.instance
       if (code === 'refreshMe') {
-        this.queryOptions.queryParams = {
-          a: new Date().getTime()
-        }
+
       } else if (code === 'addMe') {
         instance.insert({
           name: ''
