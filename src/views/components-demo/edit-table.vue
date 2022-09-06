@@ -1,49 +1,55 @@
 <template>
-  <div style="padding: 10px;">
-    <BaseFilterPanel :form-config="formConfig" @query="handleQuery">
-      <FilterItem prop="name1">
-        <el-input v-model="formConfig.model.name1" placeholder="请输入内容1"></el-input>
-      </FilterItem>
-      <FilterItem prop="name2">
-        <el-input v-model="formConfig.model.name2" placeholder="请输入内容2"></el-input>
-      </FilterItem>
-      <FilterItem prop="name3">
-        <el-input v-model="formConfig.model.name3" placeholder="请输入内容3"></el-input>
-      </FilterItem>
-      <FilterItem prop="name4">
-        <el-input v-model="formConfig.model.name4" placeholder="请输入内容4"></el-input>
-      </FilterItem>
-    </BaseFilterPanel>
+  <FilterListLayout>
+    <template #header>
+      <BaseFilterPanel :form-config="formConfig" @query="handleQuery">
+        <FilterItem prop="name1">
+          <el-input v-model="formConfig.model.name1" placeholder="请输入内容1"></el-input>
+        </FilterItem>
+        <FilterItem prop="name2">
+          <el-input v-model="formConfig.model.name2" placeholder="请输入内容2"></el-input>
+        </FilterItem>
+        <FilterItem prop="name3">
+          <el-input v-model="formConfig.model.name3" placeholder="请输入内容3"></el-input>
+        </FilterItem>
+        <FilterItem prop="name4">
+          <el-input v-model="formConfig.model.name4" placeholder="请输入内容4"></el-input>
+        </FilterItem>
+      </BaseFilterPanel>
+    </template>
+    <template #content>
+      <FieldGrid
+          ref="xGrid"
+          :gridOptions="gridOptions"
+          :queryOptions="queryOptions"
+          @toolbar-button-click="toolbarButtonClickEvent">
+        <template #name="{ row }">
+          <span>@</span>
+          <span> {{ row.name }}</span>
+        </template>
+        <template #sex_edit="{ row }">
+          <vxe-select v-model="row.sex" transfer>
+            <vxe-option v-for="item in sexOptions" :key="item.value" :value="item.value"
+                        :label="item.label"></vxe-option>
+          </vxe-select>
+        </template>
+      </FieldGrid>
+    </template>
+  </FilterListLayout>
 
-    <FieldGrid
-        ref="xGrid"
-        :gridOptions="gridOptions"
-        :queryOptions="queryOptions"
-        @toolbar-button-click="toolbarButtonClickEvent">
-      <template #name="{ row }">
-        <span>@</span>
-        <span> {{ row.name }}</span>
-      </template>
-      <template #sex_edit="{ row }">
-        <vxe-select v-model="row.sex" transfer>
-          <vxe-option v-for="item in sexOptions" :key="item.value" :value="item.value" :label="item.label"></vxe-option>
-        </vxe-select>
-      </template>
-    </FieldGrid>
-
-  </div>
 </template>
 <script>
 import FieldGrid from '@/components/vxe/FieldGrid'
 import BaseFilterPanel from '@/components/BaseFilterPanel'
 import FilterItem from '@/components/BaseFilterPanel/FilterItem'
+import FilterListLayout from '@/components/layout/FilterListLayout'
 
 export default {
   name: 'EditTable',
   components: {
     FieldGrid,
     FilterItem,
-    BaseFilterPanel
+    BaseFilterPanel,
+    FilterListLayout
   },
   data() {
     return {
@@ -74,7 +80,7 @@ export default {
         resizable: true,
         keepSource: true,
         showOverflow: 'title',
-        height: 530,
+        height: 'auto',
         pagerConfig: false,
         toolbarConfig: {
           buttons: [{
