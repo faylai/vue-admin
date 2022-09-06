@@ -1,7 +1,7 @@
 <template>
   <div class="filterListLayout">
     <div ref="header" class="header">
-      <div ref="headerWrapper" class="headerWrapper">
+      <div ref="headerWrapper">
         <slot name="header"></slot>
       </div>
     </div>
@@ -24,10 +24,8 @@ export default {
   methods: {
     init: lodash.debounce(function() {
       const MutationObserver = window.MutationObserver || window.webkitMutationObserver || window.MozMutationObserver
-      const observer = new MutationObserver((mutationsList) => {
-        if (this.$refs.headerWrapper.offsetHeight !== this.$refs.header.offsetHeight) {
-          $(this.$refs.header).css('height', $(this.$refs.headerWrapper).height())
-        }
+      const observer = new MutationObserver(() => {
+        this.onResize()
       })
       observer.observe(this.$refs.headerWrapper, {
         childList: false, // 子节点的变动（新增、删除或者更改）
@@ -35,11 +33,18 @@ export default {
         characterData: false, // 节点内容或节点文本的变动
         subtree: true // 是否将观察器应用于该节点的所有后代节点
       })
+      window.addEventListener('resize', this.onResize)
       this.observer = observer
     }, 100),
     release: lodash.debounce(function() {
       this.observer || this.observer.disconnect()
-    }, 100)
+      window.removeEventListener('resize', this.onResize)
+    }, 100),
+    onResize: lodash.debounce(function() {
+      if (this.$refs.headerWrapper.offsetHeight !== this.$refs.header.offsetHeight) {
+        $(this.$refs.header).css('height', $(this.$refs.headerWrapper).height())
+      }
+    }, 160)
   },
   activated() {
     this.init()
