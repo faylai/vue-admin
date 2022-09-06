@@ -134,7 +134,7 @@ export default {
         if (!item.$el || item._isDestroyed) {
           return
         }
-        console.log(sumW, item._cacheWidth, filterListWidth)
+        // console.log(sumW, item._cacheWidth, filterListWidth)
         sumW += item._cacheWidth
         if (this._.isNaN(sumW)) {
           console.log(`过滤条件计算错误component:${item.component}`)
@@ -152,6 +152,9 @@ export default {
     registerFilterItem(item) {
       this.filterComponentList.push(item)
     }
+  },
+  activated() {
+    this.responsiveFilerList()
   },
   mounted() {
     // 获取的原生的dom 这里来获取宽度数据
@@ -194,7 +197,7 @@ export default {
     }
 
     .foldBtn {
-      padding:  8px;
+      padding: 8px;
 
       &:focus, &:visited {
         background: #fff;
