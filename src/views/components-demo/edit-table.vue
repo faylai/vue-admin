@@ -11,9 +11,10 @@
         <FilterItem prop="name3">
           <ExtStaticSelect v-model="formConfig.model.name3"
                            :style="{width:'200px'}"
-                           :items="[{value:'11',label:'11'},{value:'22',label:'22'}]">
+                           :options="{clearable:true}"
+                           :items="[{value:'11',label:'11'},{value:'22',label:'22'},{value:'333',label:'333'}]">
             <template #prefix>
-              <div style="color:red;">请一定要选择哈哈</div>
+              <div style="color:red;padding: 10px;">请一定要选择哈哈</div>
             </template>
           </ExtStaticSelect>
 
@@ -61,8 +62,8 @@ export default {
     return {
       formConfig: {
         model: {
-          name1: '11',
-          name2: '22',
+          name1: '',
+          name2: '',
           name3: '',
           name4: ''
         },

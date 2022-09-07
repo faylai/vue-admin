@@ -9,11 +9,6 @@ export default {
     emitter
   ],
   props: {
-    // 多值,用英文逗号分隔
-    value: {
-      type: String,
-      default: ''
-    },
     valueKey: {
       type: String,
       default: 'value'
