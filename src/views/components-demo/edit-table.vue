@@ -9,10 +9,14 @@
           <el-input v-model="formConfig.model.name2" placeholder="请输入内容2"></el-input>
         </FilterItem>
         <FilterItem prop="name3">
-          <el-input v-model="formConfig.model.name3" placeholder="请输入内容3"></el-input>
-        </FilterItem>
-        <FilterItem prop="name4">
-          <el-input v-model="formConfig.model.name4" placeholder="请输入内容4"></el-input>
+          <ExtStaticSelect v-model="formConfig.model.name3"
+                           :style="{width:'200px'}"
+                           :items="[{value:'11',label:'11'},{value:'22',label:'22'}]">
+            <template #prefix>
+              <div style="color:red;">请一定要选择哈哈</div>
+            </template>
+          </ExtStaticSelect>
+
         </FilterItem>
       </BaseFilterPanel>
     </template>
@@ -42,12 +46,14 @@ import FieldGrid from '@/components/vxe/FieldGrid'
 import BaseFilterPanel from '@/components/BaseFilterPanel'
 import FilterItem from '@/components/BaseFilterPanel/FilterItem'
 import FilterListLayout from '@/components/layout/FilterListLayout'
+import ExtStaticSelect from '@/components/ExtStaticSelect'
 
 export default {
   name: 'EditTable',
   components: {
     FieldGrid,
     FilterItem,
+    ExtStaticSelect,
     BaseFilterPanel,
     FilterListLayout
   },
@@ -62,7 +68,10 @@ export default {
         },
         rules: {
           name1: [
-            { required: true, message: '请输入活动名称', trigger: 'blur' }
+            { required: true, message: '请输入活动名称', trigger: 'change' }
+          ],
+          name3: [
+            { required: true, message: '请选择', trigger: 'change' }
           ]
         }
       },
@@ -176,7 +185,9 @@ export default {
     toolbarButtonClickEvent({ code }) {
       const instance = this.$refs.xGrid.instance
       if (code === 'refreshMe') {
-
+        this.queryOptions.queryParams = {
+          a: new Date().getTime()
+        }
       } else if (code === 'addMe') {
         instance.insert({
           name: ''

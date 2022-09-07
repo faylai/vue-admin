@@ -130,3 +130,18 @@ export function validObjEmpty(obj) {
     }, true)
   }
 }
+
+export function normalizeSlots(slots, context) {
+  return Object.keys(slots).reduce(function(arr, key) {
+    slots[key].forEach(function(vnode) {
+      if (!vnode.context) {
+        slots[key].context = context
+      }
+      if (!vnode.data) {
+        vnode.data = {}
+      }
+      vnode.data.slot = key
+    })
+    return arr.concat(slots[key])
+  }, [])
+}

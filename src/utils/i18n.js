@@ -10,25 +10,6 @@ export function generateTitle(title) {
   }
   return title
 }
-export function generateTagTitle(tag) {
-  // 注意：$t :this method from vue-i18n, inject in @/lang/index.js 只能用在.vue文件中(vue实例)
-  const hasKey = this.$te('route.' + tag.title)
-  const translatedTitle = this.$t('route.' + tag.title)
-
-  if (hasKey) {
-    if (tag.query.state && tag.query.state == 'add') {
-      return this.$t('route.add') + translatedTitle
-    }
-    if (tag.query.state && tag.query.state == 'edit') {
-      return this.$t('route.edit') + translatedTitle
-    }
-    if (tag.query.state && tag.query.state == 'look') {
-      return this.$t('route.look') + translatedTitle
-    }
-    return translatedTitle
-  }
-  return tag.title
-}
 
 // translate global message outside .vue files
 export function translate(title) {

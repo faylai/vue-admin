@@ -57,7 +57,7 @@ module.exports = {
     'indent': [2, 2, {
       'SwitchCase': 1
     }],
-    'jsx-quotes': [2, 'prefer-single'],
+    'jsx-quotes': 'off',
     'key-spacing': [2, {
       'beforeColon': false,
       'afterColon': true
@@ -208,6 +208,6 @@ module.exports = {
       'multiline': 'never'
     }],
     'vue/order-in-components': 'off',
-    'vue/html-indent':'off'
+    'vue/html-indent': 'off'
   }
 }
