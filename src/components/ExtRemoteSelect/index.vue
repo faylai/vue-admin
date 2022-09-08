@@ -1,28 +1,64 @@
 <script>
-import emitter from 'element-ui/lib/mixins/emitter'
 import service from '@/api/service'
+import { normalizeSlots } from '@/utils'
+import Vue from 'vue'
 
 const defaultPageConfig = {
   pageSize: 20,
+  pageSizeParamKey: 'pageSize',
+  pageIndexParamKey: 'pageIndex',
   dataKey: 'data',
   totalCountKey: 'total',
-  listKey: 'data'
+  itemKey: 'data'
 }
+const stateMap = new WeakMap()
+
+function getScope(parentComponent, key, defaultScope) {
+  //console.log('stateMap', key, stateMap)
+  if (!stateMap.has(parentComponent)) {
+    stateMap.set(parentComponent, new Map())
+    parentComponent.$on('hook:beforeDestroy', function() {
+      stateMap.delete(parentComponent)
+      //console.log('delete stateMap', stateMap)
+    })
+  }
+  const map = stateMap.get(parentComponent)
+  if (!map.has(key)) {
+    const state = Vue.observable(defaultScope)
+    map.set(key, state)
+  }
+  return map.get(key)
+}
+
 export default {
   name: 'ExtRemoteSelect',
-  mixins: [
-    emitter
-  ],
-  model: {
-    prop: 'value',
-    event: 'change'
-  },
+  functional: true,
   props: {
-    // 多值,用英文逗号分隔
-    value: {
+    scopeKey: {
       type: String,
-      default: ''
-    }, // 多值,用英文逗号分隔 用于解决异步加载默认值显示的问题
+      required: true
+    },
+    requestKey: {
+      type: String,
+      default: undefined
+    },
+    searchName: {
+      type: String,
+      default: 'keyword'
+    },
+    params: {
+      type: Object,
+      default() {
+        return {}
+      }
+    },
+    // see https://element.eleme.io/#/zh-CN/component/select 定义props
+    options: {
+      type: Object,
+      default() {
+        return {}
+      }
+    },
     label: {
       type: String,
       default: ''
@@ -31,23 +67,27 @@ export default {
       type: Object,
       default() {
         return {
-          requestApi: function(params) {
-            if (!this.requestKey) {
+          requestApi: function(requestKey, params) {
+            if (!requestKey) {
               throw new Error('请配置 requestKey 才能发送远程请求')
             } else {
-              return service.requestByKey(this.requestKey, params)
+              return service.requestByKey(requestKey, params)
             }
           }
         }
       }
     },
-    requestKey: {
+    valueKey: {
       type: String,
-      default: undefined
+      default: 'value'
     },
-    searchName: {
+    labelKey: {
       type: String,
-      default: 'searchWord'
+      default: 'label'
+    },
+    showPage: {
+      type: Boolean,
+      default: true
     },
     pageConfig: {
       type: Object,
@@ -55,6 +95,53 @@ export default {
         return Object.assign({}, defaultPageConfig)
       }
     }
+  },
+  render(h, context) {
+    let children = (context.children || []).concat([])
+    const scope = getScope(context.parent, context.props.scopeKey, {
+      items: [],
+      loading: false,
+      _counter: 0,
+      remoteMethod: function(keyword) {
+        scope._counter++
+        scope.loading = true
+        params[context.props.searchName] = keyword
+        context.props.service.requestApi(context.props.requestKey, params).then(function(res) {
+          scope.loading = false
+          const items = []
+          for (const item of res.data.data) {
+            items.push(item)
+          }
+          scope.items = items
+        })
+      }
+    })
+    const params = Object.assign({}, context.props.params)
+    const mergedOptions = Object.assign({
+      remote: true,
+      filterable: true,
+      automaticDropdown: false,
+      loading: scope.loading,
+      remoteMethod: scope.remoteMethod
+    }, context.props.options)
+    const slots = context.slots()
+    if (!slots.default) {
+      slots.default = scope.items.map(function(item, index) {
+        /* eslint-disable */
+        return <el-option
+            key={item[context.props.valueKey]}
+            label={item[context.props.labelKey]}
+            value={item[context.props.valueKey]}>
+        </el-option>
+      })
+    }
+    children = children.concat(normalizeSlots(slots))
+    let data = Object.assign({}, context.data)
+    data.props = mergedOptions
+    if (scope._counter === 0) {
+      scope.remoteMethod('')
+    }
+    return h('el-select', data, children)
   }
 }
 </script>

@@ -6,7 +6,8 @@ function getObjectValueByKey(key, obj) {
   let currentObject = obj
   for (let i = 0; i < paths.length; i++) {
     const path = paths[i]
-    if (!currentObject.hasOwn(path)) {
+    // eslint-disable-next-line no-prototype-builtins
+    if (!currentObject.hasOwnProperty(path)) {
       currentObject = undefined
       break
     } else {
@@ -19,11 +20,20 @@ function getObjectValueByKey(key, obj) {
 export function requestByKey(key, params) {
   const requestConfig = getObjectValueByKey(key, config)
   if (requestConfig) {
-    return request({
-      url: requestConfig.url,
-      method: requestConfig.method,
-      params: params
-    })
+    if (requestConfig.method.toLowerCase() === 'get') {
+      return request({
+        url: requestConfig.url,
+        method: requestConfig.method,
+        params: params
+      })
+    } else {
+      return request({
+        url: requestConfig.url,
+        method: requestConfig.method,
+        data: params
+      })
+    }
+
   } else {
     throw new Error(`接口key:${key}未定义配置!`)
   }

@@ -6,17 +6,23 @@
           <el-input v-model="formConfig.model.name1" placeholder="请输入内容1"></el-input>
         </FilterItem>
         <FilterItem prop="name2">
-          <el-input v-model="formConfig.model.name2" placeholder="请输入内容2"></el-input>
+          <ExtRemoteSelect v-model="formConfig.model.name2"
+                           scope-key="name2"
+                           request-key="example.getSelectList1"></ExtRemoteSelect>
         </FilterItem>
         <FilterItem prop="name3">
           <ExtStaticSelect v-model="formConfig.model.name3"
-                           :style="{width:'200px'}"
                            :options="{clearable:true}"
                            :items="[{value:'11',label:'11'},{value:'22',label:'22'},{value:'333',label:'333'}]">
             <template #prefix>
               <div style="color:red;padding: 10px;">请一定要选择哈哈</div>
             </template>
           </ExtStaticSelect>
+        </FilterItem>
+        <FilterItem prop="name4">
+          <ExtRemoteSelect v-model="formConfig.model.name4"
+                           scope-key="name4"
+                           request-key="example.getSelectList2"></ExtRemoteSelect>
 
         </FilterItem>
       </BaseFilterPanel>
@@ -48,6 +54,7 @@ import BaseFilterPanel from '@/components/BaseFilterPanel'
 import FilterItem from '@/components/BaseFilterPanel/FilterItem'
 import FilterListLayout from '@/components/layout/FilterListLayout'
 import ExtStaticSelect from '@/components/ExtStaticSelect'
+import ExtRemoteSelect from '@/components/ExtRemoteSelect'
 
 export default {
   name: 'EditTable',
@@ -56,7 +63,8 @@ export default {
     FilterItem,
     ExtStaticSelect,
     BaseFilterPanel,
-    FilterListLayout
+    FilterListLayout,
+    ExtRemoteSelect
   },
   data() {
     return {
@@ -64,7 +72,7 @@ export default {
         model: {
           name1: '',
           name2: '',
-          name3: '',
+          name3: '22',
           name4: ''
         },
         rules: {

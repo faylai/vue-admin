@@ -1,5 +1,9 @@
 import lodash from 'lodash'
 
+// empty function
+export function noop() {
+}
+
 /**
  * Parse the time to string
  * @param {(Object|string|number)} time
@@ -144,4 +148,24 @@ export function normalizeSlots(slots, context) {
     })
     return arr.concat(slots[key])
   }, [])
+}
+
+export function beforeFunction(targetFn, beforeFn) {
+  targetFn = targetFn || noop()
+  beforeFn = beforeFn || noop()
+  return function() {
+    const args = [].slice.call(arguments, 0)
+    beforeFn.apply(this, args)
+    targetFn.apply(this, args)
+  }
+}
+
+export function afterFunction(targetFn, afterFn) {
+  targetFn = targetFn || noop()
+  afterFn = afterFn || noop()
+  return function() {
+    const args = [].slice.call(arguments, 0)
+    targetFn.apply(this, args)
+    afterFn.apply(this, args)
+  }
 }
