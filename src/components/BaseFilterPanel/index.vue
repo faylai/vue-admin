@@ -95,8 +95,8 @@ export default {
         })
       } else {
         item.props.icon = 'el-icon-plus'
-        this.responsiveFilerList(true)
       }
+      this.responsiveFilerList(true)
     },
     handleQuery() {
       this.$refs.filterList.validate((valid) => {
@@ -162,7 +162,7 @@ export default {
       this.buttonListWidth = this.$refs.buttonList.offsetWidth
       this.foldButtonWidth = this.$refs.foldBtn.offsetWidth
       this._.each(this.filterComponentList, function(item, index) {
-        // 10为margin 的值
+        // 10为 margin 的值，缓存开始状态用以恢复
         item._cacheWidth = item.$el.offsetWidth + 10
         item._display = $(item.$el).css('display')
       })

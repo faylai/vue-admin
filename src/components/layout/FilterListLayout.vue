@@ -37,7 +37,7 @@ export default {
       this.observer = observer
     }, 100),
     release: lodash.debounce(function() {
-      this.observer || this.observer.disconnect()
+      this.observer && this.observer.disconnect()
       window.removeEventListener('resize', this.onResize)
     }, 100),
     onResize: lodash.debounce(function() {
