@@ -25,10 +25,12 @@ export default {
       type: String,
       required: true
     },
+    // 搜索的时候关键参数名称
     searchName: {
       type: String,
       default: 'keyword'
     },
+    // 默认接口请求参数
     params: {
       type: Object,
       default() {
