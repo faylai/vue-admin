@@ -206,6 +206,7 @@ module.exports = {
       'multiline': 'never'
     }],
     'vue/order-in-components': 'off',
-    'vue/html-indent': 'off'
+    'vue/html-indent': 'off',
+    'vue/attributes-order':'off'
   }
 }

@@ -2,7 +2,9 @@
 import service from '@/api/service'
 import { normalizeSlots, createScope } from '@/utils'
 import settings from '@/settings'
-import Vue from 'vue'
+import lodash from 'lodash'
+// EnforceSlotSelect 修改了 el-select 的template 模板用以支持 bottom 插槽（放分页组件）
+// 注意：升级element-ui 的时候可能也需要升级 EnforceSlotSelect 的模板
 import EnforceSlotSelect from '@/components/ExtRemoteSelect/EnforceSlotSelect'
 
 const paginationConfig = settings.paginationConfig
@@ -73,21 +75,40 @@ export default {
       loading: false,
       _counter: 0,
       pageIndex: 1,
+      total: 0,
+      _keyword: '',
+      _params: context.props.params,
       remoteMethod: function(keyword) {
         scope._counter++
         scope.loading = true
-        params[context.props.searchName] = keyword
+        scope._keyword = keyword
+        const params = Object.assign({}, scope._params)
+        params[context.props.searchName] = scope._keyword
+        params[paginationConfig.pageIndexParamKey] = scope.pageIndex
+        params[paginationConfig.pageSizeParamKey] = context.props.pageSize
         context.props.service.requestApi(context.props.requestKey, params).then(function(res) {
           scope.loading = false
           const items = []
-          for (const item of res.data.data) {
+          const root = res[paginationConfig.responseRootName]
+          for (const item of root[paginationConfig.responseRecordListKey] || []) {
             items.push(item)
           }
+          scope.total = root[paginationConfig.responseTotalCountKey]
           scope.items = items
         })
+      },
+      currentChange(pageIndex) {
+        scope.pageIndex = pageIndex
+        scope.remoteMethod(scope._keyword)
       }
     })
-    const params = Object.assign({}, context.props.params)
+    // 简单检查参数是否被外部修改,如果修改分页重置并且重新拉取数据
+    if (!lodash.isEqual(context.props.params, scope._params)) {
+      scope._params = context.props.params
+      scope._counter = 0
+      scope.pageIndex = 1
+    }
+
     const mergedOptions = Object.assign({
       filterable: true,
       automaticDropdown: false
@@ -112,7 +133,10 @@ export default {
         slots.bottom.push(<el-pagination
             small
             layout="prev, pager, next"
-            total={0}>
+            page-size={context.props.pageSize}
+            current-page={scope.pageIndex}
+            total={scope.total}
+            vOn:current-change={scope.currentChange}>
         </el-pagination>)
       }
     }
@@ -128,6 +152,3 @@ export default {
   }
 }
 </script>
-<style lang="scss">
-
-</style>

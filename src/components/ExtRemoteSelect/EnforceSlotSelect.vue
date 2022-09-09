@@ -128,7 +128,8 @@
             {{ emptyText }}
           </p>
         </template>
-        <slot name="bottom"></slot>
+        <!-- bottom 插槽 用以支持分页组件 -->
+        <slot name="bottom" v-if="!loading"></slot>
       </el-select-menu>
     </transition>
   </div>
@@ -138,6 +139,9 @@
 <script>
 import { Select } from 'element-ui'
 
+/**
+ * 模板是从源代码中复制过来的，只是增加了 bottom 插槽,注意升级的时候更新
+ */
 export default {
   name: 'EnforceSlotSelect',
   extends: Select

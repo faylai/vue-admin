@@ -19,7 +19,7 @@ const selectData1 = Mock.mock({
 })
 
 const selectData2 = Mock.mock({
-  'items|30': [{
+  'items|20': [{
     value: '@id',
     label: '@sentence(2,3)'
   }]
@@ -62,7 +62,7 @@ module.exports = [
       return {
         code: 20000,
         data: {
-          total: data.length,
+          total: 100,
           data: data
         }
       }
