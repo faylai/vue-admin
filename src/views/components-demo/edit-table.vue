@@ -21,6 +21,7 @@
         <FilterItem prop="name4">
           <ExtRemoteSelect v-model="formConfig.model.name4"
                            :clearable="true"
+                           :show-page="true"
                            request-key="example.getSelectList2"></ExtRemoteSelect>
 
         </FilterItem>

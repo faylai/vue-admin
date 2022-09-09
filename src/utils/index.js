@@ -1,4 +1,25 @@
 import lodash from 'lodash'
+import Vue from 'vue'
+
+export const createScope = (function() {
+  const stateMap = new WeakMap()
+  return function(parentComponent, key, defaultScope) {
+    // console.log('stateMap', key, stateMap)
+    if (!stateMap.has(parentComponent)) {
+      stateMap.set(parentComponent, new Map())
+      parentComponent.$on('hook:beforeDestroy', function() {
+        stateMap.delete(parentComponent)
+        // console.log('delete stateMap', stateMap)
+      })
+    }
+    const map = stateMap.get(parentComponent)
+    if (!map.has(key)) {
+      const state = Vue.observable(defaultScope)
+      map.set(key, state)
+    }
+    return map.get(key)
+  }
+})()
 
 // empty function
 export function noop() {

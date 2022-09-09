@@ -1,35 +1,11 @@
 <script>
 import service from '@/api/service'
-import { normalizeSlots } from '@/utils'
+import { normalizeSlots, createScope } from '@/utils'
+import settings from '@/settings'
 import Vue from 'vue'
+import EnforceSlotSelect from '@/components/ExtRemoteSelect/EnforceSlotSelect'
 
-const defaultPageConfig = {
-  pageSize: 20,
-  pageSizeParamKey: 'pageSize',
-  pageIndexParamKey: 'pageIndex',
-  dataKey: 'data',
-  totalCountKey: 'total',
-  itemKey: 'data'
-}
-const stateMap = new WeakMap()
-
-function getScope(parentComponent, key, defaultScope) {
-  // console.log('stateMap', key, stateMap)
-  if (!stateMap.has(parentComponent)) {
-    stateMap.set(parentComponent, new Map())
-    parentComponent.$on('hook:beforeDestroy', function() {
-      stateMap.delete(parentComponent)
-      // console.log('delete stateMap', stateMap)
-    })
-  }
-  const map = stateMap.get(parentComponent)
-  if (!map.has(key)) {
-    const state = Vue.observable(defaultScope)
-    map.set(key, state)
-  }
-  return map.get(key)
-}
-
+const paginationConfig = settings.paginationConfig
 export default {
   name: 'ExtRemoteSelect',
   functional: true,
@@ -57,6 +33,24 @@ export default {
         return {}
       }
     },
+    valueKey: {
+      type: String,
+      default: 'value'
+    },
+    labelKey: {
+      type: String,
+      default: 'label'
+    },
+    showPage: {
+      type: Boolean,
+      default: false
+    },
+    pageSize: {
+      type: Number,
+      default() {
+        return paginationConfig.defaultPageSize * 1
+      }
+    },
     service: {
       type: Object,
       default() {
@@ -70,32 +64,15 @@ export default {
           }
         }
       }
-    },
-    valueKey: {
-      type: String,
-      default: 'value'
-    },
-    labelKey: {
-      type: String,
-      default: 'label'
-    },
-    showPage: {
-      type: Boolean,
-      default: true
-    },
-    pageConfig: {
-      type: Object,
-      default() {
-        return Object.assign({}, defaultPageConfig)
-      }
     }
   },
   render(h, context) {
     let children = (context.children || []).concat([])
-    const scope = getScope(context.parent, (context.props.scopeKey || context.props.requestKey || 'self'), {
+    const scope = createScope(context.parent, (context.props.scopeKey || context.props.requestKey || 'self'), {
       items: [],
       loading: false,
       _counter: 0,
+      pageIndex: 1,
       remoteMethod: function(keyword) {
         scope._counter++
         scope.loading = true
@@ -121,23 +98,36 @@ export default {
 
     const slots = context.slots()
     if (!slots.default) {
+      /* eslint-disable indent */
       slots.default = scope.items.map(function(item, index) {
-        /* eslint-disable */
         return <el-option
             key={item[context.props.valueKey]}
             label={item[context.props.labelKey]}
             value={item[context.props.valueKey]}>
         </el-option>
       })
+
+      if (context.props.showPage) {
+        slots.bottom = []
+        slots.bottom.push(<el-pagination
+            small
+            layout="prev, pager, next"
+            total={0}>
+        </el-pagination>)
+      }
     }
+
     children = children.concat(normalizeSlots(slots))
-    let data = Object.assign({}, context.data)
+    const data = Object.assign({}, context.data)
     data.props = mergedOptions
     if (scope._counter === 0) {
       scope.remoteMethod('')
     }
-    // console.log('attrs', data.attrs)
-    return h('el-select', data, children)
+    // eslint-disable-next-line
+    return h(EnforceSlotSelect, data, children)
   }
 }
 </script>
+<style lang="scss">
+
+</style>
