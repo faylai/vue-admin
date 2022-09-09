@@ -18,13 +18,6 @@ export default {
       default: function() {
         return []
       }
-    },
-    // see https://element.eleme.io/#/zh-CN/component/select 定义props
-    options: {
-      type: Object,
-      default() {
-        return {}
-      }
     }
   },
   render(h, context) {

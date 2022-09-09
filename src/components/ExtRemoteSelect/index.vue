@@ -14,12 +14,12 @@ const defaultPageConfig = {
 const stateMap = new WeakMap()
 
 function getScope(parentComponent, key, defaultScope) {
-  //console.log('stateMap', key, stateMap)
+  // console.log('stateMap', key, stateMap)
   if (!stateMap.has(parentComponent)) {
     stateMap.set(parentComponent, new Map())
     parentComponent.$on('hook:beforeDestroy', function() {
       stateMap.delete(parentComponent)
-      //console.log('delete stateMap', stateMap)
+      // console.log('delete stateMap', stateMap)
     })
   }
   const map = stateMap.get(parentComponent)
@@ -34,13 +34,18 @@ export default {
   name: 'ExtRemoteSelect',
   functional: true,
   props: {
+    label: {
+      type: String,
+      default: ''
+    },
+    // 唯一性决定是否使用新的 data Scope,同一 scopeKey 下 的scope 会共享
     scopeKey: {
       type: String,
-      required: true
+      default: undefined
     },
     requestKey: {
       type: String,
-      default: undefined
+      required: true
     },
     searchName: {
       type: String,
@@ -51,17 +56,6 @@ export default {
       default() {
         return {}
       }
-    },
-    // see https://element.eleme.io/#/zh-CN/component/select 定义props
-    options: {
-      type: Object,
-      default() {
-        return {}
-      }
-    },
-    label: {
-      type: String,
-      default: ''
     },
     service: {
       type: Object,
@@ -98,7 +92,7 @@ export default {
   },
   render(h, context) {
     let children = (context.children || []).concat([])
-    const scope = getScope(context.parent, context.props.scopeKey, {
+    const scope = getScope(context.parent, (context.props.scopeKey || context.props.requestKey || 'self'), {
       items: [],
       loading: false,
       _counter: 0,
@@ -118,12 +112,13 @@ export default {
     })
     const params = Object.assign({}, context.props.params)
     const mergedOptions = Object.assign({
-      remote: true,
       filterable: true,
-      automaticDropdown: false,
-      loading: scope.loading,
-      remoteMethod: scope.remoteMethod
-    }, context.props.options)
+      automaticDropdown: false
+    }, context.data.attrs || {})
+    mergedOptions.remote = true
+    mergedOptions.remoteMethod = scope.remoteMethod
+    mergedOptions.loading = scope.loading
+
     const slots = context.slots()
     if (!slots.default) {
       slots.default = scope.items.map(function(item, index) {
@@ -141,6 +136,7 @@ export default {
     if (scope._counter === 0) {
       scope.remoteMethod('')
     }
+    // console.log('attrs', data.attrs)
     return h('el-select', data, children)
   }
 }

@@ -33,7 +33,6 @@ export function requestByKey(key, params) {
         data: params
       })
     }
-
   } else {
     throw new Error(`接口key:${key}未定义配置!`)
   }

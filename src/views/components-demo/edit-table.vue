@@ -7,12 +7,11 @@
         </FilterItem>
         <FilterItem prop="name2">
           <ExtRemoteSelect v-model="formConfig.model.name2"
-                           scope-key="name2"
                            request-key="example.getSelectList1"></ExtRemoteSelect>
         </FilterItem>
         <FilterItem prop="name3">
           <ExtStaticSelect v-model="formConfig.model.name3"
-                           :options="{clearable:true}"
+                           clearable
                            :items="[{value:'11',label:'11'},{value:'22',label:'22'},{value:'333',label:'333'}]">
             <template #prefix>
               <div style="color:red;padding: 10px;">请一定要选择哈哈</div>
@@ -21,7 +20,7 @@
         </FilterItem>
         <FilterItem prop="name4">
           <ExtRemoteSelect v-model="formConfig.model.name4"
-                           scope-key="name4"
+                           :clearable="true"
                            request-key="example.getSelectList2"></ExtRemoteSelect>
 
         </FilterItem>
