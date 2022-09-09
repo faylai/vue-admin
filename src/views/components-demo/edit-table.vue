@@ -12,6 +12,7 @@
         <FilterItem prop="name3">
           <ExtStaticSelect v-model="formConfig.model.name3"
                            clearable
+                           @change="selectChange"
                            :items="[{value:'11',label:'11'},{value:'22',label:'22'},{value:'333',label:'333'}]">
             <template #prefix>
               <div style="color:red;padding: 10px;">请一定要选择哈哈</div>
@@ -20,6 +21,7 @@
         </FilterItem>
         <FilterItem prop="name4">
           <ExtRemoteSelect v-model="formConfig.model.name4"
+                           :params="selectParams"
                            :clearable="true"
                            :show-page="true"
                            request-key="example.getSelectList2"></ExtRemoteSelect>
@@ -68,6 +70,9 @@ export default {
   },
   data() {
     return {
+      selectParams: {
+        test: 1
+      },
       formConfig: {
         model: {
           name1: '',
@@ -184,6 +189,11 @@ export default {
     }
   },
   methods: {
+    selectChange(value) {
+      this.selectParams = {
+        test: value
+      }
+    },
     handleQuery(params) {
       console.log('查询参数', params)
       this.queryOptions.queryParams = {
