@@ -16,7 +16,7 @@ export default {
       type: String,
       default: ''
     },
-    // 唯一性决定是否使用新的 data Scope,同一 scopeKey 下 的scope 会共享
+    // 唯一性决定是否使用新的 data Scope,同一 scopeKey 下的 scope 会共享
     scopeKey: {
       type: String,
       default: undefined
@@ -74,6 +74,7 @@ export default {
     let children = (context.children || []).concat([])
     const scope = createScope(context.parent, (context.props.scopeKey || context.props.requestKey || 'self'), {
       items: [],
+      _items: [],
       loading: false,
       _counter: 0,
       pageIndex: 1,
@@ -88,16 +89,30 @@ export default {
         params[context.props.searchName] = scope._keyword
         params[paginationConfig.pageIndexParamKey] = scope.pageIndex
         params[paginationConfig.pageSizeParamKey] = context.props.pageSize
-        context.props.service.requestApi(context.props.requestKey, params).then(function(res) {
+        if (context.props.showPage || scope._items.length === 0) {
+          context.props.service.requestApi(context.props.requestKey, params).then(function(res) {
+            scope.loading = false
+            const items = []
+            const root = res[paginationConfig.responseRootName]
+            for (const item of root[paginationConfig.responseRecordListKey] || []) {
+              items.push(item)
+            }
+            scope.total = root[paginationConfig.responseTotalCountKey]
+            scope.items = items
+            scope._items = items.slice(0)
+          })
+        } else if (scope._items.length) {
           scope.loading = false
-          const items = []
-          const root = res[paginationConfig.responseRootName]
-          for (const item of root[paginationConfig.responseRecordListKey] || []) {
-            items.push(item)
+          if (String(keyword).trim() == '') {
+            scope.items = scope._items
+          } else {
+            scope.items = scope._items.filter(function(item) {
+              return String(item[context.props.labelKey]).indexOf(keyword) >= 0
+            })
           }
-          scope.total = root[paginationConfig.responseTotalCountKey]
-          scope.items = items
-        })
+        } else {
+          scope.loading = false
+        }
       },
       currentChange(pageIndex) {
         scope.pageIndex = pageIndex
@@ -107,6 +122,7 @@ export default {
     // 简单检查参数是否被外部修改,如果修改分页重置并且重新拉取数据
     if (!lodash.isEqual(context.props.params, scope._params)) {
       scope._params = context.props.params
+      scope._item = []
       scope._counter = 0
       scope.pageIndex = 1
     }
