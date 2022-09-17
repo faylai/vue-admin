@@ -166,7 +166,6 @@ export function buildTreeFromListNode(data) {
   function emptyChildrenWhenCloned(newOne) {
     // backup for comparison
     newOne._children = newOne._children || newOne.children || []
-    newOne.childNodes = []
     newOne.children = []
     newOne.objectCount = 0
   }
@@ -186,7 +185,6 @@ export function buildTreeFromListNode(data) {
         if (clonedParent.children.length < parent.children.length) {
           clonedNode.parentNode = clonedParent
           clonedParent.children.push(clonedNode)
-          clonedParent.childNodes.push(clonedNode)
           clonedParent.objectCount = clonedParent.children.length
         }
         parent = clonedParent
@@ -208,7 +206,6 @@ export function buildTreeFromListNode(data) {
     downNode(node, function(subNode) {
       if (subNode.children.length === 0 && subNode._children.length > 0) {
         subNode.children = subNode._children
-        subNode.childNodes = subNode._children
         return false
       }
     })
@@ -274,17 +271,6 @@ export function expandNodeDeep(nodes) {
   iterateTree(nodes, function(node) {
     node.expanded = true
     node.loaded = true
-    if (node.parentNode) {
-      if (!node.parentNode.indent) {
-        node.parentNode.indent = ['']
-      }
-      node.indent = node.parentNode.indent.concat([''])
-    } else {
-      node.indent = []
-    }
-    if (node.children && node.children.length) {
-      node.childNodes = node.children
-    }
   })
 }
 

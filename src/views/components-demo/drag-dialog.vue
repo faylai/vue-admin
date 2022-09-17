@@ -19,7 +19,7 @@
     </el-dialog>
     <h1>XTree 异步树</h1>
     <div style="height: 400px;width: 300px;border: 1px solid grey;">
-      <BaseTree selectMode="multiple"></BaseTree>
+      <BaseTree selectMode="multiple" :local-search="true"></BaseTree>
     </div>
   </div>
 </template>
