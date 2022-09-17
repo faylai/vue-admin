@@ -103,7 +103,7 @@ export default {
           })
         } else if (scope._items.length) {
           scope.loading = false
-          if (String(keyword).trim() == '') {
+          if (String(keyword).trim() === '') {
             scope.items = scope._items
           } else {
             scope.items = scope._items.filter(function(item) {

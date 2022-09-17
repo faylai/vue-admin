@@ -190,3 +190,63 @@ export function afterFunction(targetFn, afterFn) {
     afterFn.apply(this, args)
   }
 }
+
+export function createSetTimeoutJob(interval) {
+  interval = (interval || 1) * 1000
+  let intervalStub = null
+  let stopVersion = 0
+
+  function start(job, isCallbackDrive) {
+    stop()
+    const next = (function nextBuilder(rememberedStopVersion) {
+      return function() {
+        if (rememberedStopVersion === stopVersion) {
+          // 防止重复调用next
+          clearTimeout(intervalStub)
+          intervalStub = setTimeout(run, interval)
+        }
+      }
+    })(stopVersion)
+
+    function run() {
+      if (isCallbackDrive) {
+        job && job(next)
+      } else {
+        job && job()
+        next()
+      }
+    }
+
+    run()
+  }
+
+  function stop() {
+    stopVersion++
+    clearTimeout(intervalStub)
+  }
+
+  return {
+    start: start,
+    stop: stop
+  }
+}
+
+export function enablePromiseFnVersionControl(promiseFn) {
+  let version = 1
+  return function() {
+    version++
+    const currentVersion = version
+    const args = [].slice.call(arguments, 0)
+    return new Promise(function(resolve, reject) {
+      promiseFn.apply(this, args).then(function(data) {
+        if (version === currentVersion) {
+          resolve(data)
+        }
+      }).catch(function(e) {
+        if (version === currentVersion) {
+          reject(e)
+        }
+      })
+    })
+  }
+}

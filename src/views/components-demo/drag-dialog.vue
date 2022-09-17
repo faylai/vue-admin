@@ -17,16 +17,24 @@
         <el-table-column property="address" label="Address"/>
       </el-table>
     </el-dialog>
+    <h1>XTree 异步树</h1>
+    <div style="height: 400px;width: 300px;border: 1px solid grey;">
+      <BaseTree selectMode="multiple"></BaseTree>
+    </div>
   </div>
 </template>
 
 <script>
 import elDragDialog from '@/directive/el-drag-dialog' // base on element-ui
 import dashboard from '@/views/dashboard'
+import BaseTree from '@/components/BaseTree'
 
 export default {
   name: 'DragDialogDemo',
   directives: { elDragDialog },
+  components: {
+    BaseTree
+  },
   data() {
     return {
       dialogTableVisible: false,
