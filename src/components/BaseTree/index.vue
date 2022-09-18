@@ -196,10 +196,12 @@ export default {
       if (this.minKeywordLength > 0 && keywords.length > 0 && keywords.length < this.minKeywordLength) {
         me.$emit('keywords-min-error', keywords)
       } else {
-        const searchCallback = function(treeData, neeFormat) {
+        const initTreeAndHandleSelection = function(treeData) {
+          me.initTreeData(treeData)
           // 刷新需要根据关键字变化来判断是否清理或者恢复选中的只
           if (isRefresh === true) {
             if (me.lastKeywords !== keywords) {
+              me.lastKeywords = keywords
               me.clearSelectResult()
             } else {
               me.restoreSelection()
@@ -208,16 +210,14 @@ export default {
             me.lastKeywords = keywords
             me.clearSelectResult()
           }
-          me.initTreeData(treeData, neeFormat)
         }
         if (this.localSearch && !isRefresh) {
-          const formattedTreeData = formatTreeData(JSON.parse(this._treeJsonString), null)
-          const searchTreeData = searchTree(formattedTreeData, this.keywords)
+          const searchTreeData = searchTree(JSON.parse(this._treeJsonString), this.keywords)
           this.noData = !searchTreeData.length
-          searchCallback(searchTreeData, false)
+          initTreeAndHandleSelection(searchTreeData, false)
         } else {
           this.fetchTreeData(this.getFetchParams(), function(data) {
-            searchCallback(data, true)
+            initTreeAndHandleSelection(data, true)
           })
         }
       }
@@ -269,11 +269,8 @@ export default {
     synMultiSelection() {
       // TODO
     },
-    initTreeData(rawTreeData, needFormat) {
-      let formattedData = rawTreeData
-      if (needFormat) {
-        formattedData = formatTreeData(lodash.cloneDeep(rawTreeData), null)
-      }
+    initTreeData(rawTreeData) {
+      const formattedData = formatTreeData(lodash.cloneDeep(rawTreeData), null)
       const node = formattedData[0]
       if (node) {
         // 对大于 maxFoldNodes 设置的子节点进行分页设置，减少过多节点展示优化加载速度

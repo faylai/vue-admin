@@ -219,7 +219,8 @@ export function searchTree(data, keywords) {
     data = [data]
   }
   const treeList = []
-  iterateTree(data, function(node) {
+  const formattedData = formatTreeData(data, null)
+  iterateTree(formattedData, function(node) {
     if ((node.objectName + '').toLowerCase().indexOf((keywords + '').toLowerCase()) >= 0) {
       treeList.push(node)
     }
