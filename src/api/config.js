@@ -14,6 +14,11 @@ export default {
       'method': 'post',
       'url': '/vue-admin-template/select2/list',
       'desc': 'select 下拉数据'
+    },
+    'getSyncTree': {
+      'method': 'post',
+      'url': '/vue-admin-template/tree/sync',
+      'desc': '获取同步树的数据'
     }
   }
 }

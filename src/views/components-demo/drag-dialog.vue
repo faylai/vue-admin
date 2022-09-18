@@ -19,7 +19,7 @@
     </el-dialog>
     <h1>XTree 异步树</h1>
     <div style="height: 400px;width: 300px;border: 1px solid grey;">
-      <BaseTree selectMode="multiple" :local-search="true"></BaseTree>
+      <BaseTree selectMode="multiple" :local-search="true" :fetch-tree-promise-fn="fetchTreePromiseFn"></BaseTree>
     </div>
   </div>
 </template>
@@ -28,6 +28,7 @@
 import elDragDialog from '@/directive/el-drag-dialog' // base on element-ui
 import dashboard from '@/views/dashboard'
 import BaseTree from '@/components/BaseTree'
+import service from '@/api/service'
 
 export default {
   name: 'DragDialogDemo',
@@ -61,7 +62,10 @@ export default {
         date: '2016-05-03',
         name: 'John Smith',
         address: 'No.1518,  Jinshajiang Road, Putuo District'
-      }]
+      }],
+      fetchTreePromiseFn: function(params) {
+        return service.requestByKey('example.getSyncTree', params)
+      }
     }
   },
   methods: {

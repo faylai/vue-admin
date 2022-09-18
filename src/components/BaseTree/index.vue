@@ -108,7 +108,7 @@ export default {
         return {}
       }
     },
-    fetchNodePromiseFn: {
+    fetchTreePromiseFn: {
       type: Function,
       default: function() {
         return new Promise(function(resolve) {
@@ -161,6 +161,11 @@ export default {
     localSearch: {
       type: Boolean,
       default: false
+    },
+    // 是否异步树；异步树不能进行 localSearch
+    async: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -211,13 +216,20 @@ export default {
             me.clearSelectResult()
           }
         }
-        if (this.localSearch && !isRefresh) {
-          const searchTreeData = searchTree(JSON.parse(this._treeJsonString), this.keywords)
-          this.noData = !searchTreeData.length
-          initTreeAndHandleSelection(searchTreeData, false)
+        const localSearchTree = function(data) {
+          const searchTreeData = searchTree(data, me.keywords)
+          me.noData = !searchTreeData.length
+          return searchTreeData
+        }
+        if (this.couldLocalSearch && !isRefresh) {
+          initTreeAndHandleSelection(localSearchTree(JSON.parse(this._treeJsonString)))
         } else {
-          this.fetchTreeData(this.getFetchParams(), function(data) {
-            initTreeAndHandleSelection(data, true)
+          this.fetchTreeData(this.getFetchParams(), (data) => {
+            if (this.couldLocalSearch && this.keywords.trim() !== '') {
+              initTreeAndHandleSelection(localSearchTree(data))
+            } else {
+              initTreeAndHandleSelection(data)
+            }
           })
         }
       }
@@ -287,10 +299,13 @@ export default {
     fetchTreeData(params, cb) {
       const vm = this
       vm.loading = true
-      vm.fetchNode(params).then(function(data) {
+      vm.fetchTree(params).then(function(data) {
         vm.loading = false
         vm.dataError = false
-        if (vm.localSearch) {
+        if (lodash.isObject(data) && lodash.isArray(data.data)) {
+          data = data.data
+        }
+        if (vm.couldLocalSearch) {
           // 保存字符数据，可以减少内存占用，提供给本地搜索用
           vm._treeJsonString = JSON.stringify(data) || '[]'
         }
@@ -310,7 +325,9 @@ export default {
       const keywords = (this.keywords || '').trim()
       const params = {}
       if (keywords !== '') {
-        params[this.searchFieldName] = keywords
+        if (!this.couldLocalSearch) {
+          params[this.searchFieldName] = keywords
+        }
         this.isSearched = true
       } else {
         this.isSearched = false
@@ -320,8 +337,11 @@ export default {
   },
   computed: {
     // 用版本控制防止慢的请求覆盖新的请求
-    fetchNode() {
-      return enablePromiseFnVersionControl(this.fetchNodePromiseFn)
+    fetchTree() {
+      return enablePromiseFnVersionControl(this.fetchTreePromiseFn)
+    },
+    couldLocalSearch() {
+      return this.async === false && this.localSearch
     }
   },
   created: function() {
