@@ -71,10 +71,10 @@ export function formatTreeData(nodes, parent) {
       if (_.isUndefined(node.objectCount)) {
         node.objectCount = node.children.length || 0
       }
-      node.expanded = false
-      node.checkState = 0
-      node.selected = false
-      node.loading = false
+      node.expanded = node.expanded || false
+      node.checkState = node.checkState || 0
+      node.selected = node.selected || false
+      node.loading = node.loading || false
       if (node.children && node.children.length) {
         _.each(node.children, function(child) {
           child.parentNode = node

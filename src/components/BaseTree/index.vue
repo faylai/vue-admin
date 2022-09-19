@@ -201,13 +201,16 @@ export default {
         this.fetchTreeData({
           parentId: node.objectId
         }, (data) => {
+          const clone = lodash.clone(node)
+          clone.children = data
           node.loading = false
-          const copyNode = lodash.clone(node)
-          copyNode.children = data
-          const parentNode = node.parentNode || null
-          const formattedNode = this.formatNodeAndPage(copyNode, parentNode)[0]
+          const formattedNode = this.formatNodeAndPage(clone, clone)[0]
           node.children = formattedNode.children
           node.childNodes = formattedNode.childNodes
+          // 新增 parentNode （clone 节点）是非响应式的，需要重新修改为原节点
+          lodash.each(node.children, function(sub) {
+            sub.parentNode = node
+          })
           if (node.selected) {
             updateAllChildrenNodeState(node)
           }
