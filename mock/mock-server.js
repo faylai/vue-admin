@@ -38,7 +38,14 @@ const responseFake = (url, type, respond) => {
     type: type || 'get',
     response(req, res) {
       console.log('request invoke:' + req.path)
-      res.json(Mock.mock(respond instanceof Function ? respond(req, res) : respond))
+      const ret = respond instanceof Function ? respond(req, res) : respond
+      if (ret instanceof Promise) {
+        ret.then(function(data) {
+          res.json(Mock.mock(data))
+        })
+      } else {
+        res.json(Mock.mock(ret))
+      }
     }
   }
 }

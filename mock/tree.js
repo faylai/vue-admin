@@ -31,7 +31,7 @@ module.exports = [
     url: '/vue-admin-template/tree/sync',
     type: 'post',
     response: config => {
-      console.log(config.query)
+      // console.log(config.query)
       return syncData
     }
   },
@@ -40,7 +40,6 @@ module.exports = [
     type: 'post',
     response: config => {
       const parentId = config.query.parentId || config.body.parentId
-      console.log('parentId is', parentId)
       let found = []
       // 访问根的时候默认展示两层
       if (!parentId) {
@@ -68,10 +67,15 @@ module.exports = [
         })
       }
 
-      return {
-        code: 20000,
-        data: found
-      }
+      return new Promise(function(resolve) {
+        setTimeout(function() {
+          resolve({
+            code: 20000,
+            data: found
+          })
+        }, 300)
+
+      })
     }
   }
 ]
