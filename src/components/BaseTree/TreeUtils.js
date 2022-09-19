@@ -5,7 +5,7 @@ import _ from 'lodash'
 // 1: 半勾选
 // 2: 全勾选
 
-function updateAllChildrenNodeState(startNode) {
+export function updateAllChildrenNodeState(startNode) {
   iterateTree(startNode, function(node) {
     // 设置状态为勾选
     node.selected = startNode.selected
@@ -47,13 +47,12 @@ export function updateNodeSelectState(node) {
 
 // 重新构造树的数据
 export function formatTreeData(nodes, parent) {
-  let level = 0
+  let level = parent ? (parent.level + 1) : 0
   nodes = _.isArray(nodes) ? nodes : [nodes]
   let children = nodes
   _.each(children, function(node) {
     node.parentNode = parent
   })
-  // eslint-disable-next-line no-cond-assign
   while (children) {
     const subChildren = []
     _.each(children, function(node) {
@@ -75,6 +74,7 @@ export function formatTreeData(nodes, parent) {
       node.expanded = false
       node.checkState = 0
       node.selected = false
+      node.loading = false
       if (node.children && node.children.length) {
         _.each(node.children, function(child) {
           child.parentNode = node

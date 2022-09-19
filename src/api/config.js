@@ -19,6 +19,11 @@ export default {
       'method': 'post',
       'url': '/vue-admin-template/tree/sync',
       'desc': '获取同步树的数据'
+    },
+    'getAsyncTree': {
+      'method': 'post',
+      'url': '/vue-admin-template/tree/async',
+      'desc': '获取同步树的数据'
     }
   }
 }

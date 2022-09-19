@@ -17,10 +17,25 @@
         <el-table-column property="address" label="Address"/>
       </el-table>
     </el-dialog>
-    <h1>XTree 异步树</h1>
-    <div style="height: 400px;width: 300px;border: 1px solid grey;">
-      <BaseTree selectMode="multiple" :local-search="true" :fetch-tree-promise-fn="fetchTreePromiseFn"></BaseTree>
-    </div>
+
+
+    <el-row :gutter="20">
+      <el-col :span="12"><h1>XTree 同步树</h1></el-col>
+      <el-col :span="12"><h1>XTree 异步树</h1></el-col>
+    </el-row>
+    <el-row :gutter="20">
+      <el-col :span="12">
+        <div style="height: 400px;width: 300px;border: 1px solid grey;">
+          <BaseTree selectMode="multiple" :local-search="true" :fetch-tree-promise-fn="fetchSyncTreePromiseFn"></BaseTree>
+        </div>
+      </el-col>
+      <el-col :span="12">
+        <div style="height: 400px;width: 300px;border: 1px solid grey;">
+          <BaseTree selectMode="multiple" :async="true" :fetch-tree-promise-fn="fetchAsyncTreePromiseFn"></BaseTree>
+        </div>
+      </el-col>
+    </el-row>
+
   </div>
 </template>
 
@@ -63,7 +78,10 @@ export default {
         name: 'John Smith',
         address: 'No.1518,  Jinshajiang Road, Putuo District'
       }],
-      fetchTreePromiseFn: function(params) {
+      fetchAsyncTreePromiseFn: function(params) {
+        return service.requestByKey('example.getAsyncTree', params)
+      },
+      fetchSyncTreePromiseFn: function(params) {
         return service.requestByKey('example.getSyncTree', params)
       }
     }

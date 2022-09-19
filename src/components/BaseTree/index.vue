@@ -28,26 +28,16 @@
         </template>
       </ul>
 
-      <div v-show="noData" class="bc-control-error " style="display: none;">
-        <h4 class="bc-control-error-tip">
-          <span class="bc-warning-white-gray-icon"/>
-          <span v-once>{{ words.noMatchResult }}</span>
-        </h4>
+      <div v-show="noData" class="bc-control-info " style="display: none;">
+        <span v-once>{{ words.noMatchResult }}</span>
       </div>
 
       <div v-show="dataError" class="bc-control-error " style="display: none;">
-        <h4 class="bc-control-error-tip">
-          <span class="bc-warning-white-gray-icon"/>
-          <span v-once>{{ words.dataErrorTip }}</span>
-        </h4>
+        <span v-once>{{ words.dataErrorTip }}</span>
       </div>
 
-
       <div v-show="loading" class="bc-control-loading" style="display: none;">
-        <h4 class="bc-control-loading-tip">
-          <span class="bc-doing-icon"/>
-          <span v-once>{{ words.loadingTip }}</span>
-        </h4>
+        <span v-once>{{ words.loadingTip }}</span>
       </div>
 
     </div>
@@ -56,7 +46,7 @@
 
 <script>
 import TreeNode from '@/components/BaseTree/TreeNode'
-import { iterateTree, formatTreeData, updateNodeSelectState, searchTree } from './TreeUtils'
+import { iterateTree, formatTreeData, updateNodeSelectState, updateAllChildrenNodeState, searchTree } from './TreeUtils'
 import { enablePromiseFnVersionControl } from '@/utils'
 import lodash from 'lodash'
 
@@ -117,39 +107,7 @@ export default {
             'objectName': '请初始化 fetchNodePromiseFn',
             'objectId': '808D3A23D3D54038B1B42EA9BFFB8327',
             'objectCount': 2,
-            'objectType': 'test2',
-            'children': [{
-              'parentId': '808D3A23D3D54038B1B42EA9BFFB8327',
-              'objectName': '测试节点1',
-              'objectId': '808D3A23D3D54038B1B42EA9BFFB8325',
-              'children': [],
-              'objectCount': '0',
-              'objectType': 'test2'
-            }, {
-              'parentId': '808D3A23D3D54038B1B42EA9BFFB8327',
-              'objectName': '测试节点2',
-              'objectId': '808D3A23D3D54038B1B42EA9BFFB8335',
-              'children': [
-                {
-                  'parentId': '808D3A23D3D54038B1B42EA9BFFB8335',
-                  'objectName': '测试节点2-1',
-                  'objectId': '808D3A23D3D54038B1B42EA9BFFB8435',
-                  'children': [],
-                  'objectCount': '0',
-                  'objectType': 'test2'
-                },
-                {
-                  'parentId': '808D3A23D3D54038B1B42EA9BFFB8335',
-                  'objectName': '测试节点2-2',
-                  'objectId': '808D3A23D3D54038B1B42EA9BFFB8935',
-                  'children': [],
-                  'objectCount': '0',
-                  'objectType': 'test2'
-                }
-              ],
-              'objectCount': '0',
-              'objectType': 'test2'
-            }]
+            'objectType': ''
           }])
         })
       }
@@ -157,6 +115,10 @@ export default {
     searchFieldName: {
       type: String,
       default: 'keywords'
+    },
+    parentFieldName: {
+      type: String,
+      default: 'parentId'
     },
     localSearch: {
       type: Boolean,
@@ -202,18 +164,11 @@ export default {
         me.$emit('keywords-min-error', keywords)
       } else {
         const initTreeAndHandleSelection = function(treeData) {
-          me.initTreeData(treeData)
-          // 刷新需要根据关键字变化来判断是否清理或者恢复选中的只
-          if (isRefresh === true) {
-            if (me.lastKeywords !== keywords) {
-              me.lastKeywords = keywords
-              me.clearSelectResult()
-            } else {
-              me.restoreSelection()
-            }
-          } else {
-            me.lastKeywords = keywords
-            me.clearSelectResult()
+          me.treeData = me.formatNodeAndPage(treeData)
+          me.handleSelectAfterSearch(isRefresh)
+          // 为了美观默认展开第一个节点
+          if (me.treeData.length) {
+            me.treeData[0].expanded = true
           }
         }
         const localSearchTree = function(data) {
@@ -241,6 +196,23 @@ export default {
     },
     expandChange: function(node) {
       node.expanded = !node.expanded
+      if (this.async && node.expanded && node.objectCount > 0 && node.children.length === 0) {
+        node.loading = true
+        this.fetchTreeData({
+          parentId: node.objectId
+        }, (data) => {
+          node.loading = false
+          const copyNode = lodash.clone(node)
+          copyNode.children = data
+          const parentNode = node.parentNode || null
+          const formattedNode = this.formatNodeAndPage(copyNode, parentNode)[0]
+          node.children = formattedNode.children
+          node.childNodes = formattedNode.childNodes
+          if (node.selected) {
+            updateAllChildrenNodeState(node)
+          }
+        })
+      }
     },
     loadMore: function(node) {
       const children = node.children
@@ -281,27 +253,43 @@ export default {
     synMultiSelection() {
       // TODO
     },
-    initTreeData(rawTreeData) {
-      const formattedData = formatTreeData(lodash.cloneDeep(rawTreeData), null)
-      const node = formattedData[0]
-      if (node) {
-        // 对大于 maxFoldNodes 设置的子节点进行分页设置，减少过多节点展示优化加载速度
-        iterateTree(formattedData, (node) => {
-          const maxNode = Math.min(this.maxFoldNodes, node.children.length)
-          const childNodes = node.children.slice(0, maxNode)
-          node.childNodes = childNodes
-        })
-        // 默认展开第一个节点
-        node.expanded = true
+    formatNodeAndPage(rawTreeData, parent) {
+      const formattedData = formatTreeData(rawTreeData, parent)
+      // 对大于 maxFoldNodes 设置的子节点进行分页设置，减少过多节点展示优化加载速度
+      iterateTree(formattedData, (node) => {
+        const maxNode = Math.min(this.maxFoldNodes, node.children.length)
+        const childNodes = node.children.slice(0, maxNode)
+        node.childNodes = childNodes
+      })
+      return formattedData
+    },
+    handleSelectAfterSearch(isRefresh) {
+      const keywords = String(this.keywords || '').trim()
+      // 刷新需要根据关键字变化来判断是否清理或者恢复选中的节点
+      if (isRefresh === true) {
+        if (this.lastKeywords !== keywords) {
+          this.lastKeywords = keywords
+          this.clearSelectResult()
+        } else {
+          this.restoreSelection()
+        }
+      } else {
+        this.lastKeywords = keywords
+        this.clearSelectResult()
       }
-      this.treeData = formattedData
     },
     fetchTreeData(params, cb) {
       const vm = this
-      vm.loading = true
+      const muteLoading = params && params[this.parentFieldName]
+      if (!muteLoading) {
+        vm.loading = true
+      }
       vm.fetchTree(params).then(function(data) {
-        vm.loading = false
-        vm.dataError = false
+        if (!muteLoading) {
+          vm.loading = false
+          vm.dataError = false
+        }
+
         if (lodash.isObject(data) && lodash.isArray(data.data)) {
           data = data.data
         }
@@ -316,9 +304,11 @@ export default {
           cb && cb([])
         }
       }).catch(function(e) {
-        console.log(e)
-        vm.dataError = true
-        vm.loading = false
+        console.error(e)
+        if (!muteLoading) {
+          vm.dataError = true
+          vm.loading = false
+        }
       })
     },
     getFetchParams() {

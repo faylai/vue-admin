@@ -6,7 +6,7 @@
       <span
           @click.stop="$emit('update:expanded',node)"
           v-if="node.children.length > 0 || node.objectCount>0"
-          :class="['icon',node.expanded?'bd-object-tree-folder-expanded-icon':'bd-object-tree-folder-collapsed-icon',selectMode == 'single' && node.selected?'selected':'' ]">
+          :class="['icon',node.loading?'tree-folder-expanded-loading-icon':(node.expanded?'bd-object-tree-folder-expanded-icon':'bd-object-tree-folder-collapsed-icon')]">
             </span>
       <span v-else
             class="icon">
@@ -83,7 +83,8 @@ export default {
     },
     nodeText: function() {
       const node = this.node
-      return node.objectName
+      const preCount = node.objectCount ? ['(', node.objectCount, ') '].join('') : ''
+      return preCount + node.objectName
     }
   }
 }

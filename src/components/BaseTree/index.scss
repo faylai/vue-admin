@@ -241,9 +241,33 @@
         content: "\e791";
       }
     }
+    .tree-folder-expanded-loading-icon{
+      font-size: 15px;
+      line-height: 16px;
+      color: #868686;
+      animation: rotating 2s linear infinite;
+      transform-origin: center;
+      box-sizing: content-box;
+      vertical-align: middle;
+      &:before {
+        content: "\e6cf";
+      }
+    }
 
     .bd-object-tree-folder-expanded-icon {
       transform: rotate(90deg);
+    }
+
+    $fetch-tip-font-size: 14px;
+
+    .bc-control-error, .bc-control-loading, .bc-control-info {
+      position: absolute;
+      margin-top: -0.5 * $fetch-tip-font-size;
+      top: 50%;
+      left: 0;
+      right: 0;
+      font-size: $fetch-tip-font-size;
+      text-align: center;
     }
 
   }
