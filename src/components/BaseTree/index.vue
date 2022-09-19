@@ -1,49 +1,3 @@
-<template>
-  <div class="bc-filter-object-tree">
-    <div class="object-container-header" v-show="!hideSearchBar">
-      <label class="fuzzy-search">
-        <input type="text" v-model.trim="keywords"
-               @keyup.enter="search()"/>
-        <span class="bc-query-icon icon"
-              @click="search()"></span>
-      </label>
-
-      <span class="bc-refresh-icon icon"
-            @click="refresh()"></span>
-      <span class="bc-brush-icon icon"
-            @click="clear()"></span>
-    </div>
-    <div class="object-container-body" :style="{'top':hideSearchBar?'10px':'40px'}">
-      <ul class="bd-object-tree" v-show="(!loading) && (!dataError)">
-        <template v-for="node in treeData">
-          <TreeNode :node="node"
-                    :key="node.objectId"
-                    :select-mode="selectMode"
-                    :select-object-type="selectObjectType"
-                    @update:more="loadMore"
-                    @node:click="nodeClick"
-                    @node:check="nodeCheck"
-                    @update:expanded="expandChange"></TreeNode>
-
-        </template>
-      </ul>
-
-      <div v-show="noData" class="bc-control-info " style="display: none;">
-        <span v-once>{{ words.noMatchResult }}</span>
-      </div>
-
-      <div v-show="dataError" class="bc-control-error " style="display: none;">
-        <span v-once>{{ words.dataErrorTip }}</span>
-      </div>
-
-      <div v-show="loading" class="bc-control-loading" style="display: none;">
-        <span v-once>{{ words.loadingTip }}</span>
-      </div>
-
-    </div>
-  </div>
-</template>
-
 <script>
 import TreeNode from '@/components/BaseTree/TreeNode'
 import { iterateTree, formatTreeData, updateNodeSelectState, updateAllChildrenNodeState, searchTree } from './TreeUtils'
@@ -153,6 +107,47 @@ export default {
       }
     }
   },
+  render() {
+    /* eslint-disable indent */
+    return (<div class="bc-filter-object-tree">
+      <div class="object-container-header" style={{ display: !this.hideSearchBar ? 'block' : 'none' }}>
+        <label class="fuzzy-search">
+          <input type="text" vModel_trim={this.keywords} vOn:keyup_enter={this.search}/>
+          <span class="bc-query-icon icon" vOn:click={this.search}></span>
+        </label>
+        <span class="bc-refresh-icon icon" vOn:click={this.refresh}></span>
+        <span class="bc-brush-icon icon" vOn:click={this.clear}>< /span>
+      </div>
+      <div class="object-container-body" style={{ top: this.hideSearchBar ? '10px' : '40px' }}>
+        <ul class="bd-object-tree"
+            style={{ visibility: !this.noData && !this.dataError && !this.loading ? 'visible' : 'hidden' }}>{
+          this.treeData.map((node) => {
+            return (<TreeNode node={node}
+                              key={node.objectId}
+                              select-mode={this.selectMode}
+                              select-object-type={this.selectObjectType}
+                              vOn:update-more={this.loadMore}
+                              vOn:node-click={this.nodeClick}
+                              vOn:node-check={this.nodeCheck}
+                              vOn:update-expanded={this.expandChange}>
+            </TreeNode>)
+          })}
+        </ul>
+
+        <div class="bc-control-info " style={{ display: this.noData ? 'block' : 'none' }}>
+          <span>{this.words.noMatchResult}</span>
+        </div>
+
+        <div class="bc-control-error " style={{ display: this.dataError ? 'block' : 'none' }}>
+          <span>{this.words.dataErrorTip}</span>
+        </div>
+
+        <div class="bc-control-loading" style={{ display: this.loading ? 'block' : 'none' }}>
+          <span>{this.words.loadingTip}</span>
+        </div>
+      </div>
+    </div>)
+  },
   methods: {
     refresh: function() {
       this.search(true)
@@ -163,6 +158,8 @@ export default {
       if (this.minKeywordLength > 0 && keywords.length > 0 && keywords.length < this.minKeywordLength) {
         me.$emit('keywords-min-error', keywords)
       } else {
+        this.noData = false
+        this.dataError = false
         const initTreeAndHandleSelection = function(treeData) {
           me.treeData = me.formatNodeAndPage(treeData)
           me.handleSelectAfterSearch(isRefresh)

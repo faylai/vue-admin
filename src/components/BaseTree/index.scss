@@ -146,7 +146,6 @@
       width: 14px;
       height: 14px;
       background-color: #fff;
-      z-index: 1;
       vertical-align: middle;
       transition: border-color .25s cubic-bezier(.71, -.46, .29, 1.46), background-color .25s cubic-bezier(.71, -.46, .29, 1.46);
 
@@ -241,7 +240,8 @@
         content: "\e791";
       }
     }
-    .tree-folder-expanded-loading-icon{
+
+    .tree-folder-expanded-loading-icon {
       font-size: 15px;
       line-height: 16px;
       color: #868686;
@@ -249,6 +249,7 @@
       transform-origin: center;
       box-sizing: content-box;
       vertical-align: middle;
+
       &:before {
         content: "\e6cf";
       }
@@ -268,7 +269,7 @@
       right: 0;
       font-size: $fetch-tip-font-size;
       text-align: center;
+      z-index: 3;
     }
-
   }
 }
