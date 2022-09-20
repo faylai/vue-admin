@@ -252,6 +252,7 @@ export default {
       const min = Math.min(node.childNodes.length + this.maxFoldNodes, children.length)
       node.childNodes.push.apply(node.childNodes, children.slice(node.childNodes.length, min))
     },
+    // 单选
     nodeClick: function(node) {
       if (this.selectMode !== 'single') {
         return
@@ -263,6 +264,7 @@ export default {
       node.selected = true
       this.synSingleSelection(node)
     },
+    // 多选
     nodeCheck: function(node) {
       node.selected = !node.selected
       updateNodeSelectState(node)
