@@ -340,7 +340,7 @@ export default {
     handleSelectAfterSearch(isRefresh) {
       const keywords = String(this.keywords || '').trim()
       // 刷新需要根据关键字变化来判断是否清理或者恢复选中的节点
-      if (isRefresh === true) {
+      if (isRefresh === true && !this.async) {
         if (this.lastKeywords !== keywords) {
           this.lastKeywords = keywords
           this.clearSelection()
