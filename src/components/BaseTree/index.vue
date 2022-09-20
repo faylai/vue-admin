@@ -1,6 +1,14 @@
 <script>
 import TreeNode from '@/components/BaseTree/TreeNode'
-import { iterateTree, formatTreeData, updateNodeSelectState, updateAllChildrenNodeState, searchTree } from './TreeUtils'
+import {
+  iterateTree,
+  formatTreeData,
+  updateNodeSelectState,
+  updateAllChildrenNodeState,
+  searchTree,
+  getSyncSelectedBranchesAndLeaves,
+  getAsyncSelectedBranchesAndLeaves
+} from './TreeUtils'
 import { enablePromiseFnVersionControl } from '@/utils'
 import lodash from 'lodash'
 
@@ -14,7 +22,16 @@ export default {
   components: {
     TreeNode
   },
+  model: {
+    prop: 'value',
+    event: 'change'
+  },
   props: {
+    // 传递的节点ID,逗号分隔
+    value: {
+      type: String,
+      default: ''
+    },
     hideSearchBar: {
       type: Boolean,
       default: false
@@ -101,9 +118,10 @@ export default {
       // 用于 localSearch 不需要响应式
       // eslint-disable-next-line vue/no-reserved-keys
       _treeJsonString: '[]',
-      cho: {
-        selectedNode: false,
-        selections: []
+      // eslint-disable-next-line vue/no-reserved-keys
+      _cho: {
+        // 选择的响应式节点
+        selectedNodes: []
       }
     }
   },
@@ -181,7 +199,7 @@ export default {
           return searchTreeData
         }
         if (this.couldLocalSearch && !isRefresh) {
-          initTreeAndHandleSelection(localSearchTree(JSON.parse(this._treeJsonString)))
+          initTreeAndHandleSelection(localSearchTree(JSON.parse(this._data._treeJsonString)))
         } else {
           this.fetchTreeData(this.getFetchParams(), (data) => {
             if (this.couldLocalSearch && this.keywords.trim() !== '') {
@@ -195,7 +213,7 @@ export default {
     },
     clear: function() {
       this.keywords = ''
-      this.clearSelectResult()
+      this.clearSelection()
       this.search(true)
     },
     expandChange: function(node) {
@@ -217,6 +235,9 @@ export default {
           })
           if (node.selected) {
             updateAllChildrenNodeState(node)
+          } else {
+            // 异步树需要恢复选择用，作用不大，展开的时候才能选中
+            this.restoreSelection(node)
           }
         })
       }
@@ -234,31 +255,70 @@ export default {
           this.selectObjectType.split(',').indexOf(node.objectType) < 0) {
         return
       }
-      // set old selected node false
-      if (this.cho.selectedNode) {
-        this.cho.selectedNode.selected = false
-      }
-      this.cho.selectedNode = node
-      // set new selected node true
-      this.cho.selectedNode.selected = true
-      this.synSingleSelection(node, this.isSearched)
+      node.selected = true
+      this.synSingleSelection(node)
     },
     nodeCheck: function(node) {
       node.selected = !node.selected
       updateNodeSelectState(node)
-      this.synMultiSelection()
+      this.synMultiSelection(node)
     },
-    clearSelectResult() {
-      // TODO
+    clearSelection() {
+      lodash.each(this._data._cho.selectedNodes, function(node) {
+        if (node.selected) {
+          node.selected = false
+          updateNodeSelectState(node)
+        }
+      })
+      this._data._cho.selectedNodes = []
+      this.$emit('change', '', false)
     },
-    restoreSelection() {
-      // TODO
+    restoreSelection(startNode) {
+      let ids = []
+      if (this.value) {
+        ids = this.value.split(',')
+      } else {
+        if (this._data._cho.selectedNodes.length) {
+          ids = this._data._cho.selectedNodes.map(node => node.objectId)
+        }
+      }
+      if (ids.length) {
+        iterateTree(startNode || this.treeData || [], function(node) {
+          if (node.selected) {
+            return false
+          }
+          if (ids.indexOf(node.objectId) >= 0) {
+            node.selected = true
+            updateNodeSelectState(node)
+            return false
+          }
+        })
+      }
     },
-    synSingleSelection($node) {
-      // TODO
+    synSingleSelection(node) {
+      lodash.each(this._data._cho.selectedNodes || [], function(selectedNode) {
+        selectedNode.selected = false
+      })
+      this._data._cho.selectedNodes = [node]
+      this.$emit('change', node.objectId, this.simplifyNode(node))
     },
-    synMultiSelection() {
-      // TODO
+    synMultiSelection(node) {
+      let selectNodes = []
+      // 如果异步树只能得到顶部的节点即可
+      const {
+        branches,
+        leaves
+      } = this.async ? getAsyncSelectedBranchesAndLeaves(this.treeData) : getSyncSelectedBranchesAndLeaves(this.treeData)
+      selectNodes.push.apply(selectNodes, branches)
+      selectNodes.push.apply(selectNodes, leaves)
+      if (this.selectObjectType) {
+        selectNodes = lodash.filter(selectNodes, (node) => {
+          return this.selectObjectType.split(',').indexOf(node.objectType) >= 0
+        })
+      }
+      const ids = lodash.map(selectNodes, (node) => node.objectId).join(',')
+      this._data._cho.selectedNodes = selectNodes
+      this.$emit('change', ids, this.simplifyNode(selectNodes))
     },
     formatNodeAndPage(rawTreeData, parent) {
       const formattedData = formatTreeData(rawTreeData, parent)
@@ -276,13 +336,13 @@ export default {
       if (isRefresh === true) {
         if (this.lastKeywords !== keywords) {
           this.lastKeywords = keywords
-          this.clearSelectResult()
+          this.clearSelection()
         } else {
           this.restoreSelection()
         }
       } else {
         this.lastKeywords = keywords
-        this.clearSelectResult()
+        this.clearSelection()
       }
     },
     fetchTreeData(params, cb) {
@@ -302,7 +362,7 @@ export default {
         }
         if (vm.couldLocalSearch) {
           // 保存字符数据，可以减少内存占用，提供给本地搜索用
-          vm._treeJsonString = JSON.stringify(data) || '[]'
+          vm._data._treeJsonString = JSON.stringify(data) || '[]'
         }
         if (data.length) {
           cb && cb(data)
@@ -330,6 +390,18 @@ export default {
         this.isSearched = false
       }
       return Object.assign(params, this.params)
+    },
+    simplifyNode(node) {
+      const isArray = lodash.isArray(node)
+      const nodes = isArray ? node : [node]
+      const ret = lodash.map(nodes, function(node) {
+        const plainNode = lodash.assign({}, node)
+        delete plainNode.parentNode
+        delete plainNode.children
+        delete plainNode.childNodes
+        return plainNode
+      })
+      return isArray ? ret : ret[0]
     }
   },
   computed: {
@@ -342,9 +414,9 @@ export default {
     }
   },
   created: function() {
+    // 初始化数据
     this.search(true)
   }
-
 }
 </script>
 
