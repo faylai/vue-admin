@@ -103,7 +103,7 @@ export default {
     },
     nodeText: function() {
       const node = this.node
-      const preCount = node.objectCount ? ['(', node.objectCount, ') '].join('') : ''
+      const preCount = ''
       return preCount + node.objectName
     }
   }
