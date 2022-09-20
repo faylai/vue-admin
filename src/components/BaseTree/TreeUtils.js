@@ -47,7 +47,7 @@ export function updateNodeSelectState(node) {
 
 // 重新构造树的数据
 export function formatTreeData(nodes, parent) {
-  let level = parent ? (parent.level + 1) : 0
+  let level = parent ? parent.level : 0
   nodes = _.isArray(nodes) ? nodes : [nodes]
   let children = nodes
   _.each(children, function(node) {
