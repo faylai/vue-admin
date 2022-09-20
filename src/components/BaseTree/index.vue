@@ -233,12 +233,17 @@ export default {
           lodash.each(node.children, function(sub) {
             sub.parentNode = node
           })
-          if (node.selected) {
+
+          // 如果是多选需要同步下级状态，单选不必要了
+          if (node.selected && this.selectMode === 'multiple') {
             updateAllChildrenNodeState(node)
-          } else {
+          }
+
+          if (!node.selected) {
             // 异步树需要恢复选择用，作用不大，展开的时候才能选中
             this.restoreSelection(node)
           }
+
         })
       }
     },

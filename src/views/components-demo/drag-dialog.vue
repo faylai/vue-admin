@@ -20,22 +20,52 @@
 
 
     <el-row :gutter="20">
-      <el-col :span="12"><h1>XTree 同步树</h1></el-col>
-      <el-col :span="12"><h1>XTree 异步树</h1></el-col>
+      <el-col :span="12"><h1>XTree 同步树多选</h1></el-col>
+      <el-col :span="12"><h1>XTree 异步树多选</h1></el-col>
     </el-row>
     <el-row :gutter="20">
       <el-col :span="12">
         <div style="height: 400px;width: 300px;border: 1px solid grey;">
           <BaseTree selectMode="multiple" :local-search="true" :fetch-tree-promise-fn="fetchSyncTreePromiseFn">
             <template v-slot:node="node">
-              <span style="vertical-align: middle">({{node.onlineCount}}/{{ node.objectCount }})  </span>
+              <span style="vertical-align: middle">({{ node.onlineCount }}/{{ node.objectCount }})  </span>
             </template>
           </BaseTree>
         </div>
       </el-col>
       <el-col :span="12">
         <div style="height: 400px;width: 300px;border: 1px solid grey;">
-          <BaseTree selectMode="multiple" :async="true" :fetch-tree-promise-fn="fetchAsyncTreePromiseFn"></BaseTree>
+          <BaseTree selectMode="multiple" :async="true" :fetch-tree-promise-fn="fetchAsyncTreePromiseFn">
+            <template v-slot:node="node">
+              <span style="vertical-align: middle">({{ node.onlineCount }}/{{ node.objectCount }})  </span>
+            </template>
+          </BaseTree>
+        </div>
+      </el-col>
+    </el-row>
+
+
+    <el-row :gutter="20">
+      <el-col :span="12"><h1>XTree 同步树单选</h1></el-col>
+      <el-col :span="12"><h1>XTree 异步树单选</h1></el-col>
+    </el-row>
+    <el-row :gutter="20">
+      <el-col :span="12">
+        <div style="height: 400px;width: 300px;border: 1px solid grey;">
+          <BaseTree selectMode="single" :local-search="true" :fetch-tree-promise-fn="fetchSyncTreePromiseFn">
+            <template v-slot:node="node">
+              <span style="vertical-align: middle">({{ node.onlineCount }}/{{ node.objectCount }})  </span>
+            </template>
+          </BaseTree>
+        </div>
+      </el-col>
+      <el-col :span="12">
+        <div style="height: 400px;width: 300px;border: 1px solid grey;">
+          <BaseTree selectMode="single" :async="true" :fetch-tree-promise-fn="fetchAsyncTreePromiseFn">
+            <template v-slot:node="node">
+              <span style="vertical-align: middle">({{ node.onlineCount }}/{{ node.objectCount }})  </span>
+            </template>
+          </BaseTree>
         </div>
       </el-col>
     </el-row>
