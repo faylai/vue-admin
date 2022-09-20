@@ -26,7 +26,11 @@
     <el-row :gutter="20">
       <el-col :span="12">
         <div style="height: 400px;width: 300px;border: 1px solid grey;">
-          <BaseTree selectMode="multiple" :local-search="true" :fetch-tree-promise-fn="fetchSyncTreePromiseFn"></BaseTree>
+          <BaseTree selectMode="multiple" :local-search="true" :fetch-tree-promise-fn="fetchSyncTreePromiseFn">
+            <template v-slot:node="node">
+              <span>{{ node.objectCount }} </span>
+            </template>
+          </BaseTree>
         </div>
       </el-col>
       <el-col :span="12">

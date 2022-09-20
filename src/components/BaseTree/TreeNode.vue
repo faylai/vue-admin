@@ -1,53 +1,3 @@
-<template>
-  <li>
-    <div @click.stop="$emit('node-click',node)"
-         :style="{'padding-left':indentPadding}"
-         :class="['bd-object-tree-node',selectMode == 'single' && node.selected?'selected':'']">
-      <span
-          @click.stop="$emit('update-expanded',node)"
-          v-if="node.children.length > 0 || node.objectCount>0"
-          :class="['icon',node.loading?'tree-folder-expanded-loading-icon':(node.expanded?'bd-object-tree-folder-expanded-icon':'bd-object-tree-folder-collapsed-icon')]">
-            </span>
-      <span v-else
-            class="icon">
-            </span>
-      <span class="space5"></span>
-
-      <template v-if="selectMode != 'single'">
-        <span
-            @click.stop="$emit('node-check',node)"
-            :class="['checkbox',node.checkState == 0?'uncheck':'', node.checkState == 1?'half-check':'', node.checkState == 2?'all-check':'']"></span>
-        <span class="space5"></span>
-      </template>
-
-      <template v-if="node.iconCls">
-        <span
-            :class="['icon',node.iconCls]">
-            </span>
-        <span class="space5"></span>
-      </template>
-      <span class="node-text"> {{ nodeText }}</span>
-    </div>
-
-    <ul v-if="node.children.length>0 && node.expanded">
-      <template v-for="child in node.childNodes">
-        <NestedNode :node="child"
-                    :key="child.objectId"
-                    :select-mode="selectMode"
-                    :select-object-type="selectObjectType"
-                    @update-more="$emit('update-more',$event)"
-                    @node-click="$emit('node-click',$event)"
-                    @node-check="$emit('node-check',$event)"
-                    @update-expanded="$emit('update-expanded',$event)"></NestedNode>
-      </template>
-      <li class="bd-object-tree-load-more"
-          v-if="node.childNodes.length < node.objectCount"
-          @click="$emit('update-more',node)">加载更多&gt;&gt;
-      </li>
-    </ul>
-  </li>
-</template>
-
 <script>
 export default {
   name: 'TreeNode',
@@ -73,6 +23,76 @@ export default {
         return ''
       }
     }
+  },
+  render(h) {
+    const nodeScopeSlots = {
+      node: this.$scopedSlots.node || function emptyScopeNode() {
+        return h('')
+      }
+    }
+    /* eslint-disable indent */
+    return (<li>
+      <div
+          vOn:click_stop={() => this.$emit('node-click', this.node)}
+          style={{ 'padding-left': this.indentPadding }}
+          class={['bd-object-tree-node', this.selectMode === 'single' && this.node.selected ? 'selected' : '']}>
+        {(() => {
+          if (this.node.children.length > 0 || this.node.objectCount > 0) {
+            return (<span
+                vOn:click_stop={() => this.$emit('update-expanded', this.node)}
+                class={['icon', this.node.loading ? 'tree-folder-expanded-loading-icon' : (this.node.expanded ? 'bd-object-tree-folder-expanded-icon' : 'bd-object-tree-folder-collapsed-icon')]}>
+                </span>)
+          } else {
+            return (<span class="icon"></span>)
+          }
+        })()}
+        <span class="space5"></span>
+        {(() => {
+          if (this.selectMode === 'multiple') {
+            return [
+              (<span vOn:click_stop={() => this.$emit('node-check', this.node)}
+                     class={['checkbox', this.node.checkState === 0 ? 'uncheck' : '', this.node.checkState === 1 ? 'half-check' : '', this.node.checkState === 2 ? 'all-check' : '']}></span>),
+              (<span class="space5"></span>)]
+          }
+        })()}
+
+        {(() => {
+          if (this.node.iconCls) {
+            return (<span
+                class={['icon', this.node.iconCls]}></span>)
+          }
+        })()}
+
+        {nodeScopeSlots.node(this.node)}
+        <span class="node-text"> {this.nodeText}</span>
+      </div>
+
+      {(() => {
+        if (this.node.children.length > 0 && this.node.expanded) {
+          return <ul>
+            {this.node.childNodes.map((child) => {
+              return (
+                  <NestedNode node={child}
+                              scopedSlots={nodeScopeSlots}
+                              key={child.objectId}
+                              select-mode={this.selectMode}
+                              select-object-type={this.selectObjectType}
+                              vOn:update-more={($event) => this.$emit('update-more', $event)}
+                              vOn:node-click={($event) => this.$emit('node-click', $event)}
+                              vOn:node-check={($event) => this.$emit('node-check', $event)}
+                              vOn:update-expanded={($event) => this.$emit('update-expanded', $event)}></NestedNode>)
+            })}
+            {(() => {
+              if (this.node.childNodes.length < this.node.objectCount) {
+                return (<li class="bd-object-tree-load-more"
+                            vOn:click={() => this.$emit('update-more', this.node)}> 加载更多 &gt;&gt;</li>)
+              }
+            })()}
+          </ul>
+        }
+      })()}
+    </li>)
+
   },
   data: function() {
     return {}

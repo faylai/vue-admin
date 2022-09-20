@@ -108,6 +108,12 @@ export default {
     }
   },
   render() {
+    const nodeScopeSlots = {
+      node: this.$scopedSlots.node || function emptyScopeNode() {
+        return ''
+      }
+    }
+
     /* eslint-disable indent */
     return (<div class="bc-filter-object-tree">
       <div class="object-container-header" style={{ display: !this.hideSearchBar ? 'block' : 'none' }}>
@@ -123,6 +129,7 @@ export default {
             style={{ visibility: !this.noData && !this.dataError && !this.loading ? 'visible' : 'hidden' }}>{
           this.treeData.map((node) => {
             return (<TreeNode node={node}
+                              scopedSlots={nodeScopeSlots}
                               key={node.objectId}
                               select-mode={this.selectMode}
                               select-object-type={this.selectObjectType}
