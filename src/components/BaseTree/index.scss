@@ -118,7 +118,6 @@
     .bd-object-tree-node {
       white-space: nowrap;
       line-height: 36px;
-      padding: 0 4.5px;
     }
 
     .bd-object-tree-node:hover,
@@ -143,8 +142,8 @@
       border: 1px solid #dcdfe6;
       border-radius: 2px;
       box-sizing: border-box;
-      width: 14px;
-      height: 14px;
+      width: 15px;
+      height: 15px;
       background-color: #fff;
       vertical-align: middle;
       transition: border-color .25s cubic-bezier(.71, -.46, .29, 1.46), background-color .25s cubic-bezier(.71, -.46, .29, 1.46);
@@ -197,7 +196,7 @@
           position: absolute;
           top: 1px;
           transform: rotate(45deg) scaleY(1);
-          width: 3px;
+          width: 4px;
           transition: transform .15s ease-in .05s;
           transform-origin: center;
         }
@@ -242,7 +241,7 @@
     }
 
     .tree-folder-expanded-loading-icon {
-      font-size: 15px;
+      font-size: 16px;
       line-height: 16px;
       color: #868686;
       animation: rotating 2s linear infinite;

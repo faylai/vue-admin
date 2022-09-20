@@ -43,7 +43,7 @@ export default {
                 class={['icon', this.node.loading ? 'tree-folder-expanded-loading-icon' : (this.node.expanded ? 'bd-object-tree-folder-expanded-icon' : 'bd-object-tree-folder-collapsed-icon')]}>
                 </span>)
           } else {
-            return (<span class="icon"></span>)
+            return (h(''))
           }
         })()}
         <span class="space5"></span>
@@ -99,7 +99,7 @@ export default {
   },
   computed: {
     indentPadding: function() {
-      return (5 + this.node.level * 16) + 'px'
+      return (6 + this.node.level * 16) + 'px'
     },
     nodeText: function() {
       const node = this.node
