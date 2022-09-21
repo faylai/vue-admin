@@ -1,5 +1,5 @@
 <script>
-import TreeNode from '@/components/BaseTree/TreeNode'
+import TreeNode from '@/components/XTree/TreeNode'
 import {
   iterateTree,
   formatTreeData,
@@ -18,7 +18,7 @@ import lodash from 'lodash'
  */
 
 export default {
-  name: 'BaseTree',
+  name: 'XTree',
   components: {
     TreeNode
   },
@@ -131,7 +131,6 @@ export default {
         return ''
       }
     }
-
     /* eslint-disable indent */
     return (<div class="bc-filter-object-tree">
       <div class="object-container-header" style={{ display: !this.hideSearchBar ? 'block' : 'none' }}>
@@ -144,7 +143,7 @@ export default {
       </div>
       <div class="object-container-body" style={{ top: this.hideSearchBar ? '10px' : '40px' }}>
         <ul class="bd-object-tree"
-            style={{ visibility: !this.noData && !this.dataError && !this.loading ? 'visible' : 'hidden' }}>{
+            style={{ display: !this.noData && !this.dataError && !this.loading ? 'block' : 'none' }}>{
           this.treeData.map((node) => {
             return (<TreeNode node={node}
                               scopedSlots={nodeScopeSlots}

@@ -26,20 +26,20 @@
     <el-row :gutter="20">
       <el-col :span="12">
         <div style="height: 400px;width: 300px;border: 1px solid grey;">
-          <BaseTree selectMode="multiple" :local-search="true" :fetch-tree-promise-fn="fetchSyncTreePromiseFn">
+          <XTree selectMode="multiple" :local-search="true" :fetch-tree-promise-fn="fetchSyncTreePromiseFn">
             <template v-slot:node="node">
-              <span style="vertical-align: middle">({{ node.onlineCount }}/{{ node.objectCount }})  </span>
+              <span style="vertical-align: middle">({{ node.onlineCount }}/{{ node.businessCount }})  </span>
             </template>
-          </BaseTree>
+          </XTree>
         </div>
       </el-col>
       <el-col :span="12">
         <div style="height: 400px;width: 300px;border: 1px solid grey;">
-          <BaseTree selectMode="multiple" :async="true" :fetch-tree-promise-fn="fetchAsyncTreePromiseFn">
+          <XTree selectMode="multiple" :async="true" :fetch-tree-promise-fn="fetchAsyncTreePromiseFn" style="border:1px solid red;">
             <template v-slot:node="node">
-              <span style="vertical-align: middle">({{ node.onlineCount }}/{{ node.objectCount }})  </span>
+              <span style="vertical-align: middle">({{ node.onlineCount }}/{{ node.businessCount }})  </span>
             </template>
-          </BaseTree>
+          </XTree>
         </div>
       </el-col>
     </el-row>
@@ -52,20 +52,20 @@
     <el-row :gutter="20">
       <el-col :span="12">
         <div style="height: 400px;width: 300px;border: 1px solid grey;">
-          <BaseTree selectMode="single" :local-search="true" :fetch-tree-promise-fn="fetchSyncTreePromiseFn">
+          <XTree selectMode="single" :local-search="true" :fetch-tree-promise-fn="fetchSyncTreePromiseFn">
             <template v-slot:node="node">
-              <span style="vertical-align: middle">({{ node.onlineCount }}/{{ node.objectCount }})  </span>
+              <span style="vertical-align: middle">({{ node.onlineCount }}/{{ node.businessCount }})  </span>
             </template>
-          </BaseTree>
+          </XTree>
         </div>
       </el-col>
       <el-col :span="12">
         <div style="height: 400px;width: 300px;border: 1px solid grey;">
-          <BaseTree selectMode="single" :async="true" :fetch-tree-promise-fn="fetchAsyncTreePromiseFn">
+          <XTree selectMode="single" :async="true" :fetch-tree-promise-fn="fetchAsyncTreePromiseFn" style="border:1px solid red;">
             <template v-slot:node="node">
-              <span style="vertical-align: middle">({{ node.onlineCount }}/{{ node.objectCount }})  </span>
+              <span style="vertical-align: middle">({{ node.onlineCount }}/{{ node.businessCount }})  </span>
             </template>
-          </BaseTree>
+          </XTree>
         </div>
       </el-col>
     </el-row>
@@ -76,14 +76,14 @@
 <script>
 import elDragDialog from '@/directive/el-drag-dialog' // base on element-ui
 import dashboard from '@/views/dashboard'
-import BaseTree from '@/components/BaseTree'
+import XTree from '@/components/XTree'
 import service from '@/api/service'
 
 export default {
   name: 'DragDialogDemo',
   directives: { elDragDialog },
   components: {
-    BaseTree
+    XTree
   },
   data() {
     return {
