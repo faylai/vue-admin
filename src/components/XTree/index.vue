@@ -6,8 +6,9 @@ import {
   updateNodeSelectState,
   updateAllChildrenNodeState,
   searchTree,
-  getSyncSelectedBranchesAndLeaves,
-  getAsyncSelectedBranchesAndLeaves
+  getAllSelectedBranchesAndLeaves,
+  getTopSelectedBranchesAndLeaves,
+  getSelectedLeaves
 } from './TreeUtils'
 import { enablePromiseFnVersionControl } from '@/utils'
 import lodash from 'lodash'
@@ -75,7 +76,7 @@ export default {
         return new Promise(function(resolve) {
           resolve([{
             'parentId': null,
-            'objectName': '请初始化 fetchNodePromiseFn',
+            'objectName': '请初始化 fetchTreePromiseFn',
             'objectId': '808D3A23D3D54038B1B42EA9BFFB8327',
             'objectCount': 2,
             'objectType': ''
@@ -99,7 +100,9 @@ export default {
     async: {
       type: Boolean,
       default: false
-    }
+    },
+    // 多选的时候，只选择叶子节点，和 selectObjectType 配合使用
+    onlyLeaf: Boolean
   },
   data() {
     return {
@@ -172,7 +175,24 @@ export default {
       </div>
     </div>)
   },
+  watch: {
+    value(newValue, oldValue) {
+      const newIds = String(newValue || '').split(',')
+      const oldIds = String(oldValue || '').split(',')
+      if (!lodash.isEqual(newIds, oldIds)) {
+        this.$nextTick(this.restoreSelection)
+      } else {
+        console.log('no need change')
+      }
+    }
+  },
   methods: {
+    // 无脑返回所有checked的节点
+    getAllSelectedNode() {
+      const { branches, leaves } = getAllSelectedBranchesAndLeaves(this.treeData)
+      branches.push.apply(branches, leaves)
+      return this.simplifyNode(branches)
+    },
     refresh: function() {
       this.search(true)
     },
@@ -267,7 +287,7 @@ export default {
     nodeCheck: function(node) {
       node.selected = !node.selected
       updateNodeSelectState(node)
-      this.synMultiSelection(node)
+      this.synMultiSelection()
     },
     clearSelection() {
       lodash.each(this._data._cho.selectedNodes, function(node) {
@@ -277,44 +297,86 @@ export default {
         }
       })
       this._data._cho.selectedNodes = []
-      this.$emit('change', '', false)
+      this.$emit('change', '', [])
     },
     restoreSelection(startNode) {
       let ids = []
       if (this.value) {
         ids = this.value.split(',')
       } else {
+        // 外面没有使用v-model value  情况下也能保持选中
         if (this._data._cho.selectedNodes.length) {
           ids = this._data._cho.selectedNodes.map(node => node.objectId)
         }
       }
       if (ids.length) {
-        iterateTree(startNode || this.treeData || [], function(node) {
-          if (node.selected) {
-            return false
+        if (this.selectMode === 'multiple') {
+          iterateTree(startNode || this.treeData || [], function(node) {
+            if (ids.indexOf(node.objectId) >= 0) {
+              node.selected = true
+              updateNodeSelectState(node)
+              return false
+            } else {
+              if (node.selected) {
+                node.selected = false
+                updateNodeSelectState(node)
+              }
+            }
+          })
+          this.synMultiSelection(true)
+        } else {
+          let lastSelectedNode = false
+          iterateTree(startNode || this.treeData || [], function(node) {
+            // 因为单选只有个选中，找到就不用再找了
+            if (lastSelectedNode) {
+              return false
+            } else if (ids.indexOf(node.objectId) >= 0) {
+              node.selected = true
+              lastSelectedNode = node
+              return false
+            }
+          })
+          if (lastSelectedNode) {
+            this.synSingleSelection(lastSelectedNode, true)
           }
-          if (ids.indexOf(node.objectId) >= 0) {
-            node.selected = true
-            updateNodeSelectState(node)
-            return false
-          }
-        })
+        }
+        const selectNodes = this._data._cho.selectedNodes
+        this.$emit('restore', ids.join(','), this.simplifyNode(selectNodes))
       }
     },
-    synSingleSelection(node) {
+    synSingleSelection(node, suppressChangeEvent) {
       lodash.each(this._data._cho.selectedNodes || [], function(selectedNode) {
         selectedNode.selected = false
       })
       this._data._cho.selectedNodes = [node]
-      this.$emit('change', node.objectId, this.simplifyNode(node))
+      if (suppressChangeEvent !== true) {
+        this.$emit('change', node.objectId, this.simplifyNode(node))
+      }
     },
-    synMultiSelection(node) {
+    synMultiSelection(suppressChangeEvent) {
       let selectNodes = []
       // 如果异步树只能得到顶部的节点即可
-      const {
-        branches,
-        leaves
-      } = this.async ? getAsyncSelectedBranchesAndLeaves(this.treeData) : getSyncSelectedBranchesAndLeaves(this.treeData)
+      let branches = []
+      let leaves = []
+      // 搜索得到的树只能选择叶子节点
+      if (this.isSearched) {
+        leaves = getSelectedLeaves(this.treeData)
+      } else {
+        // 异步只能选择 top和 leaves
+        if (this.async) {
+          const ret = getTopSelectedBranchesAndLeaves(this.treeData)
+          branches = ret.branches
+          leaves = ret.leaves
+        } else {
+          if (this.onlyLeaf) {
+            leaves = getSelectedLeaves(this.treeData)
+          } else {
+            const ret = getTopSelectedBranchesAndLeaves(this.treeData)
+            branches = ret.branches
+            leaves = ret.leaves
+          }
+        }
+      }
       selectNodes.push.apply(selectNodes, branches)
       selectNodes.push.apply(selectNodes, leaves)
       if (this.selectObjectType) {
@@ -322,9 +384,11 @@ export default {
           return this.selectObjectType.split(',').indexOf(node.objectType) >= 0
         })
       }
-      const ids = lodash.map(selectNodes, (node) => node.objectId).join(',')
       this._data._cho.selectedNodes = selectNodes
-      this.$emit('change', ids, this.simplifyNode(selectNodes))
+      if (suppressChangeEvent !== true) {
+        const ids = lodash.map(selectNodes, (node) => node.objectId).join(',')
+        this.$emit('change', ids, this.simplifyNode(selectNodes))
+      }
     },
     formatNodeAndPage(rawTreeData, parent) {
       const formattedData = formatTreeData(rawTreeData, parent)
@@ -398,16 +462,15 @@ export default {
       return Object.assign(params, this.params)
     },
     simplifyNode(node) {
-      const isArray = lodash.isArray(node)
-      const nodes = isArray ? node : [node]
-      const ret = lodash.map(nodes, function(node) {
+      node = node || []
+      const nodes = lodash.isArray(node) ? node : [node]
+      return lodash.map(nodes, function(node) {
         const plainNode = lodash.assign({}, node)
         delete plainNode.parentNode
         delete plainNode.children
         delete plainNode.childNodes
         return plainNode
       })
-      return isArray ? ret : ret[0]
     }
   },
   computed: {

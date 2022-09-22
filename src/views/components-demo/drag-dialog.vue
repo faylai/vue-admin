@@ -17,7 +17,17 @@
         <el-table-column property="address" label="Address"/>
       </el-table>
     </el-dialog>
-
+    <div style="padding: 10px 0">
+      <DropDownTree
+          v-model="dropDownValue"
+          :multiple="true"
+          :collapseTags="true"
+          :tree-config="{localSearch:true,fetchTreePromiseFn:fetchSyncTreePromiseFn}">
+        <template v-slot:node="node">
+          <span style="vertical-align: middle">({{ node.onlineCount }}/{{ node.businessCount }})  </span>
+        </template>
+      </DropDownTree>
+    </div>
 
     <el-row :gutter="20">
       <el-col :span="12"><h1>XTree 同步树多选</h1></el-col>
@@ -35,7 +45,8 @@
       </el-col>
       <el-col :span="12">
         <div style="height: 400px;width: 300px;border: 1px solid grey;">
-          <XTree selectMode="multiple" :async="true" :fetch-tree-promise-fn="fetchAsyncTreePromiseFn" style="border:1px solid red;">
+          <XTree selectMode="multiple" :async="true" :fetch-tree-promise-fn="fetchAsyncTreePromiseFn"
+                 style="border:1px solid red;">
             <template v-slot:node="node">
               <span style="vertical-align: middle">({{ node.onlineCount }}/{{ node.businessCount }})  </span>
             </template>
@@ -61,7 +72,8 @@
       </el-col>
       <el-col :span="12">
         <div style="height: 400px;width: 300px;border: 1px solid grey;">
-          <XTree selectMode="single" :async="true" :fetch-tree-promise-fn="fetchAsyncTreePromiseFn" style="border:1px solid red;">
+          <XTree selectMode="single" :async="true" :fetch-tree-promise-fn="fetchAsyncTreePromiseFn"
+                 style="border:1px solid red;">
             <template v-slot:node="node">
               <span style="vertical-align: middle">({{ node.onlineCount }}/{{ node.businessCount }})  </span>
             </template>
@@ -78,16 +90,19 @@ import elDragDialog from '@/directive/el-drag-dialog' // base on element-ui
 import dashboard from '@/views/dashboard'
 import XTree from '@/components/XTree'
 import service from '@/api/service'
+import DropDownTree from '@/components/DropDownTree'
 
 export default {
   name: 'DragDialogDemo',
   directives: { elDragDialog },
   components: {
-    XTree
+    XTree,
+    DropDownTree
   },
   data() {
     return {
       dialogTableVisible: false,
+      dropDownValue: '722FF1B7692F44C59A8EE344F34C823F',
       options: [
         { value: '选项1', label: '黄金糕' },
         { value: '选项2', label: '双皮奶' },
@@ -118,6 +133,11 @@ export default {
       fetchSyncTreePromiseFn: function(params) {
         return service.requestByKey('example.getSyncTree', params)
       }
+    }
+  },
+  computed: {
+    dropDownTreeConfig() {
+      return {}
     }
   },
   methods: {

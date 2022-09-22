@@ -343,20 +343,20 @@ export function getSelectedBranchesAndLeaves(tree, onlyTopNode) {
 }
 
 /**
- * 获取同步树的选择节点（叶子和树枝节点）
+ * 获取树的选择节点（叶子和树枝节点）
  * @param tree {{Node or [Node]}}
  * @returns {{leaves: Node[], branches: Node[]}}
  */
-export function getSyncSelectedBranchesAndLeaves(tree) {
+export function getAllSelectedBranchesAndLeaves(tree) {
   return getSelectedBranchesAndLeaves(tree, false)
 }
 
 /**
- * 获取异步树的选择节点（叶子和树枝节点）
+ * 获取树的选择节点（叶子和树顶部选中枝节点）
  * @param tree {{Node or [Node]}}
  * @returns {{leaves: Node[], branches: Node[]}}
  */
-export function getAsyncSelectedBranchesAndLeaves(tree) {
+export function getTopSelectedBranchesAndLeaves(tree) {
   return getSelectedBranchesAndLeaves(tree, true)
 }
 
