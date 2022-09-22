@@ -360,7 +360,7 @@ export default {
       let leaves = []
       // 搜索得到的树只能选择叶子节点
       if (this.isSearched) {
-        leaves = getSelectedLeaves(this.treeData)
+        leaves = getSelectedLeaves(this.treeData).leaves || []
       } else {
         // 异步只能选择 top和 leaves
         if (this.async) {
