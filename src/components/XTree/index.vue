@@ -363,7 +363,7 @@ export default {
           leaves = ret.leaves
         } else {
           if (this.onlyLeaf) {
-            leaves = getSelectedLeaves(this.treeData).leaves||[]
+            leaves = getSelectedLeaves(this.treeData).leaves || []
           } else {
             const ret = getTopSelectedBranchesAndLeaves(this.treeData)
             branches = ret.branches
@@ -390,8 +390,7 @@ export default {
       // 对大于 maxFoldNodes 设置的子节点进行分页设置，减少过多节点展示优化加载速度
       iterateTree(formattedData, (node) => {
         const maxNode = Math.min(this.maxFoldNodes, node.children.length)
-        const childNodes = node.children.slice(0, maxNode)
-        node.childNodes = childNodes
+        node.childNodes = node.children.slice(0, maxNode)
       })
       return formattedData
     },

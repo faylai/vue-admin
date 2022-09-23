@@ -108,6 +108,14 @@
       </el-col>
     </el-row>
 
+
+
+    <div>
+      <slot name="header"></slot>
+    </div>
+    <div>
+      <slot name="header"></slot>
+    </div>
   </div>
 </template>
 
