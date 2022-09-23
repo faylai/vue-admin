@@ -8,19 +8,12 @@
       使用service 形式打开
     </el-button>
     <el-dialog v-el-drag-dialog :visible.sync="dialogTableVisible" title="Shipping address" @dragDialog="handleDrag">
-      <el-select ref="select" v-model="value" placeholder="请选择">
-        <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"/>
-      </el-select>
-      <el-table :data="gridData">
-        <el-table-column property="date" label="Date" width="150"/>
-        <el-table-column property="name" label="Name" width="200"/>
-        <el-table-column property="address" label="Address"/>
-      </el-table>
+      this is the dialog content
     </el-dialog>
 
     <el-row :gutter="20">
-      <el-col :span="12"><h1>dropDownTree 下拉多选 </h1></el-col>
-      <el-col :span="12"><h1>dropDownTree 下拉单选 </h1></el-col>
+      <el-col :span="12"><h1>dropDownTree 同步多选 </h1></el-col>
+      <el-col :span="12"><h1>dropDownTree 同步单选 </h1></el-col>
     </el-row>
     <el-row :gutter="20">
       <el-col :span="12">
@@ -46,6 +39,44 @@
               :collapseTags="true"
               :clearable="true"
               :tree-config="{localSearch:true,fetchTreePromiseFn:fetchSyncTreePromiseFn}">
+            <template v-slot:node="node">
+              <span style="vertical-align: middle">({{ node.onlineCount }}/{{ node.businessCount }})  </span>
+            </template>
+          </DropDownTree>
+        </div>
+      </el-col>
+    </el-row>
+
+    <el-row :gutter="20">
+      <el-col :span="12"><h1>dropDownTree 异步多选 </h1></el-col>
+      <el-col :span="12"><h1>dropDownTree 异步单选 </h1></el-col>
+    </el-row>
+    <el-row :gutter="20">
+      <el-col :span="12">
+        <div style="padding-top: 10px">
+          <DropDownTree
+              v-model="dropDownValueAsync"
+              :label="dropDownLabelAsync"
+              :multiple="true"
+              :collapseTags="true"
+              :clearable="true"
+              :tree-config="{localSearch:true,async:true,fetchTreePromiseFn:fetchAsyncTreePromiseFn,onlyLeaf:true}">
+            <template v-slot:node="node">
+              <span style="vertical-align: middle">({{ node.onlineCount }}/{{ node.businessCount }})  </span>
+            </template>
+          </DropDownTree>
+        </div>
+      </el-col>
+
+      <el-col :span="12">
+        <div style="padding-top: 10px">
+          <DropDownTree
+              v-model="dropDownSingleValueAsync"
+              :label="dropDownSingleLabelAsync"
+              :multiple="false"
+              :collapseTags="true"
+              :clearable="true"
+              :tree-config="{localSearch:true,async:true,fetchTreePromiseFn:fetchAsyncTreePromiseFn}">
             <template v-slot:node="node">
               <span style="vertical-align: middle">({{ node.onlineCount }}/{{ node.businessCount }})  </span>
             </template>
@@ -109,7 +140,6 @@
     </el-row>
 
 
-
     <div>
       <slot name="header"></slot>
     </div>
@@ -138,30 +168,11 @@ export default {
       dialogTableVisible: false,
       dropDownValue: '3193DF41119F47CBA4535074146E9AAA',
       dropDownSingleValue: '722FF1B7692F44C59A8EE344F34C823F',
-      options: [
-        { value: '选项1', label: '黄金糕' },
-        { value: '选项2', label: '双皮奶' },
-        { value: '选项3', label: '蚵仔煎' },
-        { value: '选项4', label: '龙须面' }
-      ],
+      dropDownValueAsync: '3193DF41119F47CBA4535074146E9AAA,1FE29AD581784006A0A3E5454B406397,BD809395A90D45D1BEDFB791D1A07D4B',
+      dropDownLabelAsync: '苏E89C3E,苏U95G00,苏EJ16M2',
+      dropDownSingleValueAsync: '722FF1B7692F44C59A8EE344F34C823F',
+      dropDownSingleLabelAsync: '苏E89C3E',
       value: '',
-      gridData: [{
-        date: '2016-05-02',
-        name: 'John Smith',
-        address: 'No.1518,  Jinshajiang Road, Putuo District'
-      }, {
-        date: '2016-05-04',
-        name: 'John Smith',
-        address: 'No.1518,  Jinshajiang Road, Putuo District'
-      }, {
-        date: '2016-05-01',
-        name: 'John Smith',
-        address: 'No.1518,  Jinshajiang Road, Putuo District'
-      }, {
-        date: '2016-05-03',
-        name: 'John Smith',
-        address: 'No.1518,  Jinshajiang Road, Putuo District'
-      }],
       fetchAsyncTreePromiseFn: function(params) {
         return service.requestByKey('example.getAsyncTree', params)
       },
@@ -190,8 +201,12 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss" scoped >
 .components-container {
   padding: 10px;
+  h1{
+    font-size: 16px;
+  }
 }
+
 </style>

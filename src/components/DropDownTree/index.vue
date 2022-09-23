@@ -142,7 +142,6 @@ export default {
         hitState: false,
         closable: !isDisabled && !node.isDisabled
       })
-
       if (checkedNodes.length) {
         const [first, ...rest] = checkedNodes
         const restCount = rest.length
@@ -196,9 +195,13 @@ export default {
         panel.$el.style.minWidth = inputInner.offsetWidth + 'px'
         panel.$emit('updatePopper')
       }
+    },
+    restorePresentFromLabel(values, labels) {
+      this.checkedNodes = values.map(function(value, index) {
+        return { objectId: value, objectName: labels[index] }
+      })
     }
   },
-
   mounted() {
     const { input } = this.$refs
     if (input && input.$el) {
@@ -219,6 +222,16 @@ export default {
       if (this.multiple && (val.length || oldVal.length)) {
         this.$nextTick(this.updateStyle)
       }
+    },
+    label: {
+      handler(newValue, oldValue) {
+        const labels = String(this.label || '').trim().split(',')
+        const values = String(this.value || '').trim().split(',')
+        if (labels.length && labels.length === values.length) {
+          this.restorePresentFromLabel(values, labels)
+        }
+      },
+      immediate: true
     }
   },
   render(h) {
@@ -300,6 +313,7 @@ export default {
       </div>
       <el-dropdown-menu slot="dropdown" ref="panel">
         <XTree scopedSlots={nodeScopeSlots}
+               ref="xtree"
                vOn:change={this.treeChange}
                vOn:restore={this.onTreeRestore}
                value={this.value}
