@@ -1,6 +1,7 @@
 <script>
 import XTree from '@/components/XTree'
 import { addResizeListener, removeResizeListener } from 'element-ui/lib/utils/resize-event'
+import Emitter from 'element-ui/lib/mixins/emitter'
 
 const InputSizeMap = {
   medium: 36,
@@ -16,6 +17,9 @@ export default {
   components: {
     XTree
   },
+  mixins: [
+    Emitter
+  ],
   props: {
     value: {
       type: String,
@@ -99,11 +103,15 @@ export default {
     handleBlur(e) {
       this.$emit('blur', e)
     },
+    emitChange(value, nodes) {
+      this.$emit('change', value, nodes)
+      this.dispatch('ElFormItem', 'el.form.change', value)
+    },
     handleClear() {
       this.presentText = ''
       this.checkedNodes = []
       this.presentTags = []
-      this.$emit('change', '', [])
+      this.emitChange('', [])
     },
     computePresentContent() {
       // nextTick is required, because checked nodes may not change right now
@@ -157,11 +165,11 @@ export default {
       const node = tag.node
       this.checkedNodes.splice(this.checkedNodes.indexOf(node), 1)
       this.presentTags.splice(this.presentTags.indexOf(tag), 1)
-      this.$emit('change', this.checkedNodes.map(node => node.objectId).join(','), this.checkedNodes)
+      this.emitChange(this.checkedNodes.map(node => node.objectId).join(','), this.checkedNodes)
     },
     treeChange(value, selection) {
       this.checkedNodes = selection
-      this.$emit('change', value, selection)
+      this.emitChange(value, selection)
       this.computePresentContent()
     },
     onTreeRestore(value, selection) {
@@ -223,7 +231,7 @@ export default {
       this.treeConfig.selectMode = 'multiple'
     }
     this.treeConfig.value = this.value
-    console.log('this.multiple', this.multiple)
+    // console.log('this.treeConfig', this.treeConfig)
     /* eslint-disable indent */
     return (<el-dropdown
         hide-on-click={false}
@@ -251,7 +259,6 @@ export default {
             vOn:blur={this.handleBlur}>{(() => {
           if (this.clearBtnVisible) {
             return <i slot="suffix"
-                      v-if="clearBtnVisible"
                       key="clear"
                       class="el-input__icon el-icon-circle-close"
                       vOn:click_stop={this.handleClear}></i>

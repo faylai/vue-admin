@@ -17,18 +17,44 @@
         <el-table-column property="address" label="Address"/>
       </el-table>
     </el-dialog>
-    <div style="padding: 10px 0">
-      <DropDownTree
-          v-model="dropDownValue"
-          :multiple="true"
-          :collapseTags="true"
-          :tree-config="{localSearch:true,fetchTreePromiseFn:fetchSyncTreePromiseFn}">
-        <template v-slot:node="node">
-          <span style="vertical-align: middle">({{ node.onlineCount }}/{{ node.businessCount }})  </span>
-        </template>
-      </DropDownTree>
-    </div>
 
+    <el-row :gutter="20">
+      <el-col :span="12"><h1>dropDownTree 下拉多选 </h1></el-col>
+      <el-col :span="12"><h1>dropDownTree 下拉单选 </h1></el-col>
+    </el-row>
+    <el-row :gutter="20">
+      <el-col :span="12">
+        <div style="padding-top: 10px">
+          <DropDownTree
+              v-model="dropDownValue"
+              :multiple="true"
+              :collapseTags="true"
+              :clearable="true"
+              :tree-config="{localSearch:true,fetchTreePromiseFn:fetchSyncTreePromiseFn,onlyLeaf:true}">
+            <template v-slot:node="node">
+              <span style="vertical-align: middle">({{ node.onlineCount }}/{{ node.businessCount }})  </span>
+            </template>
+          </DropDownTree>
+        </div>
+      </el-col>
+
+      <el-col :span="12">
+        <div style="padding-top: 10px">
+          <DropDownTree
+              v-model="dropDownSingleValue"
+              :multiple="false"
+              :collapseTags="true"
+              :clearable="true"
+              :tree-config="{localSearch:true,fetchTreePromiseFn:fetchSyncTreePromiseFn}">
+            <template v-slot:node="node">
+              <span style="vertical-align: middle">({{ node.onlineCount }}/{{ node.businessCount }})  </span>
+            </template>
+          </DropDownTree>
+        </div>
+      </el-col>
+    </el-row>
+
+    <div style="height: 400px;"></div>
     <el-row :gutter="20">
       <el-col :span="12"><h1>XTree 同步树多选</h1></el-col>
       <el-col :span="12"><h1>XTree 异步树多选</h1></el-col>
@@ -102,7 +128,8 @@ export default {
   data() {
     return {
       dialogTableVisible: false,
-      dropDownValue: '722FF1B7692F44C59A8EE344F34C823F',
+      dropDownValue: '3193DF41119F47CBA4535074146E9AAA',
+      dropDownSingleValue: '722FF1B7692F44C59A8EE344F34C823F',
       options: [
         { value: '选项1', label: '黄金糕' },
         { value: '选项2', label: '双皮奶' },

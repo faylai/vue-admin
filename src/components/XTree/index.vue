@@ -120,12 +120,8 @@ export default {
       treeData: [],
       // 用于 localSearch 不需要响应式
       // eslint-disable-next-line vue/no-reserved-keys
-      _treeJsonString: '[]',
+      _treeJsonString: '[]'
       // eslint-disable-next-line vue/no-reserved-keys
-      _cho: {
-        // 选择的响应式节点
-        selectedNodes: []
-      }
     }
   },
   render() {
@@ -179,10 +175,11 @@ export default {
     value(newValue, oldValue) {
       const newIds = String(newValue || '').split(',')
       const oldIds = String(oldValue || '').split(',')
+      // console.log('watch:', newValue, oldValue)
       if (!lodash.isEqual(newIds, oldIds)) {
         this.$nextTick(this.restoreSelection)
       } else {
-        console.log('no need change')
+        // console.log('no need change')
       }
     }
   },
@@ -290,68 +287,65 @@ export default {
       this.synMultiSelection()
     },
     clearSelection() {
-      lodash.each(this._data._cho.selectedNodes, function(node) {
-        if (node.selected) {
-          node.selected = false
-          updateNodeSelectState(node)
-        }
-      })
-      this._data._cho.selectedNodes = []
       this.$emit('change', '', [])
     },
     restoreSelection(startNode) {
       let ids = []
+      let selectNodes = []
       if (this.value) {
         ids = this.value.split(',')
-      } else {
-        // 外面没有使用v-model value  情况下也能保持选中
-        if (this._data._cho.selectedNodes.length) {
-          ids = this._data._cho.selectedNodes.map(node => node.objectId)
-        }
       }
-      if (ids.length) {
-        if (this.selectMode === 'multiple') {
-          iterateTree(startNode || this.treeData || [], function(node) {
-            if (ids.indexOf(node.objectId) >= 0) {
-              node.selected = true
+      // console.log('restoreSelection')
+      if (this.selectMode === 'multiple') {
+        iterateTree(startNode || this.treeData || [], function(node) {
+          if (ids.indexOf(node.objectId) >= 0) {
+            node.selected = true
+            updateNodeSelectState(node)
+            return false
+          } else {
+            if (node.selected) {
+              node.selected = false
               updateNodeSelectState(node)
-              return false
-            } else {
-              if (node.selected) {
-                node.selected = false
-                updateNodeSelectState(node)
-              }
             }
-          })
-          this.synMultiSelection(true)
-        } else {
-          let lastSelectedNode = false
-          iterateTree(startNode || this.treeData || [], function(node) {
-            // 因为单选只有个选中，找到就不用再找了
-            if (lastSelectedNode) {
-              return false
-            } else if (ids.indexOf(node.objectId) >= 0) {
-              node.selected = true
-              lastSelectedNode = node
-              return false
-            }
-          })
-          if (lastSelectedNode) {
-            this.synSingleSelection(lastSelectedNode, true)
           }
+        })
+        selectNodes = this.synMultiSelection(true)
+      } else {
+        let foundSelectedNode = false
+        let unsetSelectedNode = false
+        iterateTree(startNode || this.treeData || [], function(node) {
+          // 因为单选只有个选中，找到就不用再找了
+          if (foundSelectedNode && unsetSelectedNode) {
+            return false
+          } else if (ids.indexOf(node.objectId) >= 0) {
+            node.selected = true
+            foundSelectedNode = node
+            return false
+          } else {
+            if (node.selected) {
+              unsetSelectedNode = node
+              node.selected = false
+            }
+          }
+        })
+        if (foundSelectedNode) {
+          selectNodes = this.synSingleSelection(foundSelectedNode, true)
         }
-        const selectNodes = this._data._cho.selectedNodes
-        this.$emit('restore', ids.join(','), this.simplifyNode(selectNodes))
       }
+
+      this.$emit('restore', ids.join(','), this.simplifyNode(selectNodes))
     },
     synSingleSelection(node, suppressChangeEvent) {
-      lodash.each(this._data._cho.selectedNodes || [], function(selectedNode) {
-        selectedNode.selected = false
-      })
-      this._data._cho.selectedNodes = [node]
+      let selectedNodes = []
+      if (node.selected) {
+        selectedNodes = [node]
+      } else {
+        selectedNodes = []
+      }
       if (suppressChangeEvent !== true) {
         this.$emit('change', node.objectId, this.simplifyNode(node))
       }
+      return selectedNodes
     },
     synMultiSelection(suppressChangeEvent) {
       let selectNodes = []
@@ -369,7 +363,7 @@ export default {
           leaves = ret.leaves
         } else {
           if (this.onlyLeaf) {
-            leaves = getSelectedLeaves(this.treeData)
+            leaves = getSelectedLeaves(this.treeData).leaves||[]
           } else {
             const ret = getTopSelectedBranchesAndLeaves(this.treeData)
             branches = ret.branches
@@ -384,11 +378,12 @@ export default {
           return this.selectObjectType.split(',').indexOf(node.objectType) >= 0
         })
       }
-      this._data._cho.selectedNodes = selectNodes
+
       if (suppressChangeEvent !== true) {
         const ids = lodash.map(selectNodes, (node) => node.objectId).join(',')
         this.$emit('change', ids, this.simplifyNode(selectNodes))
       }
+      return selectNodes
     },
     formatNodeAndPage(rawTreeData, parent) {
       const formattedData = formatTreeData(rawTreeData, parent)
