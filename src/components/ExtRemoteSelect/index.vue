@@ -13,8 +13,11 @@ export default {
   name: 'ExtRemoteSelect',
   functional: true,
   props: {
-    // 异步情况用于恢复选中状态的值
+    // 异步情况用于恢复选中状态的值和value 保持一致
+    // eslint-disable-next-line
     label: {},
+    // eslint-disable-next-line
+    value: {},
     // 唯一性决定是否使用新的 data Scope,同一 scopeKey 下的 scope 会共享
     scopeKey: {
       type: String,
@@ -69,10 +72,12 @@ export default {
       }
     }
   },
+  // eslint-disable-next-line
   render(h, context) {
     let children = (context.children || []).concat([])
     const scope = createScope(context.parent, (context.props.scopeKey || context.props.requestKey || 'self'), {
       value: undefined,
+      label: undefined,
       items: [],
       _items: [],
       loading: false,
@@ -101,12 +106,10 @@ export default {
             scope.items = items
             scope._items = items.slice(0)
             // 处理默认选中的问题,生成几个隐藏的option
-            if (context.props.showPage && !lodash.isUndefined(context.data.attrs.value)) {
-              console.log('context.data.attrs.value', context.data.attrs.value)
-              const value = lodash.isArray(context.data.attrs.value) ? context.data.attrs.value : [context.data.attrs.value]
-              const scopeValue = lodash.isArray(scope.value) ? context.props.value : [scope.value]
-              const label = lodash.isArray(context.props.label) ? context.props.value : [context.props.label]
-              if (value && !lodash.isEqual(value, scopeValue) && value.length === label.length) {
+            if (context.props.showPage && !lodash.isEmpty(scope.value)) {
+              const value = lodash.isArray(scope.value) ? scope.value : [scope.value]
+              const label = lodash.isArray(scope.label) ? scope.label : [scope.label]
+              if (value.length === label.length) {
                 for (let i = 0; i < value.length; i++) {
                   // 没有从item 找到情况下，新建隐藏项目用来诱导选中
                   if (!lodash.some(scope.items, item => String(item[context.props.valueKey]) === value[i])) {
@@ -139,18 +142,28 @@ export default {
       }
     })
     // 简单检查参数是否被外部修改,如果修改分页重置并且重新拉取数据
-    if (!lodash.isEqual(context.props.params, scope._params)) {
+    if (!lodash.isEqual(context.props.params, scope._params) || !lodash.isEqual(scope.value, context.props.value)) {
       scope._params = context.props.params
       scope._item = []
       scope._counter = 0
       scope.pageIndex = 1
     }
-
     scope.value = context.props.value
+    scope.label = context.props.label
+    // 用来截获选中的值
     if (context.data.on && context.data.on.input) {
       context.data.on.input = beforeFunction(context.data.on.input, function(value) {
-        console.log('v-model:value', value)
-        scope.value = value
+        if (lodash.isEmpty(value)) {
+          scope.value = undefined
+          scope.label = undefined
+        } else {
+          let values = lodash.isArray(value) ? value : [value]
+          lodash.each(values, function(v) {
+            const item = lodash.some(scope.items, item => String(item[context.props.valueKey]) === v)
+            scope.value = item[context.props.valueKey]
+            scope.label = item[context.props.labelKey]
+          })
+        }
       })
     }
 
