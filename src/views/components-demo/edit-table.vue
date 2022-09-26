@@ -20,11 +20,14 @@
           </ExtStaticSelect>
         </FilterItem>
         <FilterItem prop="name4">
-          <ExtRemoteSelect v-model="formConfig.model.name4"
+          <ExtRemoteSelect v-model.trim="formConfig.model.name4"
                            :params="selectParams"
                            :clearable="true"
                            :show-page="true"
-                           request-key="example.getSelectList2"></ExtRemoteSelect>
+                           value-key="no"
+                           label-key="name"
+                           label="杨景妮"
+                           request-key="example.getUserList"></ExtRemoteSelect>
 
         </FilterItem>
       </BaseFilterPanel>
@@ -78,7 +81,8 @@ export default {
           name1: '',
           name2: '',
           name3: '22',
-          name4: ''
+          name4: 'ald0030034',
+          label4: '杨景妮'
         },
         rules: {
           name1: [

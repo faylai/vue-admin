@@ -132,7 +132,7 @@ export default {
     }
     /* eslint-disable indent */
     return (<div class="bc-filter-object-tree">
-      <div class="object-container-header" style={{ display: !this.hideSearchBar ? 'block' : 'none' }}>
+      <div class="object-container-header" vShow={!this.hideSearchBar}>
         <label class="fuzzy-search">
           <input type="text" vModel_trim={this.keywords} vOn:keyup_enter={this.search}/>
           <span class="bc-query-icon icon" vOn:click={this.search}></span>
@@ -142,7 +142,7 @@ export default {
       </div>
       <div class="object-container-body" style={{ top: this.hideSearchBar ? '10px' : '40px' }}>
         <ul class="bd-object-tree"
-            style={{ display: !this.noData && !this.dataError && !this.loading ? 'block' : 'none' }}>{
+            vShow={!this.noData && !this.dataError && !this.loading}>{
           this.treeData.map((node) => {
             return (<TreeNode node={node}
                               scopedSlots={nodeScopeSlots}
@@ -157,15 +157,15 @@ export default {
           })}
         </ul>
 
-        <div class="bc-control-info " style={{ display: this.noData ? 'block' : 'none' }}>
+        <div class="bc-control-info " vShow={this.noData}>
           <span>{this.words.noMatchResult}</span>
         </div>
 
-        <div class="bc-control-error " style={{ display: this.dataError ? 'block' : 'none' }}>
+        <div class="bc-control-error " vShow={this.dataError}>
           <span>{this.words.dataErrorTip}</span>
         </div>
 
-        <div class="bc-control-loading" style={{ display: this.loading ? 'block' : 'none' }}>
+        <div class="bc-control-loading" vShow={this.loading}>
           <span>{this.words.loadingTip}</span>
         </div>
       </div>

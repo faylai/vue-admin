@@ -24,6 +24,11 @@ export default {
       'method': 'post',
       'url': '/vue-admin-template/tree/async',
       'desc': '获取同步树的数据'
+    },
+    'getUserList': {
+      'method': 'post',
+      'url': '/vue-admin-template/user/list',
+      'desc': '获取用户列表'
     }
   }
 }
