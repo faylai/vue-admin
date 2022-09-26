@@ -3,7 +3,13 @@
     <template #header>
       <BaseFilterPanel :form-config="formConfig" @query="handleQuery">
         <FilterItem prop="name1">
-          <el-input v-model="formConfig.model.name1" placeholder="请输入内容1"></el-input>
+          <DropDownTree
+              v-model="formConfig.model.name1"
+              placeholder="请选择组织"
+              :collapseTags="true"
+              :clearable="true"
+              :tree-config="{localSearch:true,fetchTreePromiseFn:fetchSyncTreePromiseFn}">
+          </DropDownTree>
         </FilterItem>
         <FilterItem prop="name2">
           <ExtRemoteSelect v-model="formConfig.model.name2"
@@ -62,6 +68,8 @@ import FilterItem from '@/components/BaseFilterPanel/FilterItem'
 import FilterListLayout from '@/components/layout/FilterListLayout'
 import ExtStaticSelect from '@/components/ExtStaticSelect'
 import ExtRemoteSelect from '@/components/ExtRemoteSelect'
+import DropDownTree from '@/components/DropDownTree'
+import service from '@/api/service'
 
 export default {
   name: 'EditTable',
@@ -71,7 +79,8 @@ export default {
     ExtStaticSelect,
     BaseFilterPanel,
     FilterListLayout,
-    ExtRemoteSelect
+    ExtRemoteSelect,
+    DropDownTree
   },
   data() {
     return {
@@ -80,7 +89,7 @@ export default {
       },
       formConfig: {
         model: {
-          name1: '',
+          name1: '722FF1B7692F44C59A8EE344F34C823F',
           name2: '',
           name3: '22',
           name4: ['ald0030034', 'ald0030005'],
@@ -88,7 +97,7 @@ export default {
         },
         rules: {
           name1: [
-            { required: true, message: '请输入活动名称', trigger: 'change' }
+            { required: true, message: '请选择组织', trigger: 'change' }
           ],
           name3: [
             { required: true, message: '请选择', trigger: 'change' }
@@ -195,6 +204,9 @@ export default {
     }
   },
   methods: {
+    fetchSyncTreePromiseFn: function(params) {
+      return service.requestByKey('example.getSyncTree', params)
+    },
     selectChange(value) {
       this.selectParams = {
         test: value
