@@ -21,12 +21,14 @@
         </FilterItem>
         <FilterItem prop="name4">
           <ExtRemoteSelect v-model.trim="formConfig.model.name4"
+                           :label="formConfig.model.label4"
                            :params="selectParams"
                            :clearable="true"
+                           :multiple="true"
                            :show-page="true"
+                           :collapse-tags="true"
                            value-key="no"
                            label-key="name"
-                           label="杨景妮"
                            request-key="example.getUserList"></ExtRemoteSelect>
 
         </FilterItem>
@@ -81,8 +83,8 @@ export default {
           name1: '',
           name2: '',
           name3: '22',
-          name4: 'ald0030034',
-          label4: '杨景妮'
+          name4: ['ald0030034', 'ald0030005'],
+          label4: ['杨景妮', '韩花娥']
         },
         rules: {
           name1: [

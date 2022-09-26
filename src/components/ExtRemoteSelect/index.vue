@@ -76,8 +76,6 @@ export default {
   render(h, context) {
     let children = (context.children || []).concat([])
     const scope = createScope(context.parent, (context.props.scopeKey || context.props.requestKey || 'self'), {
-      value: undefined,
-      label: undefined,
       items: [],
       _items: [],
       loading: false,
@@ -106,9 +104,9 @@ export default {
             scope.items = items
             scope._items = items.slice(0)
             // 处理默认选中的问题,生成几个隐藏的option
-            if (context.props.showPage && !lodash.isEmpty(scope.value)) {
-              const value = lodash.isArray(scope.value) ? scope.value : [scope.value]
-              const label = lodash.isArray(scope.label) ? scope.label : [scope.label]
+            if (context.props.showPage && !lodash.isEmpty(scope._value)) {
+              const value = scope._value
+              const label = scope._label
               if (value.length === label.length) {
                 for (let i = 0; i < value.length; i++) {
                   // 没有从item 找到情况下，新建隐藏项目用来诱导选中
@@ -141,27 +139,33 @@ export default {
         scope.remoteMethod(scope._keyword)
       }
     })
+
+    const arrayValue = lodash.isArray(context.props.value) ? context.props.value : lodash.isEmpty(context.props.value) ? [] : [context.props.value]
+    const arrayLabel = lodash.isArray(context.props.label) ? context.props.label : lodash.isEmpty(context.props.label) ? [] : [context.props.label]
+
     // 简单检查参数是否被外部修改,如果修改分页重置并且重新拉取数据
-    if (!lodash.isEqual(context.props.params, scope._params) || !lodash.isEqual(scope.value, context.props.value)) {
+    if (!lodash.isEqual(context.props.params, scope._params) || !lodash.isEqual(scope._value || [], arrayValue)) {
       scope._params = context.props.params
-      scope._item = []
+      scope._items = []
       scope._counter = 0
       scope.pageIndex = 1
+      scope._value = arrayValue
+      scope._label = arrayLabel
     }
-    scope.value = context.props.value
-    scope.label = context.props.label
+
     // 用来截获选中的值
     if (context.data.on && context.data.on.input) {
       context.data.on.input = beforeFunction(context.data.on.input, function(value) {
         if (lodash.isEmpty(value)) {
-          scope.value = undefined
-          scope.label = undefined
+          scope._value = []
+          scope._label = []
         } else {
           let values = lodash.isArray(value) ? value : [value]
+          scope._value = values
+          scope._label = []
           lodash.each(values, function(v) {
             const item = lodash.some(scope.items, item => String(item[context.props.valueKey]) === v)
-            scope.value = item[context.props.valueKey]
-            scope.label = item[context.props.labelKey]
+            scope._label.push(item[context.props.labelKey])
           })
         }
       })
