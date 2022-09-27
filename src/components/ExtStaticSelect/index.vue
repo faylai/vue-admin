@@ -1,5 +1,6 @@
 <script>
 import { normalizeSlots } from '@/utils'
+import EnforceSlotSelect from '@/components/EnforceSlotSelect'
 
 export default {
   name: 'ExtStaticSelect',
@@ -32,7 +33,7 @@ export default {
         </el-option>
       })
     }
-    return h('el-select', context.data, normalizeSlots(slots))
+    return h(EnforceSlotSelect, context.data, normalizeSlots(slots))
   }
 }
 </script>

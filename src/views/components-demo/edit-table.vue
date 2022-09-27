@@ -8,6 +8,7 @@
               placeholder="请选择组织"
               :collapseTags="true"
               :clearable="true"
+              :multiple="true"
               :tree-config="{localSearch:true,fetchTreePromiseFn:fetchSyncTreePromiseFn}">
           </DropDownTree>
         </FilterItem>

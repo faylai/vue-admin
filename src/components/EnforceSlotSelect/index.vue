@@ -9,7 +9,7 @@
         v-if="multiple"
         ref="tags"
         :style="{ 'max-width': inputWidth - 32 + 'px', width: '100%' }">
-      <span v-if="collapseTags && selected.length">
+      <span v-if="collapseTags && selected.length" class="collapse-tags">
         <el-tag
             :closable="!selectDisabled"
             :size="collapseTagSize"
@@ -17,7 +17,7 @@
             type="info"
             @close="deleteTag($event, selected[0])"
             disable-transitions>
-          <span class="el-select__tags-text">{{ selected[0].currentLabel }}</span>
+          <span class="el-select__tags-text" :title="selected[0].currentLabel">{{ selected[0].currentLabel }}</span>
         </el-tag>
         <el-tag
             v-if="selected.length > 1"
@@ -148,4 +148,37 @@ export default {
 }
 </script>
 
+<style lang="scss">
+.el-select {
+  .el-select__tags {
+    .collapse-tags {
+      width: 100%;
+
+      .el-tag.el-tag--info:first-child {
+        width: calc(100% - 80px);
+        display: block;
+        position: relative;
+
+        .el-select__tags-text {
+          max-width: calc(100% - 16px);
+          display: inline-block;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          vertical-align: middle;
+        }
+
+        .el-tag__close {
+          position: absolute;
+          margin-top: -8px;
+          top: 50%;
+          right: 0;
+          left: auto;
+          bottom: auto;
+        }
+      }
+    }
+  }
+
+}
+</style>
 
