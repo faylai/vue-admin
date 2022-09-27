@@ -140,7 +140,9 @@
 import { Select } from 'element-ui'
 
 /**
- * 模板是从源代码中复制过来的，只是增加了 bottom 插槽,注意升级的时候更新
+ * 模板是从源代码中复制过来的，变更内容如下：
+ * 1、html 模板增加了 bottom 插槽,注意升级的时候更新
+ * 2、scss 中修复了 tag collapse 模式下样式文字溢出的问题
  */
 export default {
   name: 'EnforceSlotSelect',
