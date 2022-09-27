@@ -156,7 +156,7 @@ export default {
           if (collapseTags) {
             tags.push({
               key: -1,
-              text: `+ ${restCount}`,
+              text: `+${restCount > 99 ? 99 : restCount}`,
               closable: false
             })
           } else {
@@ -305,8 +305,9 @@ export default {
                       hit={tag.hitState}
                       closable={tag.closable}
                       disable-transitions
+                      class={[this.collapseTags && 'collapse-tag']}
                       vOn:close={() => this.deleteTag(tag)}>
-                    <span>{tag.text}</span>
+                    <span title={tag.text}>{tag.text}</span>
                   </el-tag>)
                 })
               }
