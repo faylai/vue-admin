@@ -38,11 +38,11 @@
 
     input[type="text"] {
       height: 28px;
-      border: 0;
-      padding-left: 2px;
+      padding-left: 5px;
       padding-right: 28px;
       width: 100%;
       outline: none;
+
     }
 
     .fuzzy-search {
@@ -57,6 +57,9 @@
       border: 1px solid #c9c9c9;
       border-radius: 4px;
       font-size: 12px;
+      &.focus {
+        border: 1px solid #409EFF;
+      }
     }
 
     @mixin fuzzy-search-icon {

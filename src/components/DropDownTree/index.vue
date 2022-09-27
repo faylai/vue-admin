@@ -96,6 +96,12 @@ export default {
     },
     visibleChange(visible) {
       this.dropDownVisible = visible
+      if (visible) {
+        this.$nextTick(function() {
+          console.log('visible change')
+          this.$refs.xtree.focusInput()
+        })
+      }
     },
     handleFocus(e) {
       this.$emit('focus', e)

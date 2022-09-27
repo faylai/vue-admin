@@ -112,6 +112,7 @@ export default {
       noData: false,
       dataError: false,
       isSearched: false,
+      inputFocused: false,
       words: {
         noMatchResult: '没有查询到数据',
         dataErrorTip: '数据加载出错',
@@ -134,7 +135,13 @@ export default {
     return (<div class="bc-filter-object-tree">
       <div class="object-container-header" vShow={!this.hideSearchBar}>
         <label class="fuzzy-search">
-          <input type="text" vModel_trim={this.keywords} vOn:keyup_enter={this.search}/>
+          <input type="text"
+                 vModel_trim={this.keywords}
+                 vOn:keyup_enter={this.search}
+                 vOn:focus={this.onInputFocus}
+                 vOn:blur={this.onInputBlur}
+                 class={[this.inputFocused && 'focus']}
+                 ref="input"/>
           <span class="bc-query-icon icon" vOn:click={this.search}></span>
         </label>
         <span class="bc-refresh-icon icon" vOn:click={this.refresh}></span>
@@ -187,6 +194,12 @@ export default {
       const { branches, leaves } = getAllSelectedBranchesAndLeaves(this.treeData)
       branches.push.apply(branches, leaves)
       return this.simplifyNode(branches)
+    },
+    onInputFocus() {
+      this.inputFocused = true
+    },
+    onInputBlur() {
+      this.inputFocused = false
     },
     refresh: function() {
       this.search(true)
@@ -477,6 +490,11 @@ export default {
         delete plainNode.childNodes
         return plainNode
       })
+    },
+    focusInput() {
+      if (this.$refs.input) {
+        this.$refs.input.focus()
+      }
     }
   },
   computed: {
