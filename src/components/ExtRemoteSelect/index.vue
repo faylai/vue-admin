@@ -160,7 +160,7 @@ export default {
           scope._value = []
           scope._label = []
         } else {
-          let values = lodash.isArray(value) ? value : [value]
+          const values = lodash.isArray(value) ? value : [value]
           scope._value = values
           scope._label = []
           lodash.each(values, function(v) {
