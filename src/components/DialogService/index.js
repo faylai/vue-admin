@@ -24,22 +24,18 @@ function install(Vue, config) {
       }
       return h('el-dialog', {
         props: this._props,
-        on: { close: this.close, open: this.onOpen },
+        on: { close: this.close },
         ref: 'dialog'
       }, children)
     }, methods: {
-      onOpen() {
-        const vm = this
-        setTimeout(function() {
-          vm.$emit('open')
-        }, 100)
-      }, getComponentInstance() {
+      getComponentInstance() {
         if (this.$refs.comp) {
           return this.$refs.comp
         } else {
           return null
         }
-      }, close() {
+      },
+      close() {
         const beforeClose = this.beforeClose || function() {
           return true
         }
@@ -52,7 +48,7 @@ function install(Vue, config) {
           })
         }
       },
-      show: function(dialogProps) {
+      show: function(dialogProps, callback) {
         if (this._isDestroyed) {
           console.error('you can\'t show a destroyed dialog')
           return
@@ -68,8 +64,16 @@ function install(Vue, config) {
             Object.keys(config).forEach(key => {
               this[key] = config[key]
             })
-            document.body.appendChild(this.$el)
             this.$mount()
+            const that = this
+            this.$refs.dialog.$on('open', function() {
+              if (callback) {
+                setTimeout(function() {
+                  callback.apply(that, [that.getComponentInstance()])
+                }, 100)
+              }
+            })
+            document.body.appendChild(this.$el)
             this.__isMounted__ = true
             return this
           }

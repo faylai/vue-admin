@@ -1,11 +1,13 @@
 <template>
   <div class="dashboard-container">
     <div class="dashboard-text">name: {{ name }}</div>
+    <el-button @click="openDialog">嵌套dialog</el-button>
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
+import Vue from 'vue'
 
 export default {
   name: 'Dashboard',
@@ -13,6 +15,20 @@ export default {
     ...mapGetters([
       'name'
     ])
+  },
+  methods: {
+    openDialog() {
+      const props = { value: 'el-input' }
+      const dialog = this.$dialog('el-input', props)
+      dialog.show({
+        title: '展示一个 el-input 数据同步'
+      }, function() {
+        const instance = dialog.getComponentInstance()
+        instance.$on('input', function(value) {
+          props.value = value
+        })
+      })
+    }
   }
 }
 </script>
