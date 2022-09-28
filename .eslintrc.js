@@ -207,6 +207,7 @@ module.exports = {
     }],
     'vue/order-in-components': 'off',
     'vue/html-indent': 'off',
-    'vue/attributes-order':'off'
+    'vue/attributes-order': 'off',
+    'vue/require-default-prop': 'off'
   }
 }

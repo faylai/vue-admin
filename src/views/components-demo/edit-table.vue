@@ -42,11 +42,26 @@
       </BaseFilterPanel>
     </template>
     <template #content>
-      <FieldGrid
-          ref="xGrid"
-          :gridOptions="gridOptions"
-          :queryOptions="queryOptions"
-          @toolbar-button-click="toolbarButtonClickEvent">
+      <!--      <FieldGrid
+                ref="xGrid"
+                :gridOptions="gridOptions"
+                :query-promise-function="queryOptions.queryPromiseFunction"
+                :params="queryOptions.params"
+                @toolbar-button-click="toolbarButtonClickEvent">
+              <template #name="{ row }">
+                <span>@</span>
+                <span> {{ row.name }}</span>
+              </template>
+              <template #sex_edit="{ row }">
+                <vxe-select v-model="row.sex" transfer>
+                  <vxe-option v-for="item in sexOptions" :key="item.value" :value="item.value"
+                              :label="item.label"></vxe-option>
+                </vxe-select>
+              </template>
+            </FieldGrid>-->
+      <XGrid :gridOptions="gridOptions"
+             :query-promise-function="queryOptions.queryPromiseFunction"
+             style="height: 100%">
         <template #name="{ row }">
           <span>@</span>
           <span> {{ row.name }}</span>
@@ -57,7 +72,7 @@
                         :label="item.label"></vxe-option>
           </vxe-select>
         </template>
-      </FieldGrid>
+      </XGrid>
     </template>
   </FilterListLayout>
 
@@ -71,6 +86,7 @@ import ExtStaticSelect from '@/components/ExtStaticSelect'
 import ExtRemoteSelect from '@/components/ExtRemoteSelect'
 import DropDownTree from '@/components/DropDownTree'
 import service from '@/api/service'
+import XGrid from '@/components/vxe/XGrid'
 
 export default {
   name: 'EditTable',
@@ -81,7 +97,8 @@ export default {
     BaseFilterPanel,
     FilterListLayout,
     ExtRemoteSelect,
-    DropDownTree
+    DropDownTree,
+    XGrid
   },
   data() {
     return {
@@ -115,6 +132,7 @@ export default {
         }
       ],
       gridOptions: {
+        params: {},
         border: true,
         resizable: true,
         keepSource: true,
@@ -124,23 +142,27 @@ export default {
         toolbarConfig: {
           buttons: [{
             code: 'refreshMe',
-            type: 'text',
+            size: 'small',
             name: '刷新'
           }, {
             code: 'addMe',
-            type: 'text',
-            name: '新增'
+            name: '新增',
+            size: 'small',
+            icon: 'vxe-icon-square-plus'
           }, {
             code: 'deleteMe',
-            type: 'text',
-            name: '删除'
+            name: '删除',
+            size: 'small',
+            icon: 'vxe-icon-delete'
           }, {
             code: 'saveMe',
-            type: 'text',
-            name: '保存'
+            name: '保存',
+            status: 'success',
+            size: 'small',
+            icon: 'vxe-icon-save'
           }, {
             code: 'validateMe',
-            type: 'text',
+            size: 'small',
             name: '校验'
           }]
         },
@@ -198,9 +220,10 @@ export default {
           field: 'address',
           title: '地址'
         }]
-      }, queryOptions: {
-        queryPromise: this.createQuery,
-        queryParams: {}
+      },
+      queryOptions: {
+        queryPromiseFunction: this.createQuery,
+        params: {}
       }
     }
   },
@@ -215,7 +238,7 @@ export default {
     },
     handleQuery(params) {
       console.log('查询参数', params)
-      this.queryOptions.queryParams = {
+      this.gridOptions.params = {
         a: new Date().getTime(),
         ...params
       }
@@ -223,7 +246,7 @@ export default {
     toolbarButtonClickEvent({ code }) {
       const instance = this.$refs.xGrid.instance
       if (code === 'refreshMe') {
-        this.queryOptions.queryParams = {
+        this.gridOptions.params = {
           a: new Date().getTime()
         }
       } else if (code === 'addMe') {
@@ -267,7 +290,7 @@ export default {
                 role: 'Develop',
                 sex: '1',
                 age: 28,
-                address: 'Shenzhen'
+                address: 'Shenzhen 88888888888888888888888888888888888'
               }]
             }
           })

@@ -1,11 +1,12 @@
 <script>
+import settings from '@/settings'
 import elEmitter from 'element-ui/lib/mixins/emitter'
 import { validObjEmpty } from '@/utils'
-import service from '@/api/service'
 import { createHOC } from 'vue-hoc'
 import { Grid } from 'vxe-table'
 import lodash from 'lodash'
 
+const paginationConfig = settings.paginationConfig
 const inner = 'inner'
 const outer = 'outer'
 export default createHOC(Grid, {
@@ -16,15 +17,18 @@ export default createHOC(Grid, {
     event: 'change'
   },
   props: {
-    // 封装自定义配置
-    queryOptions: {
+    params: {
       type: Object,
       default: function() {
-        return {
-          // 查询参数改变的调用查询函数
-          queryParams: false, // 查询接口
-          queryPromise: false
-        }
+        return {}
+      }
+    },
+    queryPromiseFunction: {
+      type: Function,
+      default() {
+        return new Promise(function(resolve, reject) {
+          reject('请初始化 queryPromiseFunction 方法')
+        })
       }
     },
     gridOptions: {
@@ -46,33 +50,33 @@ export default createHOC(Grid, {
       return this.$children[0]
     },
     packagedGridOptions() {
-      const gridOptions = this._.defaultsDeep({}, this.gridOptions || {})
-      if (!this._.isUndefined(gridOptions.pagerConfig) && this.queryOptions.queryPromise) {
+      const gridOptions = lodash.defaultsDeep({}, this.gridOptions || {})
+      if (!lodash.isUndefined(gridOptions.pagerConfig)) {
         if (gridOptions.pagerConfig === true) {
           gridOptions.pagerConfig = {
             total: 0,
             currentPage: 1,
-            pageSize: 10
+            pageSize: paginationConfig.defaultPageSize * 1
           }
         } else {
           gridOptions.pagerConfig = {}
-          this._.defaultsDeep(gridOptions.pagerConfig, {
+          lodash.defaultsDeep(gridOptions.pagerConfig, {
             total: 0,
             currentPage: 1,
             enabled: false,
-            pageSize: 1000
+            pageSize: paginationConfig.defaultPageSize * 10
           })
         }
       }
-      if (this.queryOptions && this.queryOptions.queryPromise) {
+      if (this.queryPromiseFunction) {
         gridOptions.proxyConfig = gridOptions.proxyConfig || {}
-        this._.defaultsDeep(gridOptions.proxyConfig, {
+        lodash.defaultsDeep(gridOptions.proxyConfig, {
           seq: true,
           props: {
-            result: 'data.data',
-            message: 'msg',
-            list: 'data.data',
-            total: 'data.totalCount'
+            result: paginationConfig.responseRootName,
+            message: paginationConfig.responseMsgName,
+            list: [paginationConfig.responseRootName, paginationConfig.responseRecordListKey].join('.'),
+            total: [paginationConfig.responseRootName, paginationConfig.responseTotalCountKey].join('.')
           },
           ajax: {
             query: ({ page }) => {
@@ -81,16 +85,13 @@ export default createHOC(Grid, {
                 pageIndex: page.currentPage,
                 pageSize: page.pageSize
               }
-              this._.defaultsDeep(params, this.queryOptions.queryParams || {})
-              const queryPromise = this._.isFunction(this.queryOptions.queryPromise) ? this.queryOptions.queryPromise(
-                params) : service.requestByKey(this.queryOptions.queryPromise, params)
+              lodash.defaultsDeep(params, this.params || {})
+              const queryPromise = this.queryPromiseFunction(params)
               return new Promise((resolve, reject) => {
                 queryPromise.then((data) => {
                   resolve(data)
                   this.$nextTick(() => {
-                    const values = this.getValue()
-                    this.$emit('change', values)
-                    this.dispatch('ElFormItem', 'el.form.change', [values])
+                    this.emitChange(this.getValue())
                   })
                 }, (err) => {
                   reject(err)
@@ -111,22 +112,24 @@ export default createHOC(Grid, {
   watch: {
     'gridOptions.data': function() {
       this.$nextTick(() => {
-        const values = this.getValue()
-        this.$emit('change', values)
+        this.emitChange(this.getValue())
       })
     }
   },
   created() {
-    if (this.queryOptions && this.queryOptions.queryPromise && this.queryOptions.queryParams) {
-      const unwatchQueryParams = this.$watch('queryOptions.queryParams', function() {
-        this.instance.commitProxy('reload')
-      }, { deep: true })
-      this.$on('hook:beforeDestroy', function() {
-        unwatchQueryParams()
-      })
-    }
+    const unwatchQueryParams = this.$watch('params', function() {
+      console.log('params change')
+      this.instance.commitProxy('reload')
+    }, { deep: true })
+    this.$on('hook:beforeDestroy', function() {
+      unwatchQueryParams()
+    })
   },
   methods: {
+    emitChange(values) {
+      this.$emit('change', values)
+      this.dispatch('ElFormItem', 'el.form.change', values)
+    },
     onActive: function() {
       this.editType = inner
     },
@@ -143,7 +146,6 @@ export default createHOC(Grid, {
           this.setInnerType()
         } else {
           if (this.editType === inner || this.editType === false) {
-            this.setOuterType()
             this.onBlur()
           } else {
             this.setOuterType()
@@ -165,8 +167,7 @@ export default createHOC(Grid, {
       this.instance.fullValidate(rows, (err) => {
         values.error = err
         this.setOuterType()
-        this.$emit('change', values)
-        this.dispatch('ElFormItem', 'el.form.change', [values])
+        this.emitChange(values)
       })
     },
     // expose validate api for outer invoke
@@ -193,9 +194,7 @@ export default createHOC(Grid, {
   mounted() {
     if (this.gridOptions.data) {
       this.$nextTick(() => {
-        const values = this.getValue()
-        this.$emit('change', values)
-        this.dispatch('ElFormItem', 'el.form.change', [values])
+        this.$emit('change', this.getValue())
       })
     }
   }
