@@ -7,7 +7,6 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import Vue from 'vue'
 
 export default {
   name: 'Dashboard',
