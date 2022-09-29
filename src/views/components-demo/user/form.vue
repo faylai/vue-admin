@@ -134,6 +134,25 @@ export default {
         ]
       }
     }
+  },
+  methods: {
+    confirm(dialog) {
+      console.log('xxx')
+      dialog.close()
+    },
+    test() {
+      console.log('test')
+    }
+  },
+  $dialogButton: {
+    confirmButton: true,
+    cancelButton: false,
+    buttons: [
+      {
+        text: '回退',
+        trigger: 'test'
+      }
+    ]
   }
 }
 </script>

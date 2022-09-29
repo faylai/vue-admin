@@ -1,4 +1,18 @@
 import { Dialog } from 'element-ui'
+import lodash from 'lodash'
+
+const confirmButtonConfig = {
+  text: '确定',
+  type: 'primary',
+  // 调用包裹组件方法的名称
+  trigger: 'confirm'
+}
+
+const cancelButtonConfig = {
+  text: '取消',
+  // 调用包裹组件方法的名称
+  trigger: 'cancel'
+}
 
 function install(Vue, config) {
   // const Dialog =Vue.options.components.ElDialog.extendOptions;
@@ -13,8 +27,99 @@ function install(Vue, config) {
   }
 
   const ElDialogConstructor = Vue.extend({
-    name: 'ElDialogConstructor', props: getDialogPropsDef(), render(h) {
+    name: 'ElDialogConstructor',
+    props: getDialogPropsDef(),
+    /* eslint-disable indent */
+    render(h) {
       const slots = this.componentConfig.slots
+      const $dialogButton = this.componentConfig.class.$dialogButton || {}
+      let { buttons, confirmButton, cancelButton } = this.componentConfig.props
+      if (!(buttons && buttons.length)) {
+        buttons = $dialogButton.buttons || []
+      }
+      if (!confirmButton) {
+        confirmButton = $dialogButton.confirmButton
+      }
+
+      if (!cancelButton) {
+        cancelButton = $dialogButton.cancelButton
+      }
+
+      if (!slots.footer) {
+        slots.footer = (<div slot="footer" class="dialog-footer">
+          {(() => {
+            let copyConfirmButtonConfig = Object.assign({}, confirmButtonConfig)
+            if (confirmButton) {
+              if (confirmButton !== true) {
+                lodash.defaultsDeep(confirmButton, copyConfirmButtonConfig)
+                copyConfirmButtonConfig = confirmButton
+              }
+
+              return <el-button {...{ attrs: copyConfirmButtonConfig }}
+                                vOn:click={() => {
+                                  const instance = this.getComponentInstance()
+                                  if (instance) {
+                                    const fn = instance[copyConfirmButtonConfig.trigger]
+                                    if (lodash.isFunction(fn)) {
+                                      fn.call(instance, this)
+                                    } else {
+                                      console.error(`请定义${copyConfirmButtonConfig.text} 按钮触发的方法:${copyConfirmButtonConfig.trigger}`)
+                                    }
+                                  }
+                                }}>{copyConfirmButtonConfig.text}</el-button>
+            }
+
+          })()}
+          {(() => {
+            let copyCancelButtonConfig = Object.assign({}, cancelButtonConfig)
+            if (cancelButton) {
+              if (cancelButton !== true) {
+                lodash.defaultsDeep(confirmButton, copyCancelButtonConfig)
+                copyCancelButtonConfig = confirmButton
+              }
+              return <el-button {...{ attrs: copyCancelButtonConfig }}
+                                vOn:click={() => {
+                                  const instance = this.getComponentInstance()
+                                  if (instance) {
+                                    const fn = instance[copyCancelButtonConfig.trigger]
+                                    if (lodash.isFunction(fn)) {
+                                      if (fn.call(instance, this) !== false) {
+                                        this.close()
+                                      }
+                                    } else {
+                                      this.close()
+                                    }
+                                  }
+                                }}>{copyCancelButtonConfig.text}</el-button>
+            }
+
+          })()}
+
+          {
+            buttons.map((item) => {
+              return <el-button {...{ attrs: item }}
+                                vOn:click={() => {
+                                  const instance = this.getComponentInstance()
+                                  if (instance) {
+                                    if (lodash.isFunction(item.trigger)) {
+                                      item.trigger(instance)
+                                    } else if (lodash.isString(item.trigger)) {
+
+                                      if (instance) {
+                                        const fn = instance[item.trigger]
+                                        if (lodash.isFunction(fn)) {
+                                          fn.call(instance, this)
+                                        } else {
+                                          console.error(`请定义【${item.text}】 按钮触发的方法:${item.trigger}`)
+                                        }
+                                      }
+                                    }
+                                  }
+                                }}>{item.text}</el-button>
+            })
+          }
+        </div>)
+      }
       const children = [h(this.componentConfig.class, { props: this.componentConfig.props, ref: 'comp' })]
       for (const key of Object.keys(slots)) {
         const vnode = slots[key]
@@ -27,7 +132,8 @@ function install(Vue, config) {
         on: { close: this.close },
         ref: 'dialog'
       }, children)
-    }, methods: {
+    },
+    methods: {
       getComponentInstance() {
         if (this.$refs.comp) {
           return this.$refs.comp

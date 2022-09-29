@@ -59,7 +59,7 @@ import DropDownTree from '@/components/DropDownTree'
 import service from '@/api/service'
 import XGrid from '@/components/vxe/XGrid'
 import constance from '@/views/components-demo/user/constance'
-import userForm from './form'
+import UserForm from './form'
 
 export default {
   name: 'UserList',
@@ -146,10 +146,9 @@ export default {
     toolbarButtonClickEvent({ code }) {
       if (code === 'add') {
         console.log('add')
-        const dialog = this.$dialog(userForm, {
+        this.$dialog(UserForm, {
           form: {}
-        })
-        dialog.show({
+        }).show({
           title: '新增用户',
           width: '580px'
         })
