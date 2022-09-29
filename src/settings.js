@@ -30,6 +30,6 @@ module.exports = {
     // 每页可以选择的页数
     pageSizes: [5, 15, 20, 50, 100, 200],
     // 分页条布局
-    layouts: ['PrevJump', 'PrevPage', 'JumpNumber', 'NextPage', 'NextJump', 'Sizes', 'FullJump', 'Total']
+    layouts: ['PrevJump', 'PrevPage', 'JumpNumber', 'NextPage', 'NextJump', 'Sizes', /*'FullJump',*/ 'Total']
   }
 }

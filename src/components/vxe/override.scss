@@ -22,6 +22,7 @@
       > .vxe-loading {
         .vxe-loading--spinner {
           width: auto;
+
           &:before,
           &:after {
             border-radius: 0;
@@ -67,4 +68,12 @@
       border-color: #1374F2;
     }
   }
+}
+
+.vxe-button.type--button:not(.is--round) {
+  border-radius: 3px;
+}
+
+.vxe-button.size--small {
+  font-size: 12px;
 }
