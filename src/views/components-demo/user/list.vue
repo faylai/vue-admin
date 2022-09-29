@@ -58,7 +58,7 @@ import ExtRemoteSelect from '@/components/ExtRemoteSelect'
 import DropDownTree from '@/components/DropDownTree'
 import service from '@/api/service'
 import XGrid from '@/components/vxe/XGrid'
-import constance from '@/views/components-demo/user/constance'
+import constance from './constance'
 import UserForm from './form'
 
 export default {

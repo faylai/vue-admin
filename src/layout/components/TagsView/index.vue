@@ -231,17 +231,6 @@ export default {
         background-color: rgb(64, 158, 255);
         color: #fff;
         border-color: rgb(64, 158, 255);
-
-        &::before {
-          content: '';
-          background: #fff;
-          display: inline-block;
-          width: 8px;
-          height: 8px;
-          border-radius: 50%;
-          position: relative;
-          margin-right: 2px;
-        }
       }
     }
   }
@@ -279,21 +268,23 @@ export default {
     .el-icon-close {
       width: 16px;
       height: 16px;
-      vertical-align: 2px;
+      line-height: 16px;
+      vertical-align: middle;
       border-radius: 50%;
       text-align: center;
       transition: all .3s cubic-bezier(.645, .045, .355, 1);
       transform-origin: 100% 50%;
+      margin-left: 3px;
 
       &:before {
-        transform: scale(.6);
+        transform: scale(.8);
         display: inline-block;
-        vertical-align: -3px;
       }
 
       &:hover {
-        background-color: #b4bccc;
-        color: #fff;
+        background-color: white;
+        color: red;
+        font-weight: bolder;
       }
     }
   }

@@ -90,7 +90,7 @@
 </template>
 
 <script>
-import constance from '@/views/components-demo/user/constance'
+import constance from './constance'
 
 export default {
   name: 'UserForm',

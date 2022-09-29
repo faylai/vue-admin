@@ -41,7 +41,7 @@ export default {
       window.removeEventListener('resize', this.onResize)
     }, 100),
     onResize: lodash.debounce(function() {
-      if (this.$refs.headerWrapper.offsetHeight !== this.$refs.header.offsetHeight) {
+      if (this.$refs.headerWrapper && this.$refs.headerWrapper.offsetHeight !== this.$refs.header.offsetHeight) {
         $(this.$refs.header).css('height', $(this.$refs.headerWrapper).height())
       }
     }, 160)
