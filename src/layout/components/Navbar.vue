@@ -5,10 +5,12 @@
     <breadcrumb class="breadcrumb-container"/>
 
     <div class="right-menu">
-      <el-dropdown class="avatar-container" trigger="click">
+      <el-dropdown class="avatar-container"
+                   @visible-change="this.visibleChange"
+                   trigger="click">
         <div class="avatar-wrapper">
-          <img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar">
-          <i class="el-icon-caret-bottom"/>
+          <img :src="avatarUrl" class="user-avatar">
+          <i :class="['el-icon-caret-bottom',dropDownVisible && 'reverse']"/>
         </div>
         <el-dropdown-menu slot="dropdown" class="user-dropdown">
           <router-link to="/">
@@ -35,17 +37,30 @@
 import { mapGetters } from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
+import avatarPicture from '@/assets/person.png'
 
 export default {
   components: {
     Breadcrumb,
     Hamburger
   },
+  data() {
+    return {
+      dropDownVisible: false
+    }
+  },
   computed: {
     ...mapGetters([
       'sidebar',
       'avatar'
-    ])
+    ]),
+    avatarUrl() {
+      if (this.avatar) {
+        return this.avatar
+      } else {
+        return avatarPicture
+      }
+    }
   },
   methods: {
     toggleSideBar() {
@@ -54,6 +69,9 @@ export default {
     async logout() {
       await this.$store.dispatch('user/logout')
       this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+    },
+    visibleChange(visible) {
+      this.dropDownVisible = visible
     }
   }
 }
@@ -87,7 +105,6 @@ export default {
   .right-menu {
     float: right;
     height: 100%;
-    line-height: 50px;
 
     &:focus {
       outline: none;
@@ -120,8 +137,8 @@ export default {
 
         .user-avatar {
           cursor: pointer;
-          width: 40px;
-          height: 40px;
+          width: 38px;
+          height: 38px;
           border-radius: 10px;
         }
 
@@ -129,8 +146,22 @@ export default {
           cursor: pointer;
           position: absolute;
           right: -20px;
-          top: 25px;
-          font-size: 12px;
+          top: 50%;
+          margin-top: -8px;
+          height: 16px;
+          font-size: 16px;
+          color: #808288;
+
+          &.reverse {
+            transform: rotateZ(180deg);
+          }
+        }
+      }
+
+      :hover {
+        .el-icon-caret-bottom {
+          color: #409EFF;
+
         }
       }
     }
