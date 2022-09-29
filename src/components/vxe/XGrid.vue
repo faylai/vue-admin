@@ -32,8 +32,10 @@ export default {
       gridOptions.pagerConfig = lodash.defaultsDeep(gridOptions.pagerConfig, {
         total: 0,
         currentPage: 1,
-        enabled: false,
-        pageSize: paginationConfig.defaultPageSize * 10
+        perfect: true,
+        pageSize: paginationConfig.defaultPageSize * 1,
+        layouts: paginationConfig.layouts,
+        pageSizes: paginationConfig.pageSizes
       })
     }
     if (context.props.queryPromiseFunction) {
@@ -41,8 +43,8 @@ export default {
       lodash.defaultsDeep(gridOptions.proxyConfig, {
         seq: true,
         props: {
-          result: paginationConfig.responseRootName,
-          message: paginationConfig.responseMsgName,
+          result: [paginationConfig.responseRootName, paginationConfig.responseRecordListKey].join('.'),
+          message: [paginationConfig.responseRootName, paginationConfig.responseMsgName].join('.'),
           list: [paginationConfig.responseRootName, paginationConfig.responseRecordListKey].join('.'),
           total: [paginationConfig.responseRootName, paginationConfig.responseTotalCountKey].join('.')
         },
@@ -54,6 +56,7 @@ export default {
               pageSize: page.pageSize
             }
             lodash.defaultsDeep(params, gridOptions.params || {})
+            console.log('query params', params)
             return context.props.queryPromiseFunction(params)
           }
         }

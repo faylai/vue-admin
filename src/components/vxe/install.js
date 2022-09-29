@@ -18,7 +18,7 @@ import {
   // Colgroup,
   Grid,
   Toolbar,
-  // Pager,
+  Pager,
   // Checkbox,
   // CheckboxGroup,
   // Radio,
@@ -59,7 +59,7 @@ Vue.use(Icon)
   // .use(Colgroup)
   .use(Grid)
   .use(Toolbar)
-  // .use(Pager)
+  .use(Pager)
   // .use(Checkbox)
   // .use(CheckboxGroup)
   // .use(Radio)

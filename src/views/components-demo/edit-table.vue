@@ -138,7 +138,7 @@ export default {
         keepSource: true,
         showOverflow: 'title',
         height: 'auto',
-        pagerConfig: false,
+        pagerConfig: true,
         toolbarConfig: {
           buttons: [{
             code: 'refreshMe',
