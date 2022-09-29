@@ -51,7 +51,7 @@ export const constantRoutes = [
       path: 'dashboard',
       name: 'Dashboard',
       component: () => import('@/views/dashboard/index'),
-      meta: { title: 'Dashboard', icon: 'dashboard' }
+      meta: { title: '首页', icon: 'dashboard', affix: true }
     }]
   }
   /*,
@@ -163,7 +163,7 @@ export const asyncRoutes = [
     component: Layout,
     redirect: '/example/table',
     name: 'Example',
-    meta: { title: 'Example', icon: 'el-icon-s-help' },
+    meta: { title: '功能示例', icon: 'el-icon-s-help' },
     children: [
       {
         path: 'user',
@@ -185,7 +185,7 @@ export const asyncRoutes = [
     redirect: 'noRedirect',
     name: 'ComponentDemo',
     meta: {
-      title: 'Components',
+      title: '组件示例',
       icon: 'dashboard'
     },
     children: [
@@ -193,13 +193,13 @@ export const asyncRoutes = [
         path: 'drag-dialog',
         component: () => import('@/views/components-demo/drag-dialog'),
         name: 'DragDialogDemo',
-        meta: { title: 'Drag Dialog' }
+        meta: { title: '树的示例', icon: 'tree' }
       },
       {
         path: 'edit-table',
         component: () => import('@/views/components-demo/edit-table'),
         name: 'EditTable',
-        meta: { title: 'edit-table' }
+        meta: { title: '编辑表格', icon: 'table' }
       }
     ]
   },
