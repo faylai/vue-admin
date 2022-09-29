@@ -146,13 +146,8 @@ export default {
   },
   $dialogButton: {
     confirmButton: true,
-    cancelButton: false,
-    buttons: [
-      {
-        text: '回退',
-        trigger: 'test'
-      }
-    ]
+    cancelButton: true,
+    buttons: []
   }
 }
 </script>
