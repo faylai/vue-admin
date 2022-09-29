@@ -58,6 +58,7 @@ function install(Vue, config) {
           } else {
             const config = Object.assign({
               visible: true,
+              closeOnClickModal: false,
               title: '请初始化title',
               appendToBody: true
             }, dialogProps || {})

@@ -11,13 +11,10 @@
       }
     }
 
-    .vxe-buttons--wrapper {
-      padding-left: 10px;
-    }
-
     .vxe-tools--wrapper {
       padding-right: 10px;
     }
+
   }
 
   &.is--loading {
@@ -25,7 +22,6 @@
       > .vxe-loading {
         .vxe-loading--spinner {
           width: auto;
-
           &:before,
           &:after {
             border-radius: 0;

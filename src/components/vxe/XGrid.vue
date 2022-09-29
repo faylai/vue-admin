@@ -56,12 +56,18 @@ export default {
               pageSize: page.pageSize
             }
             lodash.defaultsDeep(params, gridOptions.params || {})
-            console.log('query params', params)
             return context.props.queryPromiseFunction(params)
           }
         }
       })
     }
+    lodash.defaultsDeep(gridOptions, {
+      border: true,
+      resizable: true,
+      keepSource: true,
+      showOverflow: 'title',
+      height: 'auto'
+    })
     data.props = gridOptions
     children = children.concat(normalizeSlots(context.slots()))
     return h(Grid, data, children)
