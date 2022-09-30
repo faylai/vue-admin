@@ -73,8 +73,8 @@ export default createHOC(Grid, {
         lodash.defaultsDeep(gridOptions.proxyConfig, {
           seq: true,
           props: {
-            result: paginationConfig.responseRootName,
-            message: paginationConfig.responseMsgName,
+            result: [paginationConfig.responseRootName, paginationConfig.responseRecordListKey].join('.'),
+            message: [paginationConfig.responseRootName, paginationConfig.responseMsgName].join('.'),
             list: [paginationConfig.responseRootName, paginationConfig.responseRecordListKey].join('.'),
             total: [paginationConfig.responseRootName, paginationConfig.responseTotalCountKey].join('.')
           },

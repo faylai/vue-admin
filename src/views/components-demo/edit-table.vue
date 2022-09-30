@@ -36,32 +36,18 @@
                            :collapse-tags="true"
                            value-key="no"
                            label-key="name"
-                           request-key="example.getUserList"></ExtRemoteSelect>
+                           request-key="example.getPersonList"></ExtRemoteSelect>
 
         </FilterItem>
       </BaseFilterPanel>
     </template>
     <template #content>
-      <!--      <FieldGrid
-                ref="xGrid"
-                :gridOptions="gridOptions"
-                :query-promise-function="queryOptions.queryPromiseFunction"
-                :params="queryOptions.params"
-                @toolbar-button-click="toolbarButtonClickEvent">
-              <template #name="{ row }">
-                <span>@</span>
-                <span> {{ row.name }}</span>
-              </template>
-              <template #sex_edit="{ row }">
-                <vxe-select v-model="row.sex" transfer>
-                  <vxe-option v-for="item in sexOptions" :key="item.value" :value="item.value"
-                              :label="item.label"></vxe-option>
-                </vxe-select>
-              </template>
-            </FieldGrid>-->
-      <XGrid :gridOptions="gridOptions"
-             :query-promise-function="queryOptions.queryPromiseFunction"
-             style="height: 100%">
+      <FieldGrid
+          ref="xGrid"
+          :gridOptions="gridOptions"
+          :query-promise-function="queryOptions.queryPromiseFunction"
+          :params="queryOptions.params"
+          @toolbar-button-click="toolbarButtonClickEvent">
         <template #name="{ row }">
           <span>@</span>
           <span> {{ row.name }}</span>
@@ -72,7 +58,7 @@
                         :label="item.label"></vxe-option>
           </vxe-select>
         </template>
-      </XGrid>
+      </FieldGrid>
     </template>
   </FilterListLayout>
 
@@ -86,8 +72,6 @@ import ExtStaticSelect from '@/components/ExtStaticSelect'
 import ExtRemoteSelect from '@/components/ExtRemoteSelect'
 import DropDownTree from '@/components/DropDownTree'
 import service from '@/api/service'
-import XGrid from '@/components/vxe/XGrid'
-
 export default {
   name: 'EditTable',
   components: {
@@ -97,8 +81,7 @@ export default {
     BaseFilterPanel,
     FilterListLayout,
     ExtRemoteSelect,
-    DropDownTree,
-    XGrid
+    DropDownTree
   },
   data() {
     return {

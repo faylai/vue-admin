@@ -5,7 +5,7 @@
         <FilterItem prop="name1">
           <DropDownTree
               v-model="formConfig.model.name1"
-              placeholder="请选择组织"
+              placeholder="请选择部门"
               :collapseTags="true"
               :clearable="true"
               :multiple="true"
@@ -13,9 +13,10 @@
           </DropDownTree>
         </FilterItem>
         <FilterItem prop="name2">
-          <ExtRemoteSelect v-model="formConfig.model.name2"
+          <ExtStaticSelect v-model="formConfig.model.name2"
                            clearable
-                           request-key="example.getSelectList1"></ExtRemoteSelect>
+                           placeholder="请选择状态"
+                           :items="CONSTANCE.userStatus"></ExtStaticSelect>
         </FilterItem>
         <FilterItem prop="name3">
           <ExtStaticSelect v-model="formConfig.model.name3"
@@ -34,7 +35,7 @@
                            placeholder="请选择角色"
                            value-key="no"
                            label-key="name"
-                           request-key="example.getUserList"></ExtRemoteSelect>
+                           request-key="example.getPersonList"></ExtRemoteSelect>
         </FilterItem>
       </BaseFilterPanel>
     </template>
@@ -43,7 +44,10 @@
              :query-promise-function="createQuery"
              ref="xGrid"
              @toolbar-button-click="toolbarButtonClickEvent">
-
+        <template #operate="{ row }">
+          <vxe-button icon="vxe-icon-edit" @click="showFormDialog(row)">修改</vxe-button>
+          <vxe-button icon="vxe-icon-delete">删除</vxe-button>
+        </template>
       </XGrid>
     </template>
   </FilterListLayout>
@@ -77,24 +81,21 @@ export default {
     return {
       formConfig: {
         model: {
-          name1: '722FF1B7692F44C59A8EE344F34C823F',
+          name1: '',
           name2: '',
           name3: '',
-          name4: ['ald0030034', 'ald0030005'],
-          label4: ['杨景妮', '韩花娥']
+          name4: []
         },
         rules: {
           name1: [
             { required: true, message: '请选择组织', trigger: 'change' }
-          ],
-          name3: [
-            { required: true, message: '请选择', trigger: 'change' }
           ]
         }
       },
       gridOptions: {
         params: {},
         pagerConfig: true,
+        id: 'userId',
         toolbarConfig: {
           buttons: [{
             code: 'add',
@@ -102,33 +103,42 @@ export default {
             status: 'primary',
             size: 'small',
             icon: 'vxe-icon-square-plus'
-          }]
+          }],
+          export: true,
+          custom: true
         },
         columns: [{
           type: 'seq',
           title: '序号',
           width: 60
         }, {
-          field: 'name',
-          title: '姓名'
+          field: 'userId',
+          title: '用户编号'
         }, {
-          field: 'orgName',
-          title: '组织'
+          field: 'userName',
+          title: '用户名称'
         }, {
-          field: 'sex',
-          title: '性别'
+          field: 'nickName',
+          title: '用户昵称'
         }, {
-          field: 'age',
-          title: '年龄'
-        }, {
-          field: 'role',
-          title: '角色'
+          field: 'dept.deptName',
+          title: '部门'
         }, {
           field: 'phonenumber',
           title: '手机号码'
         }, {
-          field: 'address',
-          title: '地址'
+          field: 'status',
+          title: '状态',
+          formatter: ['formatLabelValue', constance.CONSTANCE.userStatus]
+        }, {
+          field: 'createTime',
+          title: '创建时间'
+        }, {
+          slots: { default: 'operate' },
+          showOverflow: false,
+          minWidth: 120,
+          align: 'center',
+          title: '操作'
         }]
       }
     }
@@ -143,38 +153,21 @@ export default {
         ...params
       }
     },
+    showFormDialog(row) {
+      this.$dialog(UserForm, {
+        form: row
+      }).show({
+        title: !row ? '新增用户' : '修改用户',
+        width: '600px'
+      })
+    },
     toolbarButtonClickEvent({ code }) {
       if (code === 'add') {
-        console.log('add')
-        this.$dialog(UserForm, {
-          form: {}
-        }).show({
-          title: '新增用户',
-          width: '580px'
-        })
+        this.showFormDialog()
       }
     },
     createQuery: function(params) {
-      return new Promise(resolve => {
-        setTimeout(() => {
-          resolve({
-            code: 1,
-            data: {
-              totalCount: 90,
-              data: [{
-                id: 10001,
-                name: 'Test1',
-                orgName: 'T1',
-                sex: '1',
-                age: 28,
-                phonenumber: '13937143905',
-                role: 'Develop',
-                address: 'Shenzhen 88888888888888888888888888888888888'
-              }]
-            }
-          })
-        }, 1000)
-      })
+      return service.requestByKey('example.getUserList', params)
     }
   }
 }

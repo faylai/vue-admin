@@ -1,6 +1,6 @@
 const _ = require('lodash')
 
-const syncData = require('./syncTree.json')
+const syncData = require('./json/syncTree.json')
 
 function itNode(node, fn) {
   let children = _.isArray(node) ? node : [node]

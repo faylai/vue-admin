@@ -15,7 +15,7 @@
         <el-dropdown-menu slot="dropdown" class="user-dropdown">
           <router-link to="/">
             <el-dropdown-item>
-              Home
+              首页
             </el-dropdown-item>
           </router-link>
           <a target="_blank" href="https://github.com/faylai/vue-admin">
@@ -66,9 +66,10 @@ export default {
     toggleSideBar() {
       this.$store.dispatch('app/toggleSideBar')
     },
-    async logout() {
-      await this.$store.dispatch('user/logout')
-      this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+    logout() {
+      this.$store.dispatch('user/logout').then(() => {
+        this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+      })
     },
     visibleChange(visible) {
       this.dropDownVisible = visible

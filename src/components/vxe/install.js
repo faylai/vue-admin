@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import './override.scss'
 import config from './config'
+import initFormat from './format'
 import {
   // 全局对象
   VXETable,
@@ -8,7 +9,7 @@ import {
   // Filter,
   // Menu,
   Edit,
-  // Export,
+  Export,
   // Keyboard,
   Validator,
 
@@ -44,12 +45,13 @@ import {
 
 // 按需加载的方式默认是不带国际化的，自定义国际化需要自行解析占位符 '{0}'，例如：
 VXETable.setup(config)
-
+// 配置全局格式化函数
+initFormat(VXETable)
 // 表格功能
 // Vue.use(Filter)
 Vue.use(Edit)
-// .use(Menu)
-// .use(Export)
+  // .use(Menu)
+  .use(Export)
 // .use(Keyboard)
 Vue.use(Validator)
 
