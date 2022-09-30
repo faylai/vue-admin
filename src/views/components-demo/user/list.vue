@@ -49,7 +49,7 @@
           <XPopConfirm
               @confirm="remove(row)"
               type="delete">
-            <vxe-button slot="reference" icon="vxe-icon-delete">删除</vxe-button>
+            <vxe-button  icon="vxe-icon-delete">删除</vxe-button>
           </XPopConfirm>
         </template>
       </XGrid>

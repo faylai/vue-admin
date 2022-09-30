@@ -1,36 +1,3 @@
-<template>
-  <x-popover
-      v-bind="$attrs"
-      v-model="visible"
-      trigger="click">
-    <div class="el-popconfirm">
-      <p class="el-popconfirm__main">
-        <i
-            v-if="!hideIcon"
-            :class="displayIcon"
-            class="el-popconfirm__icon"
-            :style="{color: displayIcon}"></i>
-        {{ displayTitle }}
-      </p>
-      <div class="el-popconfirm__action">
-        <el-button
-            size="mini"
-            :type="cancelButtonType"
-            @click="cancel">
-          {{ displayCancelButtonText }}
-        </el-button>
-        <el-button
-            size="mini"
-            :type="confirmButtonType"
-            @click="confirm">
-          {{ displayConfirmButtonText }}
-        </el-button>
-      </div>
-    </div>
-    <slot name="reference" slot="reference"></slot>
-  </x-popover>
-</template>
-
 <script>
 import ElButton from 'element-ui/lib/button'
 import XPopover from '@/components/XPopover'
@@ -131,6 +98,58 @@ export default {
       this.visible = false
       this.$emit('cancel')
     }
+  },
+  render(h) {
+    /* eslint-disable indent */
+    const reference = this.$slots.reference || this.$slots.default
+    if (reference) {
+      reference.forEach(function(vnode) {
+        if (!vnode.data) {
+          vnode.data = {}
+        }
+        vnode.data.slot = 'reference'
+      })
+    }
+    const defaultSlot = <div class="el-popconfirm">
+      <p class="el-popconfirm__main">
+        {(() => {
+          if (!this.hideIcon) {
+            return <i
+                class={['el-popconfirm__icon', this.displayIcon]}
+                style={{ color: this.displayIconColor }}> < /i>
+          }
+        })()}
+        {this.displayTitle}
+      </p>
+      <div class="el-popconfirm__action">
+        <el-button
+            size="mini"
+            type={this.cancelButtonType}
+            vOn:click={this.cancel}>
+          {this.displayCancelButtonText}
+        </el-button>
+        <el-button
+            size="mini"
+            type={this.confirmButtonType}
+            vOn:click={this.confirm}>
+          {this.displayConfirmButtonText}
+        </el-button>
+      </div>
+    </div>
+    return h('x-popover', {
+          props: Object.assign({
+            value: this.visible
+          }, this.$attrs),
+          on: {
+            input: (visible) => {
+              this.visible = visible
+            }
+          }
+        },
+        [defaultSlot, h('template', {
+          slot: 'reference'
+        }, [reference])])
+
   }
 }
 </script>
