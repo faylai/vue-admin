@@ -41,12 +41,19 @@
     </template>
     <template #content>
       <XGrid :gridOptions="gridOptions"
-             :query-promise-function="createQuery"
+             :query-promise-function="fetchUserListFunction"
              ref="xGrid"
              @toolbar-button-click="toolbarButtonClickEvent">
         <template #operate="{ row }">
           <vxe-button icon="vxe-icon-edit" @click="showFormDialog(row)">修改</vxe-button>
-          <vxe-button icon="vxe-icon-delete">删除</vxe-button>
+          <XPopConfirm
+              confirm-button-text="好的"
+              cancel-button-text="不用了"
+              icon="el-icon-info"
+              icon-color="red"
+              title="这是一段内容确定删除吗？">
+            <vxe-button slot="reference" icon="vxe-icon-delete" @click="remove(row)">删除</vxe-button>
+          </XPopConfirm>
         </template>
       </XGrid>
     </template>
@@ -64,6 +71,7 @@ import service from '@/api/service'
 import XGrid from '@/components/vxe/XGrid'
 import constance from './constance'
 import UserForm from './form'
+import XPopConfirm from '@/components/XPopConfirm'
 
 export default {
   name: 'UserList',
@@ -74,7 +82,8 @@ export default {
     FilterListLayout,
     ExtRemoteSelect,
     DropDownTree,
-    XGrid
+    XGrid,
+    XPopConfirm
   },
   mixins: [constance],
   data() {
@@ -144,9 +153,6 @@ export default {
     }
   },
   methods: {
-    fetchSyncTreePromiseFn: function(params) {
-      return service.requestByKey('example.getSyncTree', params)
-    },
     handleQuery(params) {
       this.gridOptions.params = {
         a: new Date().getTime(),
@@ -166,8 +172,14 @@ export default {
         this.showFormDialog()
       }
     },
-    createQuery: function(params) {
+    remove(row) {
+
+    },
+    fetchUserListFunction: function(params) {
       return service.requestByKey('example.getUserList', params)
+    },
+    fetchSyncTreePromiseFn: function(params) {
+      return service.requestByKey('example.getSyncTree', params)
     }
   }
 }

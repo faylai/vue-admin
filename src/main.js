@@ -35,19 +35,18 @@ Vue.use(ElementUI, {
   size: 'small', // set element-ui default size
   i18n: (key, value) => i18n.t(key, value)
 })
+
 // 如果想要中文版 element-ui，按如下方式声明
 // Vue.use(ElementUI)
-
-Vue.config.productionTip = false
-Vue.prototype._ = lodash
-Vue.use(DialogService, {
-  router,
-  store
-})
-new Vue({
-  el: '#app',
+const pluginConfig = {
   router,
   store,
-  i18n,
+  i18n
+}
+Vue.config.productionTip = false
+Vue.prototype._ = lodash
+Vue.use(DialogService, pluginConfig)
+new Vue(Object.assign({
+  el: '#app',
   render: h => h(App)
-})
+}, pluginConfig))

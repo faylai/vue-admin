@@ -133,8 +133,11 @@ export default {
   },
   methods: {
     confirm(dialog) {
-      console.log('xxx')
-      dialog.close()
+      this.$refs.form.validate(valid => {
+        if (valid) {
+          dialog && dialog.close()
+        }
+      })
     },
     test() {
       console.log('test')
