@@ -1,25 +1,136 @@
+<template>
+  <x-popover
+      v-bind="$attrs"
+      v-model="visible"
+      trigger="click">
+    <div class="el-popconfirm">
+      <p class="el-popconfirm__main">
+        <i
+            v-if="!hideIcon"
+            :class="displayIcon"
+            class="el-popconfirm__icon"
+            :style="{color: displayIcon}"></i>
+        {{ displayTitle }}
+      </p>
+      <div class="el-popconfirm__action">
+        <el-button
+            size="mini"
+            :type="cancelButtonType"
+            @click="cancel">
+          {{ displayCancelButtonText }}
+        </el-button>
+        <el-button
+            size="mini"
+            :type="confirmButtonType"
+            @click="confirm">
+          {{ displayConfirmButtonText }}
+        </el-button>
+      </div>
+    </div>
+    <slot name="reference" slot="reference"></slot>
+  </x-popover>
+</template>
+
 <script>
-import { normalizeSlots } from '@/utils'
+import ElButton from 'element-ui/lib/button'
+import XPopover from '@/components/XPopover'
+import { t } from 'element-ui/lib/locale'
+
 const TYPES = {
   delete: {
-    'confirm-button-text': '确定',
-    'cancel-button-text': '取消',
-    'icon': 'el-icon-info',
-    'icon-color': 'red',
-    title: '确定删除吗'
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    icon: 'el-icon-info',
+    iconColor: 'red',
+    title: '确定删除吗？'
   },
   default: {
-    'confirm-button-text': '确定',
-    'cancel-button-text': '取消',
-    'icon': 'el-icon-info',
-    'icon-color': 'red',
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    icon: 'el-icon-info',
+    iconColor: 'red',
     title: '确定执行该操作码？'
   }
 }
-import PopBase from '@/components/XPopConfirm/base'
-
 export default {
-  extends: PopBase,
-  name: 'XPopConfirm'
+  name: 'XPopConfirmBase',
+  components: {
+    XPopover,
+    ElButton
+  },
+  props: {
+    title: {
+      type: String
+    },
+    type: {
+      type: String
+    },
+    confirmButtonText: {
+      type: String
+    },
+    cancelButtonText: {
+      type: String
+    },
+    confirmButtonType: {
+      type: String,
+      default: 'primary'
+    },
+    cancelButtonType: {
+      type: String,
+      default: 'text'
+    },
+    icon: {
+      type: String,
+      default: 'el-icon-question'
+    },
+    iconColor: {
+      type: String,
+      default: '#f90'
+    },
+    hideIcon: {
+      type: Boolean,
+      default: false
+    }
+  },
+  data() {
+    return {
+      visible: false
+    }
+  },
+  computed: {
+    displayConfirmButtonText() {
+      return this.displayTypeValue('confirmButtonText', this.confirmButtonText || t('el.popconfirm.confirmButtonText'))
+    },
+    displayCancelButtonText() {
+      return this.displayTypeValue('cancelButtonText', this.cancelButtonText || t('el.popconfirm.cancelButtonText'))
+    },
+    displayIcon() {
+      return this.displayTypeValue('icon', this.icon)
+    },
+    displayIconColor() {
+      return this.displayTypeValue('iconColor', this.iconColor)
+    },
+    displayTitle() {
+      return this.displayTypeValue('title', this.title)
+    }
+  },
+  methods: {
+    displayTypeValue(key, value) {
+      const type = TYPES[this.type]
+      if (value !== undefined) {
+        return value
+      } else {
+        return type[key]
+      }
+    },
+    confirm() {
+      this.visible = false
+      this.$emit('confirm')
+    },
+    cancel() {
+      this.visible = false
+      this.$emit('cancel')
+    }
+  }
 }
 </script>

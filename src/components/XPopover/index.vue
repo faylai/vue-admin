@@ -30,6 +30,10 @@ const PopperContainerApp = Vue.extend({
   }
 })
 
+/**
+ * 实现了不包裹新的标签也能实现popperover效果，达到了最小的侵入性
+ */
+
 export default {
   name: 'XPopover',
   mixins: [Popper],

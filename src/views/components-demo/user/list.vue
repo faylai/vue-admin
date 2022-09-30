@@ -47,12 +47,9 @@
         <template #operate="{ row }">
           <vxe-button icon="vxe-icon-edit" @click="showFormDialog(row)">修改</vxe-button>
           <XPopConfirm
-              confirm-button-text="好的"
-              cancel-button-text="不用了"
-              icon="el-icon-info"
-              icon-color="red"
-              title="这是一段内容确定删除吗？">
-            <vxe-button slot="reference" icon="vxe-icon-delete" @click="remove(row)">删除</vxe-button>
+              @confirm="remove(row)"
+              type="delete">
+            <vxe-button slot="reference" icon="vxe-icon-delete">删除</vxe-button>
           </XPopConfirm>
         </template>
       </XGrid>
@@ -173,7 +170,7 @@ export default {
       }
     },
     remove(row) {
-
+      console.log('remove')
     },
     fetchUserListFunction: function(params) {
       return service.requestByKey('example.getUserList', params)
