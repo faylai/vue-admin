@@ -35,21 +35,9 @@
                            placeholder="请选择角色"
                            value-key="no"
                            label-key="name"
-                           request-key="example.getPersonList"></ExtRemoteSelect>
+                           request-key="example.getPersonList">
+          </ExtRemoteSelect>
         </FilterItem>
-
-        <FilterItem prop="name4">
-          <ExtRemoteSelect v-model.trim="formConfig.model.name5"
-                           :label="formConfig.model.name5"
-                           :clearable="true"
-                           :multiple="true"
-                           :collapse-tags="true"
-                           placeholder="请选择角色"
-                           value-key="no"
-                           label-key="name"
-                           request-key="example.getPersonList"></ExtRemoteSelect>
-        </FilterItem>
-
       </BaseFilterPanel>
     </template>
     <template #content>
@@ -62,7 +50,7 @@
           <XPopConfirm
               @confirm="remove(row)"
               type="delete">
-            <vxe-button  icon="vxe-icon-delete">删除</vxe-button>
+            <vxe-button icon="vxe-icon-delete">删除</vxe-button>
           </XPopConfirm>
         </template>
       </XGrid>

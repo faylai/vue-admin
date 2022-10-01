@@ -1,4 +1,5 @@
 <script>
+/* eslint-disable */
 import Vue from 'vue'
 import Popper from 'element-ui/lib/utils/vue-popper'
 import { on, off } from 'element-ui/lib/utils/dom'

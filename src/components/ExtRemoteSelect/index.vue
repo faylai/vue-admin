@@ -1,13 +1,8 @@
 <script>
-import service from '@/api/service'
-import { normalizeSlots, createScope } from '@/utils'
-import settings from '@/settings'
-import lodash from 'lodash'
 
 import EnforceSlotSelect from '@/components/EnforceSlotSelect'
-import { beforeFunction } from '@/utils'
+import { normalizeSlots } from '@/utils'
 
-const paginationConfig = settings.paginationConfig
 export default {
   name: 'ExtRemoteSelect',
   functional: true,

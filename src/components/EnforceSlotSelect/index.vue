@@ -122,7 +122,7 @@
           </el-option>
           <slot>
             <template v-for="item in enforceScope.items" if="remote">
-              <slot name="option" v-bind:option="item">
+              <slot name="option" v-bind="item">
                 <el-option
                     v-show="item.display !== false"
                     :key="item[valueKey]"
