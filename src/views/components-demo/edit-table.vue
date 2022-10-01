@@ -72,6 +72,7 @@ import ExtStaticSelect from '@/components/ExtStaticSelect'
 import ExtRemoteSelect from '@/components/ExtRemoteSelect'
 import DropDownTree from '@/components/DropDownTree'
 import service from '@/api/service'
+
 export default {
   name: 'EditTable',
   components: {
@@ -93,8 +94,8 @@ export default {
           name1: '722FF1B7692F44C59A8EE344F34C823F',
           name2: '',
           name3: '22',
-          name4: ['ald0030034', 'ald0030005'],
-          label4: ['杨景妮', '韩花娥']
+          name4: ['ald0030034', 'ald0030005', 'ald0030001'],
+          label4: ['杨景妮', '韩花娥', '魏永森']
         },
         rules: {
           name1: [

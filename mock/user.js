@@ -88,14 +88,26 @@ module.exports = [
     type: 'post',
     response: config => {
       const pageIndex = config.query.pageIndex || config.body.pageIndex || 1
-      const pageSize = config.query.pageSize || 10
-      return {
-        code: 20000,
-        data: {
-          totalCount: userDropDownData.length,
-          data: userDropDownData.slice(pageSize * (pageIndex - 1), pageSize * pageIndex)
-        }
+      const pageSize = config.query.pageSize || config.body.pageSize || 20
+      const keyword = config.query.keyword || config.body.keyword || false
+      let allData = userDropDownData.concat([])
+      if (keyword !== false && keyword !== '*') {
+        allData = allData.filter(function(item) {
+          return String(item.name).indexOf(keyword) >= 0
+        })
       }
+      return new Promise(function(resolve) {
+        setTimeout(function() {
+          resolve({
+            code: 20000,
+            data: {
+              totalCount: allData.length,
+              data: allData.slice(pageSize * (pageIndex - 1), pageSize * pageIndex)
+            }
+          })
+        }, 300)
+      })
+
     }
   },
   // user list

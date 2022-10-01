@@ -29,7 +29,6 @@
           <ExtRemoteSelect v-model.trim="formConfig.model.name4"
                            :label="formConfig.model.label4"
                            :clearable="true"
-                           :multiple="true"
                            :show-page="true"
                            :collapse-tags="true"
                            placeholder="请选择角色"

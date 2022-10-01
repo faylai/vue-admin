@@ -107,7 +107,7 @@
       <el-select-menu
           ref="popper"
           :append-to-body="popperAppendToBody"
-          v-show="visible && emptyText !== false">
+          v-show="visible && emptyDisplayText !== false">
         <el-scrollbar
             tag="ul"
             wrap-class="el-select-dropdown__wrap"
@@ -122,21 +122,31 @@
           </el-option>
           <slot>
             <template v-for="item in enforceScope.items" if="remote">
-              <slot name="option" v-bind="item">
+              <template v-if="item.display !== false">
+                <slot name="option" v-bind="item">
+                  <el-option
+                      :key="item[valueKey]"
+                      :label="item[labelKey]"
+                      :value="item[valueKey]">
+                  </el-option>
+                </slot>
+              </template>
+              <template v-else>
                 <el-option
-                    v-show="item.display !== false"
+                    v-show="false"
                     :key="item[valueKey]"
                     :label="item[labelKey]"
                     :value="item[valueKey]">
                 </el-option>
-              </slot>
+              </template>
+
             </template>
           </slot>
         </el-scrollbar>
-        <template v-if="emptyText && (!allowCreate || isLoading || (allowCreate && options.length === 0 ))">
+        <template v-if="emptyDisplayText && (!allowCreate || isLoading || (allowCreate && options.length === 0 ))">
           <slot name="empty" v-if="$slots.empty"></slot>
           <p class="el-select-dropdown__empty" v-else>
-            {{ emptyText }}
+            {{ emptyDisplayText }}
           </p>
         </template>
         <!-- bottom 插槽 用以支持分页组件 -->
@@ -230,9 +240,11 @@ export default {
         }
       }
     },
+    // 真是没有办法的的技巧
     remoteMethod: {
       type: Function,
       default(keyword) {
+        this.enforceScope.pageIndex = 1
         this.requestMethod(keyword)
       }
     }
@@ -254,10 +266,21 @@ export default {
   computed: {
     isLoading() {
       return this.loading === true || this.enforceScope.loading === true
+    },
+    emptyDisplayText() {
+      if (this.isLoading) {
+        return this.loadingText || this.t('el.select.loading')
+      } else {
+        if (this.options.length === 0 || this.enforceScope.items.filter((item) => item.display !== false).length === 0) {
+          return this.noDataText || this.t('el.select.noData')
+        } else {
+          return this.emptyText
+        }
+      }
     }
   },
   watch: {
-    'enforceScope.params': function() {
+    'params': function() {
       this.resetEnforceScope()
       this.requestMethod('')
     },
@@ -267,6 +290,8 @@ export default {
       if (!lodash.isEqual(scope._value || [], arrayValue)) {
         this.resetEnforceScope()
       }
+      console.log('query', this.query)
+      console.log('_keyword', this.enforceScope._keyword)
     }
   },
   methods: {
@@ -343,6 +368,7 @@ export default {
     if (this.remote === true && this.requestKey) {
       this.requestMethod('')
     }
+    this.resetEnforceScope()
   },
   // 用来截获选中的值用以保证分页的时候的选中
   mounted() {
@@ -353,12 +379,26 @@ export default {
         scope._label = []
       } else {
         const values = lodash.isArray(value) ? value : [value]
+        let allItem = []
+        lodash.each(scope._value, (v, i) => {
+          allItem.push({
+            [this.valueKey]: v,
+            [this.labelKey]: scope._label[i]
+          })
+        })
+        allItem = allItem.concat(scope.items)
         scope._value = values
         scope._label = []
         lodash.each(values, (v) => {
-          const item = lodash.some(scope.items, item => String(item[this.valueKey]) === v)
+          const item = lodash.find(allItem, item => String(item[this.valueKey]) === v)
           scope._label.push(item[this.labelKey])
         })
+      }
+    })
+    this.$on('visible-change', (visible) => {
+      if (visible === false && this.enforceScope._keyword) {
+        this.enforceScope.pageIndex = 1
+        this.requestMethod('')
       }
     })
   }
