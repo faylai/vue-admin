@@ -114,22 +114,42 @@
             view-class="el-select-dropdown__list"
             ref="scrollbar"
             :class="{ 'is-empty': !allowCreate && query && filteredOptionsCount === 0 }"
-            v-show="options.length > 0 && !loading">
+            v-show="options.length > 0 && !isLoading">
           <el-option
               :value="query"
               created
               v-if="showNewOption">
           </el-option>
-          <slot></slot>
+          <slot>
+            <template v-for="item in enforceScope.items" if="remote">
+              <slot name="option" v-bind:option="item">
+                <el-option
+                    v-show="item.display !== false"
+                    :key="item[valueKey]"
+                    :label="item[labelKey]"
+                    :value="item[valueKey]">
+                </el-option>
+              </slot>
+            </template>
+          </slot>
         </el-scrollbar>
-        <template v-if="emptyText && (!allowCreate || loading || (allowCreate && options.length === 0 ))">
+        <template v-if="emptyText && (!allowCreate || isLoading || (allowCreate && options.length === 0 ))">
           <slot name="empty" v-if="$slots.empty"></slot>
           <p class="el-select-dropdown__empty" v-else>
             {{ emptyText }}
           </p>
         </template>
         <!-- bottom 插槽 用以支持分页组件 -->
-        <slot name="bottom" v-if="!loading"></slot>
+        <slot name="bottom" v-if="!isLoading">
+          <el-pagination v-if="showPage && remote"
+                         small
+                         layout="prev, pager, next"
+                         :page-size="pageSize"
+                         :current-page="enforceScope.pageIndex"
+                         :total="enforceScope.total"
+                         @current-change="currentPageChange">
+          </el-pagination>
+        </slot>
       </el-select-menu>
     </transition>
   </div>
@@ -138,7 +158,11 @@
 
 <script>
 import { Select } from 'element-ui'
+import service from '@/api/service'
+import settings from '@/settings'
+import lodash from 'lodash'
 
+const paginationConfig = settings.paginationConfig
 /**
  * 模板是从源代码中复制过来的，变更内容如下：
  * 1、html 模板增加了 bottom 插槽,注意升级的时候更新
@@ -146,7 +170,198 @@ import { Select } from 'element-ui'
  */
 export default {
   name: 'EnforceSlotSelect',
-  extends: Select
+  extends: Select,
+  props: {
+    // 异步情况用于恢复选中状态的值和value 保持一致
+    // eslint-disable-next-line
+    label: {},
+    // eslint-disable-next-line
+    value: {},
+    // 唯一性决定是否使用新的 data Scope,同一 scopeKey 下的 scope 会共享
+    requestKey: {
+      type: String
+    },
+    // 搜索的时候关键参数名称
+    searchName: {
+      type: String,
+      default: 'keyword'
+    },
+    // 默认接口请求参数
+    params: {
+      type: Object,
+      default() {
+        return {}
+      }
+    },
+    valueKey: {
+      type: String,
+      default: 'value'
+    },
+    labelKey: {
+      type: String,
+      default: 'label'
+    },
+    showPage: {
+      type: Boolean,
+      default: false
+    },
+    pageSize: {
+      type: Number,
+      default() {
+        return paginationConfig.defaultPageSize * 1
+      }
+    },
+    // 一次性获得所有数据的的最大分页数
+    maxPageSize: {
+      type: Number,
+      default: 1000
+    },
+    service: {
+      type: Object,
+      default() {
+        return {
+          requestApi: function(requestKey, params) {
+            if (!requestKey) {
+              throw new Error('请配置 requestKey 才能发送远程请求')
+            } else {
+              return service.requestByKey(requestKey, params)
+            }
+          }
+        }
+      }
+    },
+    remoteMethod: {
+      type: Function,
+      default(keyword) {
+        this.requestMethod(keyword)
+      }
+    }
+  },
+  data() {
+    return {
+      enforceScope: {
+        items: [],
+        loading: false,
+        _items: [],
+        _counter: 0,
+        pageIndex: 1,
+        total: 0,
+        _keyword: '',
+        _params: ''
+      }
+    }
+  },
+  computed: {
+    isLoading() {
+      return this.loading === true || this.enforceScope.loading === true
+    }
+  },
+  watch: {
+    'enforceScope.params': function() {
+      this.resetEnforceScope()
+      this.requestMethod('')
+    },
+    'value': function() {
+      const scope = this.enforceScope
+      const arrayValue = lodash.isArray(this.value) ? this.value : lodash.isEmpty(this.value) ? [] : [this.value]
+      if (!lodash.isEqual(scope._value || [], arrayValue)) {
+        this.resetEnforceScope()
+      }
+    }
+  },
+  methods: {
+    resetEnforceScope() {
+      const scope = this.enforceScope
+      const arrayValue = lodash.isArray(this.value) ? this.value : lodash.isEmpty(this.value) ? [] : [this.value]
+      const arrayLabel = lodash.isArray(this.label) ? this.label : lodash.isEmpty(this.label) ? [] : [this.label]
+      scope._params = this.params
+      scope._items = []
+      scope._counter = 0
+      scope.pageIndex = 1
+      scope._value = arrayValue
+      scope._label = arrayLabel
+    },
+    requestMethod: function(keyword) {
+      const scope = this.enforceScope
+      scope._counter++
+      scope._keyword = keyword
+      const params = Object.assign({}, scope._params)
+      params[this.searchName] = scope._keyword
+      params[paginationConfig.pageIndexParamKey] = scope.pageIndex
+      params[paginationConfig.pageSizeParamKey] = this.showPage ? this.pageSize : this.maxPageSize
+      if (this.showPage || (scope._items.length === 0 && this.requestKey)) {
+        this.$emit('beforeRequest', this)
+        scope.loading = true
+        this.service.requestApi(this.requestKey, params).then((res) => {
+          const items = []
+          scope.loading = false
+          const root = res[paginationConfig.responseRootName]
+          for (const item of root[paginationConfig.responseRecordListKey] || []) {
+            items.push(item)
+          }
+          scope.total = root[paginationConfig.responseTotalCountKey]
+          scope.items = items
+          scope._items = items.slice(0)
+          // 处理默认选中的问题,生成几个隐藏的option
+          if (this.showPage && !lodash.isEmpty(scope._value)) {
+            const value = scope._value
+            const label = scope._label
+            if (value.length === label.length) {
+              for (let i = 0; i < value.length; i++) {
+                // 没有从item 找到情况下，新建隐藏项目用来诱导选中
+                if (!lodash.some(scope.items, item => String(item[this.valueKey]) === value[i])) {
+                  scope.items.push({
+                    display: false,
+                    [this.valueKey]: value[i],
+                    [this.labelKey]: label[i]
+                  })
+                }
+              }
+            }
+          }
+          this.$emit('afterRequest', this)
+        })
+      } else if (scope._items.length) {
+        // 本地搜索
+        if (String(keyword).trim() === '') {
+          scope.items = scope._items
+        } else {
+          scope.items = scope._items.filter((item) => {
+            return String(item[this.labelKey]).indexOf(keyword) >= 0
+          })
+        }
+      }
+    },
+    currentPageChange(pageIndex) {
+      const scope = this.enforceScope
+      scope.pageIndex = pageIndex
+      this.requestMethod(scope._keyword)
+    }
+  },
+  created() {
+    this.$emit('created', this)
+    if (this.remote === true && this.requestKey) {
+      this.requestMethod('')
+    }
+  },
+  // 用来截获选中的值用以保证分页的时候的选中
+  mounted() {
+    const scope = this.enforceScope
+    this.$on('input', (value) => {
+      if (lodash.isEmpty(value)) {
+        scope._value = []
+        scope._label = []
+      } else {
+        const values = lodash.isArray(value) ? value : [value]
+        scope._value = values
+        scope._label = []
+        lodash.each(values, (v) => {
+          const item = lodash.some(scope.items, item => String(item[this.valueKey]) === v)
+          scope._label.push(item[this.labelKey])
+        })
+      }
+    })
+  }
 }
 </script>
 
@@ -166,7 +381,6 @@ export default {
           display: inline-block;
           overflow: hidden;
           text-overflow: ellipsis;
-          vertical-align: middle;
         }
 
         .el-tag__close {

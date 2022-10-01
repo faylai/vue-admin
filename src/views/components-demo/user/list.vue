@@ -37,6 +37,19 @@
                            label-key="name"
                            request-key="example.getPersonList"></ExtRemoteSelect>
         </FilterItem>
+
+        <FilterItem prop="name4">
+          <ExtRemoteSelect v-model.trim="formConfig.model.name5"
+                           :label="formConfig.model.name5"
+                           :clearable="true"
+                           :multiple="true"
+                           :collapse-tags="true"
+                           placeholder="请选择角色"
+                           value-key="no"
+                           label-key="name"
+                           request-key="example.getPersonList"></ExtRemoteSelect>
+        </FilterItem>
+
       </BaseFilterPanel>
     </template>
     <template #content>
@@ -90,7 +103,8 @@ export default {
           name1: '',
           name2: '',
           name3: '',
-          name4: []
+          name4: [],
+          name5: []
         },
         rules: {
           name1: [
