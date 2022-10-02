@@ -6,7 +6,7 @@
 
     <div class="right-menu">
       <el-dropdown class="avatar-container"
-                   @visible-change="this.visibleChange"
+                   @visible-change="visibleChange"
                    trigger="click">
         <div class="avatar-wrapper">
           <img :src="avatarUrl" class="user-avatar">

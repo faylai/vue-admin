@@ -1,11 +1,13 @@
 'use strict'
 const path = require('path')
 const defaultSettings = require('./src/settings.js')
+console.log('process.env.NODE_ENV === \'development\' is ', process.env.NODE_ENV === 'development')
 
 function resolve(dir) {
   return path.join(__dirname, dir)
 }
 
+/* eslint-disable indent */
 const name = defaultSettings.title || 'vue Admin Template' // page title
 
 // If your port is set to 80,
@@ -28,7 +30,7 @@ module.exports = {
   outputDir: 'dist',
   assetsDir: 'static',
   lintOnSave: process.env.NODE_ENV === 'development',
-  productionSourceMap: false,
+  productionSourceMap: process.env.NODE_ENV === 'development',
   devServer: {
     port: port,
     open: true,
@@ -47,7 +49,7 @@ module.exports = {
         '@': resolve('src')
       }
     },
-    devtool: 'source-map'
+    devtool: 'cheap-module-eval-source-map'
   },
   chainWebpack(config) {
     // it can improve the speed of the first screen, it is recommended to turn on preload
@@ -60,7 +62,6 @@ module.exports = {
         include: 'initial'
       }
     ])
-
     // when there are many pages, it will cause too many meaningless requests
     config.plugins.delete('prefetch')
 
@@ -118,7 +119,6 @@ module.exports = {
           })
           // https:// webpack.js.org/configuration/optimization/#optimizationruntimechunk
           config.optimization.runtimeChunk('single')
-          config.devtool('source-map')
         }
       )
   }

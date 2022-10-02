@@ -1,6 +1,6 @@
 {
-  "name": "vue-admin-template",
-  "version": "4.4.0",
+  "name": "vue-admin",
+  "version": "1.1.0",
   "description": "A vue admin template with Element UI & axios & iconfont & permission control & lint",
   "author": "Pan <panfree23@gmail.com>",
   "scripts": {
@@ -32,10 +32,10 @@
     "xe-utils": "^3.5.6"
   },
   "devDependencies": {
-    "@vue/cli-plugin-babel": "4.4.4",
-    "@vue/cli-plugin-eslint": "4.4.4",
-    "@vue/cli-plugin-unit-jest": "4.4.4",
-    "@vue/cli-service": "4.4.4",
+    "@vue/cli-plugin-babel": "4.5.15",
+    "@vue/cli-plugin-eslint": "4.5.15",
+    "@vue/cli-plugin-unit-jest": "4.5.15",
+    "@vue/cli-service": "4.5.15",
     "@vue/test-utils": "1.0.0-beta.29",
     "autoprefixer": "9.5.1",
     "babel-eslint": "10.1.0",

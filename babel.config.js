@@ -17,9 +17,7 @@ module.exports = {
             'style': true // 样式是否也按需加载
           }
         ]
-      ],
-      'sourceMaps': true,
-      'retainLines': true
+      ]
     }
   }
 }

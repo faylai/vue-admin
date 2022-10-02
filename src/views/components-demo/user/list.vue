@@ -158,6 +158,7 @@ export default {
       }
     },
     showFormDialog(row) {
+      debugger
       this.$dialog(UserForm, {
         form: row
       }).show({
