@@ -271,7 +271,7 @@ export default {
       if (this.isLoading) {
         return this.loadingText || this.t('el.select.loading')
       } else {
-        if (this.options.length === 0 || this.enforceScope.items.filter((item) => item.display !== false).length === 0) {
+        if (this.options.length === 0 || (this.remote === true && this.enforceScope.items.filter((item) => item.display !== false).length === 0)) {
           return this.noDataText || this.t('el.select.noData')
         } else {
           return this.emptyText
@@ -281,8 +281,10 @@ export default {
   },
   watch: {
     'params': function() {
-      this.resetEnforceScope()
-      this.requestMethod('')
+      if (this.remote) {
+        this.resetEnforceScope()
+        this.requestMethod('')
+      }
     },
     'value': function() {
       const scope = this.enforceScope
@@ -290,8 +292,6 @@ export default {
       if (!lodash.isEqual(scope._value || [], arrayValue)) {
         this.resetEnforceScope()
       }
-      console.log('query', this.query)
-      console.log('_keyword', this.enforceScope._keyword)
     }
   },
   methods: {
@@ -338,7 +338,7 @@ export default {
                   scope.items.push({
                     display: false,
                     [this.valueKey]: value[i],
-                    [this.labelKey]: label[i]
+                    [this.labelKey]: label[i] || ''
                   })
                 }
               }
@@ -372,35 +372,38 @@ export default {
   },
   // 用来截获选中的值用以保证分页的时候的选中
   mounted() {
-    const scope = this.enforceScope
-    this.$on('input', (value) => {
-      if (lodash.isEmpty(value)) {
-        scope._value = []
-        scope._label = []
-      } else {
-        const values = lodash.isArray(value) ? value : [value]
-        let allItem = []
-        lodash.each(scope._value, (v, i) => {
-          allItem.push({
-            [this.valueKey]: v,
-            [this.labelKey]: scope._label[i]
+    if (this.remote === true) {
+      const scope = this.enforceScope
+      // 保存选中的value label,用于状态恢复用
+      this.$on('input', (value) => {
+        if (lodash.isEmpty(value)) {
+          scope._value = []
+          scope._label = []
+        } else {
+          const values = lodash.isArray(value) ? value : [value]
+          let allItem = []
+          lodash.each(scope._value, (v, i) => {
+            allItem.push({
+              [this.valueKey]: v,
+              [this.labelKey]: scope._label[i]
+            })
           })
-        })
-        allItem = allItem.concat(scope.items)
-        scope._value = values
-        scope._label = []
-        lodash.each(values, (v) => {
-          const item = lodash.find(allItem, item => String(item[this.valueKey]) === v)
-          scope._label.push(item[this.labelKey])
-        })
-      }
-    })
-    this.$on('visible-change', (visible) => {
-      if (visible === false && this.enforceScope._keyword) {
-        this.enforceScope.pageIndex = 1
-        this.requestMethod('')
-      }
-    })
+          allItem = allItem.concat(scope.items)
+          scope._value = values
+          scope._label = []
+          lodash.each(values, (v) => {
+            const item = lodash.find(allItem, item => String(item[this.valueKey]) === v)
+            scope._label.push(item[this.labelKey])
+          })
+        }
+      })
+      this.$on('visible-change', (visible) => {
+        if (visible === false && this.enforceScope._keyword) {
+          this.enforceScope.pageIndex = 1
+          this.requestMethod('')
+        }
+      })
+    }
   }
 }
 </script>
