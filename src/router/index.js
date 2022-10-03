@@ -200,6 +200,12 @@ export const asyncRoutes = [
         component: () => import('@/views/components-demo/edit-table'),
         name: 'EditTable',
         meta: { title: '编辑表格', icon: 'table' }
+      },
+      {
+        path: 'table-list',
+        component: () => import('@/views/table'),
+        name: 'ListTable',
+        meta: { title: '列表', icon: 'table' }
       }
     ]
   },

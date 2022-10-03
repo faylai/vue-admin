@@ -20,7 +20,7 @@ const TYPES = {
   }
 }
 export default {
-  name: 'XPopConfirmBase',
+  name: 'XPopConfirm',
   components: {
     XPopover,
     ElButton

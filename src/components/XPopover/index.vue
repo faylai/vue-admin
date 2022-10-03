@@ -1,40 +1,15 @@
 <script>
-/* eslint-disable */
-import Vue from 'vue'
 import Popper from 'element-ui/lib/utils/vue-popper'
-import { on, off } from 'element-ui/lib/utils/dom'
-import { addClass, removeClass } from 'element-ui/lib/utils/dom'
-import PopperContainer from '@/components/XPopover/PopperContainer'
+import { addClass, off, on, removeClass } from 'element-ui/lib/utils/dom'
+import PopperContainer from './PopperContainer'
+import { createIDFactory } from '@/utils'
+import PopperContainerApp from './PopperContainerApp'
 
-const idPrefix = 'x-popover'
-let counter = 0
-
-function uuid() {
-  counter++
-  return [idPrefix, counter].join('-')
-}
-
-const PopperContainerApp = Vue.extend({
-  props: Object.assign({
-    defaultSlot: {
-      type: Array,
-      default() {
-        return []
-      }
-    }
-  }, PopperContainer.props),
-  render(h, context) {
-    return h(PopperContainer, {
-      props: this._props,
-      ref: 'popperContainer'
-    }, this.defaultSlot || [])
-  }
-})
-
+const uuid = createIDFactory('x-popover')
 /**
  * 实现了不包裹新的标签也能实现popperover效果，达到了最小的侵入性
  */
-
+/* eslint-disable */
 export default {
   name: 'XPopover',
   mixins: [Popper],

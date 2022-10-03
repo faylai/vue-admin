@@ -250,3 +250,21 @@ export function enablePromiseFnVersionControl(promiseFn) {
     })
   }
 }
+
+export const createIDFactory = (function() {
+  const cache = {}
+  return function(idPrefix) {
+    if (lodash.isEmpty(idPrefix)) {
+      throw new Error('idPrefix is required')
+    }
+    if (cache[idPrefix]) {
+      throw new Error(`idPrefix: ${idPrefix} is used`)
+    }
+    let counter = 0
+    cache[idPrefix] = true
+    return function() {
+      counter++
+      return [idPrefix, counter].join('-')
+    }
+  }
+})()

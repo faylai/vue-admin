@@ -6,7 +6,6 @@ export default {
   name: 'ExtendsFromVxeGrid',
   created() {
     const unwatchQueryParams = this.$watch('params', function() {
-      console.log('params change')
       this.commitProxy('reload')
     }, { deep: true })
     this.$on('hook:beforeDestroy', function() {
