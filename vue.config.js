@@ -48,10 +48,20 @@ module.exports = {
       alias: {
         '@': resolve('src')
       }
-    },
-    devtool: 'cheap-module-eval-source-map'
+    }
   },
   chainWebpack(config) {
+    if (process.env.NODE_ENV === 'development') {
+      config.output.devtoolModuleFilenameTemplate = function(info) {
+        const isGeneratedDuplicate = info.resourcePath.match(/\.vue$/) && info.allLoaders
+        if (isGeneratedDuplicate) {
+          return `webpack-generated:///${info.resourcePath}?${info.hash}`
+        }
+        return `webpack:///${path.normalize(info.resourcePath)}`
+      }
+      config.output.devtoolFallbackModuleFilenameTemplate = 'webpack:///[resource-path]?[hash]'
+    }
+
     // it can improve the speed of the first screen, it is recommended to turn on preload
     config.plugin('preload').tap(() => [
       {
