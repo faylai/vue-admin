@@ -13,6 +13,7 @@
 
 <script>
 import lodash from 'lodash'
+import ResizeObserver from 'resize-observer-polyfill'
 
 export default {
   name: 'FilterListLayout',
@@ -23,16 +24,17 @@ export default {
   },
   methods: {
     init: lodash.debounce(function() {
-      const MutationObserver = window.MutationObserver || window.webkitMutationObserver || window.MozMutationObserver
-      const observer = new MutationObserver(() => {
+
+      const observer = new ResizeObserver((entries, observer) => {
+        /*  for (const entry of entries) {
+                  const {left, top, width, height} = entry.contentRect;
+                  console.log('Element:', entry.target);
+                  console.log(`Element's size: ${ width }px x ${ height }px`);
+                  console.log(`Element's paddings: ${ top }px ; ${ left }px`);
+         } */
         this.onResize()
       })
-      observer.observe(this.$refs.headerWrapper, {
-        childList: false, // 子节点的变动（新增、删除或者更改）
-        attributes: true, // 属性的变动
-        characterData: false, // 节点内容或节点文本的变动
-        subtree: true // 是否将观察器应用于该节点的所有后代节点
-      })
+      observer.observe(this.$refs.headerWrapper)
       window.addEventListener('resize', this.onResize)
       this.observer = observer
     }, 100),

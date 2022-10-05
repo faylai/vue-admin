@@ -32,7 +32,7 @@
                            :params="selectParams"
                            :clearable="true"
                            :multiple="true"
-                           :show-page="true"
+                           :show-page="false"
                            :collapse-tags="true"
                            value-key="no"
                            label-key="name"
