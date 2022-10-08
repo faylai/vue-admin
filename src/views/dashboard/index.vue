@@ -1,7 +1,12 @@
 <template>
   <div class="dashboard-container">
-    <div class="dashboard-text">name: {{ name }}</div>
-    <el-button @click="openDialog">嵌套dialog</el-button>
+    <div class="dashboard-text">登录用户名: {{ name }}</div>
+
+    <el-button @click="openDialog">
+      <svg-icon icon-class="dashboard"/>
+      嵌套dialog
+    </el-button>
+
   </div>
 </template>
 

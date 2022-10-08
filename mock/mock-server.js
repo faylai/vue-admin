@@ -2,9 +2,10 @@ const chokidar = require('chokidar')
 const bodyParser = require('body-parser')
 const chalk = require('chalk')
 const path = require('path')
-const Mock = require('mockjs')
-
 const mockDir = path.join(process.cwd(), 'mock')
+if (!process.env.VUE_APP_BASE_API) {
+  require('dotenv').config({ path: path.join(__dirname, '../.env.production') })
+}
 
 function registerRoutes(app) {
   let mockLastIndex
@@ -33,18 +34,21 @@ function unregisterRoutes() {
 
 // for mock server
 const responseFake = (url, type, respond) => {
+  const VUE_APP_BASE_API = process.env.VUE_APP_BASE_API
   return {
-    url: new RegExp(`${process.env.VUE_APP_BASE_API}${url}`),
+    url: new RegExp(`${VUE_APP_BASE_API}${url}`),
     type: type || 'get',
     response(req, res) {
       console.log('request invoke:' + req.path)
       const ret = respond instanceof Function ? respond(req, res) : respond
       if (ret instanceof Promise) {
         ret.then(function(data) {
-          res.json(Mock.mock(data))
+          res.json(data)
+        }).catch(function(e) {
+          console.error(e)
         })
       } else {
-        res.json(Mock.mock(ret))
+        res.json(ret)
       }
     }
   }

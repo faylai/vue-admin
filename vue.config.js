@@ -1,8 +1,6 @@
 'use strict'
 const path = require('path')
 const defaultSettings = require('./src/settings.js')
-console.log('process.env.NODE_ENV === \'development\' is ', process.env.NODE_ENV === 'development')
-
 function resolve(dir) {
   return path.join(__dirname, dir)
 }
