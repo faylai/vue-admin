@@ -178,7 +178,7 @@ export default {
       this.computePresentContent()
     },
     onTreeRestore(value, selection) {
-      const values = String(this.value || '').trim().split(',')
+      const values = String(value || '').trim().split(',')
       this.checkedNodes = (selection || []).filter(function(node) {
         return values.indexOf(node.objectId) > -1
       })
@@ -233,7 +233,7 @@ export default {
       handler(newValue, oldValue) {
         const labels = String(this.label || '').trim().split(',')
         const values = String(this.value || '').trim().split(',')
-        if (labels.length && labels.length === values.length) {
+        if (labels.length && labels.length === values.length && !(values.length === 1 && values[0] === '')) {
           this.restorePresentFromLabel(values, labels)
         }
       },
