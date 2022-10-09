@@ -207,8 +207,17 @@ module.exports = {
     }],
     'vue/order-in-components': 'off',
     'vue/html-indent': 'off',
+    'vue/script-indent': 'off',
     'vue/attributes-order': 'off',
     'vue/require-default-prop': 'off',
-    'vue/require-prop-types':'off'
-  }
+    'vue/require-prop-types': 'off'
+  },
+  'overrides': [
+    {
+      'files': ['*.vue'],
+      'rules': {
+        'indent': 'off'
+      }
+    }
+  ]
 }

@@ -137,9 +137,6 @@ export const constantRoutes = [
         }
       ]
     }*/
-
-  // 404 page must be placed at the end !!!
-  // { path: '*', redirect: '/404', hidden: true }
 ]
 
 const createRouter = () => new Router({
@@ -172,10 +169,10 @@ export const asyncRoutes = [
         meta: { title: '用户管理', icon: 'table' }
       },
       {
-        path: 'tree',
-        name: 'Tree',
-        component: () => import('@/views/tree/index'),
-        meta: { title: 'Tree', icon: 'tree' }
+        path: 'formBuilder',
+        name: 'FormBuilder',
+        component: () => import('@/views/tool/build'),
+        meta: { title: '表单设计', icon: 'tree' }
       }
     ]
   },
@@ -209,6 +206,7 @@ export const asyncRoutes = [
       }
     ]
   },
+  // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
 ]
 export default router
