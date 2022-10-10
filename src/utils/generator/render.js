@@ -17,14 +17,6 @@ const isAttr = makeMap(
   'target,title,type,usemap,value,width,wrap'
 )
 
-function vModel(self, dataObject, defaultValue) {
-  dataObject.props.value = defaultValue
-
-  dataObject.on.input = val => {
-    self.$emit('input', val)
-  }
-}
-
 const componentChild = {
   'el-button': {
     default(h, conf, key) {
@@ -91,14 +83,12 @@ const componentChild = {
 }
 
 export default {
-  render(h) {
-    const dataObject = {
-      attrs: {},
-      props: {},
-      on: {},
-      style: {}
-    }
-    const confClone = JSON.parse(JSON.stringify(this.conf))
+  functional: true,
+  render(h, context) {
+    const dataObject = context.data
+    dataObject.props = dataObject.props || {}
+    dataObject.attrs = dataObject.attrs || {}
+    const confClone = JSON.parse(JSON.stringify(context.props.conf))
     const children = []
 
     const childObjs = componentChild[confClone.tag]
@@ -113,9 +103,7 @@ export default {
 
     Object.keys(confClone).forEach(key => {
       const val = confClone[key]
-      if (key === 'vModel') {
-        vModel(this, dataObject, confClone.defaultValue)
-      } else if (dataObject[key]) {
+      if (dataObject[key]) {
         dataObject[key] = val
       } else if (!isAttr(key)) {
         dataObject.props[key] = val
@@ -123,7 +111,7 @@ export default {
         dataObject.attrs[key] = val
       }
     })
-    return h(this.conf.tag, dataObject, children)
+    return h(context.props.conf.tag, dataObject, children)
   },
   props: ['conf']
 }

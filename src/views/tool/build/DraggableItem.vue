@@ -1,8 +1,6 @@
 <script>
 import draggable from 'vuedraggable'
 import render from '@/utils/generator/render'
-import Vue from 'vue'
-
 const components = {
   itemBtns(h, element, index, parent) {
     const { copyItem, deleteItem } = this.listeners
@@ -36,8 +34,8 @@ const layouts = {
                 }}>
           <el-form-item label-width={element.labelWidth ? `${element.labelWidth}px` : null}
                         label={element.label} required={element.required}>
-            <render key={element.renderKey} conf={element} onInput={event => {
-              Vue.set(element, 'defaultValue', event)
+            <render key={element.renderKey} value={element.defaultValue} conf={element} onInput={event => {
+              element.defaultValue = event
             }}/>
           </el-form-item>
           {components.itemBtns.apply(this, arguments)}
