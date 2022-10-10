@@ -554,7 +554,7 @@ import IconsDialog from './IconsDialog'
 import {
   inputComponents,
   selectComponents
-} from '@/utils/generator/config'
+} from '@/views/tool/build/generator/config'
 
 const dateTimeFormat = {
   date: 'yyyy-MM-dd',

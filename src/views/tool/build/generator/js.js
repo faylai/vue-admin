@@ -1,5 +1,5 @@
 import { isArray } from 'lodash'
-import { exportDefault, titleCase } from '@/utils/index'
+import { exportDefault, titleCase } from '@/utils'
 import { trigger } from './config'
 
 const units = {
