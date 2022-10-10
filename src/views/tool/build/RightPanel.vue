@@ -546,15 +546,14 @@
 </template>
 
 <script>
-import { isArray } from 'util'
+import { isArray } from 'lodash'
 import draggable from 'vuedraggable'
 import TreeNodeDialog from './TreeNodeDialog'
 import { isNumberStr } from '@/utils/index'
 import IconsDialog from './IconsDialog'
 import {
   inputComponents,
-  selectComponents,
-  layoutComponents
+  selectComponents
 } from '@/utils/generator/config'
 
 const dateTimeFormat = {

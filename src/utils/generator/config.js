@@ -408,7 +408,6 @@ export const layoutComponents = [
     document: 'https://element.eleme.cn/#/zh-CN/component/layout'
   },
   {
-    layout: 'colFormItem',
     label: '按钮',
     changeTag: true,
     labelWidth: null,
