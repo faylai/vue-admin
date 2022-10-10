@@ -92,19 +92,13 @@
               :label-position="formConf.labelPosition"
               :disabled="formConf.disabled"
               :label-width="formConf.labelWidth + 'px'">
-            <draggable class="drawing-board" :list="drawingList" :animation="340" group="componentsGroup">
-              <draggable-item
-                  v-for="(element, index) in drawingList"
-                  :key="element.renderKey"
+              <draggable-form
                   :drawing-list="drawingList"
-                  :element="element"
-                  :index="index"
                   :active-id="activeId"
                   :form-conf="formConf"
                   @activeItem="activeFormItem"
                   @copyItem="drawingItemCopy"
                   @deleteItem="drawingItemDelete"/>
-            </draggable>
             <div v-show="!drawingList.length" class="empty-info">
               从左侧拖入或点选组件进行表单设计
             </div>
@@ -141,7 +135,7 @@ import { makeUpCss } from '@/views/tool/build/generator/css'
 import drawingDefault from '@/views/tool/build/generator/drawingDefault'
 import logo from '@/assets/logo/logo.png'
 import CodeTypeDialog from './CodeTypeDialog'
-import DraggableItem from './DraggableItem'
+import DraggableForm from './DraggableForm'
 
 let oldActiveId
 let tempActiveData
@@ -151,7 +145,7 @@ export default {
     draggable,
     RightPanel,
     CodeTypeDialog,
-    DraggableItem
+    DraggableForm
   },
   data() {
     return {
@@ -361,20 +355,6 @@ export default {
 </script>
 
 <style lang="scss">
-body, html {
-  margin: 0;
-  padding: 0;
-  background: #fff;
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji;
-}
-
-input, textarea {
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji;
-}
-
 .editor-tabs {
   background: #121315;
 

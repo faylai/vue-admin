@@ -1,6 +1,7 @@
 <script>
 import draggable from 'vuedraggable'
 import render from '@/views/tool/build/generator/render'
+
 const components = {
   itemBtns(h, element, index, parent) {
     const { copyItem, deleteItem } = this.listeners
@@ -86,19 +87,18 @@ function layoutIsNotFound() {
 
 export default {
   functional: true,
+  name: 'DraggableForm',
   props: [
-    'element',
-    'index',
     'drawingList',
     'activeId',
     'formConf'
   ],
   render(h, context) {
-    const layout = layouts[context.props.element.layout]
-    if (layout) {
-      return layout.call(context, h, context.props.element, context.props.index, context.props.drawingList)
-    }
-    return layoutIsNotFound()
+    return (<draggable class="drawing-board" list={context.props.drawingList} animation="340" group="componentsGroup">
+      {
+        renderChildren.call(context, h, { children: context.props.drawingList })
+      }
+    </draggable>)
   }
 }
 </script>
