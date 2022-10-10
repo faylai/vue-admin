@@ -112,13 +112,7 @@
         :form-conf="formConf"
         :show-field="!!drawingList.length"
         @tag-change="tagChange"/>
-
-    <code-type-dialog
-        :visible.sync="dialogVisible"
-        title="选择生成类型"
-        :show-file-name="showFileName"
-        @confirm="generate"/>
-    <input id="copyNode" type="hidden">
+    <input id="copyNode" type="hidden" ref="copyNode">
   </div>
 </template>
 
@@ -128,14 +122,15 @@ import beautifier from 'js-beautify'
 import ClipboardJS from 'clipboard'
 import RightPanel from './RightPanel'
 import { inputComponents, selectComponents, layoutComponents, formConf } from '@/views/tool/build/generator/config'
-import { beautifierConf, titleCase } from '@/utils/index'
+import { beautifierConf } from '@/utils/index'
 import { makeUpHtml, vueTemplate, vueScript, cssStyle } from '@/views/tool/build/generator/html'
 import { makeUpJs } from '@/views/tool/build/generator/js'
 import { makeUpCss } from '@/views/tool/build/generator/css'
 import drawingDefault from '@/views/tool/build/generator/drawingDefault'
 import logo from '@/assets/logo/logo.png'
-import CodeTypeDialog from './CodeTypeDialog'
 import DraggableForm from './DraggableForm'
+import GenerateTypeForm from '@/views/tool/build/GenerateTypeForm'
+import lodash from 'lodash'
 
 let oldActiveId
 let tempActiveData
@@ -144,25 +139,19 @@ export default {
   components: {
     draggable,
     RightPanel,
-    CodeTypeDialog,
     DraggableForm
   },
   data() {
     return {
       logo,
       idGlobal: 100,
-      formConf,
+      formConf: lodash.cloneDeep(formConf),
       inputComponents,
       selectComponents,
       layoutComponents,
       labelWidth: 100,
       drawingList: drawingDefault,
       activeId: drawingDefault[0].formId,
-      drawerVisible: false,
-      formData: {},
-      dialogVisible: false,
-      generateConf: null,
-      showFileName: false,
       activeData: drawingDefault[0]
     }
   },
@@ -195,7 +184,7 @@ export default {
   mounted() {
     const clipboard = new ClipboardJS('#copyNode', {
       text: trigger => {
-        const codeStr = this.generateCode()
+        const codeStr = this.generateCode(this.$refs.copyNode.generateConf)
         this.$notify({
           title: '成功',
           message: '代码已复制到剪切板，可粘贴。',
@@ -254,27 +243,10 @@ export default {
       return tempActiveData
     },
     AssembleFormData() {
-      this.formData = {
+      return {
         fields: JSON.parse(JSON.stringify(this.drawingList)),
         ...this.formConf
       }
-    },
-    generate(data) {
-      const func = this[`exec${titleCase(this.operationType)}`]
-      this.generateConf = data
-      func && func(data)
-    },
-    execRun(data) {
-      this.AssembleFormData()
-      this.drawerVisible = true
-    },
-    execDownload(data) {
-      const codeStr = this.generateCode()
-      const blob = new Blob([codeStr], { type: 'text/plain;charset=utf-8' })
-      this.$download.saveAs(blob, data.fileName)
-    },
-    execCopy(data) {
-      document.getElementById('copyNode').click()
     },
     empty() {
       this.$confirm('确定要清空所有组件吗？', '提示', { type: 'warning' }).then(
@@ -311,28 +283,40 @@ export default {
         }
       })
     },
-    generateCode() {
-      const { type } = this.generateConf
-      this.AssembleFormData()
-      const script = vueScript(makeUpJs(this.formData, type))
-      const html = vueTemplate(makeUpHtml(this.formData, type))
-      const css = cssStyle(makeUpCss(this.formData))
+    generateCode(generateConf) {
+      const { type } = generateConf
+      const formData = this.AssembleFormData()
+      const script = vueScript(makeUpJs(formData, type))
+      const html = vueTemplate(makeUpHtml(formData, type))
+      const css = cssStyle(makeUpCss(formData))
       return beautifier.html(html + script + css, beautifierConf.html)
     },
     download() {
-      this.dialogVisible = true
-      this.showFileName = true
-      this.operationType = 'download'
-    },
-    run() {
-      this.dialogVisible = true
-      this.showFileName = false
-      this.operationType = 'run'
+      this.$dialog(GenerateTypeForm, {
+        showFileName: true
+      }).show({
+        title: '选择生成类型',
+        width: '500px'
+      }, (form) => {
+        form.$on('confirm', (generateConf) => {
+          const codeStr = this.generateCode(generateConf)
+          const blob = new Blob([codeStr], { type: 'text/plain;charset=utf-8' })
+          this.$download.saveAs(blob, generateConf.fileName)
+        })
+      })
     },
     copy() {
-      this.dialogVisible = true
-      this.showFileName = false
-      this.operationType = 'copy'
+      this.$dialog(GenerateTypeForm, {
+        showFileName: false
+      }).show({
+        title: '选择生成类型',
+        width: '500px'
+      }, (form) => {
+        form.$on('confirm', (generateConf) => {
+          this.$refs.copyNode.generateConf = generateConf
+          document.getElementById('copyNode').click()
+        })
+      })
     },
     tagChange(newTag) {
       newTag = this.cloneComponent(newTag)
