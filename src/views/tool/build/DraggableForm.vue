@@ -74,6 +74,9 @@ function renderChildren(h, element, index, parent) {
   if (!Array.isArray(element.children)) return null
   return element.children.map((el, i) => {
     const layout = layouts[el.layout]
+    el.getParent = function() {
+      return element.children
+    }
     if (layout) {
       return layout.call(this, h, el, i, element.children)
     }

@@ -92,13 +92,13 @@
               :label-position="formConf.labelPosition"
               :disabled="formConf.disabled"
               :label-width="formConf.labelWidth + 'px'">
-              <draggable-form
-                  :drawing-list="drawingList"
-                  :active-id="activeId"
-                  :form-conf="formConf"
-                  @activeItem="activeFormItem"
-                  @copyItem="drawingItemCopy"
-                  @deleteItem="drawingItemDelete"/>
+            <draggable-form
+                :drawing-list="drawingList"
+                :active-id="activeId"
+                :form-conf="formConf"
+                @activeItem="activeFormItem"
+                @copyItem="drawingItemCopy"
+                @deleteItem="drawingItemDelete"/>
             <div v-show="!drawingList.length" class="empty-info">
               从左侧拖入或点选组件进行表单设计
             </div>
@@ -221,8 +221,19 @@ export default {
     },
     addComponent(item) {
       const clone = this.cloneComponent(item)
-      this.drawingList.push(clone)
-      this.activeFormItem(clone)
+      // 如果是容器组件则放到容器组件里面
+      if (this.activeData && this.activeData.children) {
+        this.activeData.children.push(clone)
+      } else {
+        // 如果焦点再容器组件里面那么新增的组件还是在容器里面
+        if (this.activeData && this.activeData.getParent()) {
+          this.activeData.getParent().push(clone)
+        } else {
+          // 否则放到最外面即可
+          this.drawingList.push(clone)
+        }
+        this.activeFormItem(clone)
+      }
     },
     cloneComponent(origin) {
       const clone = JSON.parse(JSON.stringify(origin))
