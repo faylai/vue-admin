@@ -1,6 +1,6 @@
 <script>
 import draggable from 'vuedraggable'
-import render from '@/views/tool/build/generator/render'
+import renderField from '@/views/tool/build/RenderField'
 
 const components = {
   itemBtns(h, element, index, parent) {
@@ -35,7 +35,7 @@ const layouts = {
                 }}>
           <el-form-item label-width={element.labelWidth ? `${element.labelWidth}px` : null}
                         label={element.label} required={element.required}>
-            <render key={element.renderKey} value={element.defaultValue} conf={element} onInput={event => {
+            <renderField key={element.renderKey} value={element.defaultValue} conf={element} onInput={event => {
               element.defaultValue = event
             }}/>
           </el-form-item>
