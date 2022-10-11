@@ -92,21 +92,21 @@ export default {
     const dataObject = context.data
     dataObject.props = dataObject.props || {}
     dataObject.attrs = dataObject.attrs || {}
-    const confClone = JSON.parse(JSON.stringify(context.props.conf))
+    const conf = context.props.conf
     const children = []
 
-    const childObjs = componentChild[confClone.tag]
+    const childObjs = componentChild[conf.tag]
     if (childObjs) {
       Object.keys(childObjs).forEach(key => {
         const childFunc = childObjs[key]
-        if (confClone[key]) {
-          children.push(childFunc(h, confClone, key))
+        if (conf[key]) {
+          children.push(childFunc(h, conf, key))
         }
       })
     }
 
-    Object.keys(confClone).forEach(key => {
-      const val = confClone[key]
+    Object.keys(conf).forEach(key => {
+      const val = conf[key]
       if (dataObject[key]) {
         dataObject[key] = val
       } else if (!isAttr(key)) {

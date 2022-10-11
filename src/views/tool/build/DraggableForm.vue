@@ -35,7 +35,7 @@ const layouts = {
                 }}>
           <el-form-item label-width={element.labelWidth ? `${element.labelWidth}px` : null}
                         label={element.label} required={element.required}>
-            <renderField key={element.renderKey} value={element.defaultValue} conf={element} onInput={event => {
+            <renderField key={element.renderKey} value={element.defaultValue} conf={element} vOn:input={event => {
               element.defaultValue = event
             }}/>
           </el-form-item>
