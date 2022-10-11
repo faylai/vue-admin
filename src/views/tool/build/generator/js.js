@@ -141,6 +141,7 @@ function buildRules(conf, ruleList) {
     if (conf.regList && isArray(conf.regList)) {
       conf.regList.forEach(item => {
         if (item.pattern) {
+          // eslint-disable-next-line
           rules.push(`{ pattern: ${eval(item.pattern)}, message: '${item.message}', trigger: '${trigger[conf.tag]}' }`)
         }
       })

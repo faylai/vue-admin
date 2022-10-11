@@ -12,12 +12,12 @@ import router from './router'
 import i18n from './lang'
 import '@/icons' // icon
 import '@/permission' // permission control
-import DialogService from '@/components/DialogService'
+import DialogService from '@/plugins/DialogService'
+import $download from '@/plugins/download'
 import './components/vxe/install.js'
 import lodash from 'lodash'
 
 window.$ = window.jQuery = require('jquery')
-
 
 // set ElementUI lang to EN
 Vue.use(ElementUI, {
@@ -35,6 +35,7 @@ const pluginConfig = {
 Vue.config.productionTip = false
 Vue.prototype._ = lodash
 Vue.use(DialogService, pluginConfig)
+Vue.use($download)
 new Vue(Object.assign({
   el: '#app',
   render: h => h(App)
