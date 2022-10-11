@@ -79,8 +79,9 @@ function renderChildren(h, element, index, parent) {
     }
     if (layout) {
       return layout.call(this, h, el, i, element.children)
+    } else {
+      return layoutIsNotFound()
     }
-    return layoutIsNotFound()
   })
 }
 

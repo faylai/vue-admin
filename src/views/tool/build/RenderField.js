@@ -17,6 +17,10 @@ const isAttr = makeMap(
   'target,title,type,usemap,value,width,wrap'
 )
 
+function isStyleOrClassAttr(key) {
+  return ['class', 'style'].includes(key)
+}
+
 const componentChild = {
   'el-button': {
     default(h, conf, key) {
@@ -108,7 +112,11 @@ export default {
       } else if (!isAttr(key)) {
         dataObject.props[key] = val
       } else {
-        dataObject.attrs[key] = val
+        if (isStyleOrClassAttr(key)) {
+          dataObject[key] = val
+        } else {
+          dataObject.attrs[key] = val
+        }
       }
     })
     return h(context.props.conf.tag, dataObject, children)

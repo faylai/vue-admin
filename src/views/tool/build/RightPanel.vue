@@ -8,7 +8,7 @@
       <a class="document-link" target="_blank" :href="documentLink" title="查看组件文档">
         <i class="el-icon-link"/>
       </a>
-      <el-scrollbar class="right-scrollbar">
+      <div class="right-scrollbar">
         <!-- 组件属性 -->
         <el-form v-show="currentTab==='field' && showField" size="small" label-width="90px">
           <el-form-item v-if="activeData.changeTag" label="组件类型">
@@ -537,7 +537,7 @@
             <el-switch v-model="formConf.unFocusedComponentBorder"/>
           </el-form-item>
         </el-form>
-      </el-scrollbar>
+      </div>
     </div>
 
     <treeNode-dialog :visible.sync="dialogVisible" title="添加选项" @commit="addNode"/>
@@ -844,6 +844,7 @@ export default {
 <style lang="scss" scoped>
 .right-board {
   width: 350px;
+  height: 100%;
   position: absolute;
   right: 0;
   top: 0;
@@ -851,7 +852,7 @@ export default {
 
   .field-box {
     position: relative;
-    height: calc(100vh - 42px);
+    height: calc(100% - 40px);
     box-sizing: border-box;
     overflow: hidden;
   }
