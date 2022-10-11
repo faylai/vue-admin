@@ -154,7 +154,11 @@ export default {
       selectComponents,
       layoutComponents,
       labelWidth: 100,
-      drawingList: drawingDefault,
+      drawingList: drawingDefault.map(function(item) {
+        const ret = lodash.cloneDeep(item)
+        ret.renderKey = +new Date()
+        return ret
+      }),
       activeId: drawingDefault[0].formId,
       activeData: drawingDefault[0],
       oldActiveId: undefined,
@@ -408,7 +412,6 @@ export default {
     overflow: auto;
     padding: 12px 18px 15px 15px;
   }
-
 
 
   .center-tabs {
