@@ -121,7 +121,12 @@ import draggable from 'vuedraggable'
 import beautifier from 'js-beautify'
 import ClipboardJS from 'clipboard'
 import RightPanel from './RightPanel'
-import { inputComponents, selectComponents, layoutComponents, formConf } from '@/views/tool/build/generator/config'
+import {
+  inputComponents,
+  selectComponents,
+  layoutComponents,
+  formConf
+} from '@/views/tool/build/generator/config'
 import { beautifierConf } from '@/utils/index'
 import { makeUpHtml, vueTemplate, vueScript, cssStyle } from '@/views/tool/build/generator/html'
 import { makeUpJs } from '@/views/tool/build/generator/js'
@@ -131,9 +136,8 @@ import logo from '@/assets/logo/logo.png'
 import DraggableForm from './DraggableForm'
 import GenerateTypeForm from '@/views/tool/build/GenerateTypeForm'
 import lodash from 'lodash'
+import { off, on } from 'element-ui/lib/utils/dom'
 
-let oldActiveId
-let tempActiveData
 export default {
   name: 'FormBuilder',
   components: {
@@ -152,15 +156,17 @@ export default {
       labelWidth: 100,
       drawingList: drawingDefault,
       activeId: drawingDefault[0].formId,
-      activeData: drawingDefault[0]
+      activeData: drawingDefault[0],
+      oldActiveId: undefined,
+      tempActiveData: undefined
     }
   },
   created() {
     // 防止 firefox 下 拖拽 会新打卡一个选项卡
-    document.body.ondrop = event => {
-      event.preventDefault()
-      event.stopPropagation()
-    }
+    on(document.body, 'ondrag', this.onDrop)
+    this.$on('hook:beforeDestroy', function() {
+      off(document.body, 'ondrag', this.onDrop)
+    })
   },
   watch: {
     // eslint-disable-next-line func-names
@@ -168,7 +174,7 @@ export default {
       if (
           this.activeData.placeholder === undefined ||
           !this.activeData.tag ||
-          oldActiveId !== this.activeId
+          this.oldActiveId !== this.activeId
       ) {
         return
       }
@@ -176,7 +182,7 @@ export default {
     },
     activeId: {
       handler(val) {
-        oldActiveId = val
+        this.oldActiveId = val
       },
       immediate: true
     }
@@ -204,7 +210,7 @@ export default {
     },
     onEnd(obj, a) {
       if (obj.from !== obj.to) {
-        this.activeData = tempActiveData
+        this.activeData = this.tempActiveData
         this.activeId = this.idGlobal
       }
     },
@@ -233,14 +239,14 @@ export default {
       if (clone.layout === 'colFormItem') {
         clone.vModel = `field${this.idGlobal}`
         clone.placeholder !== undefined && (clone.placeholder += clone.label)
-        tempActiveData = clone
+        this.tempActiveData = clone
       } else if (clone.layout === 'rowFormItem') {
         delete clone.label
         clone.componentName = `row${this.idGlobal}`
         clone.gutter = this.formConf.gutter
-        tempActiveData = clone
+        this.tempActiveData = clone
       }
-      return tempActiveData
+      return this.tempActiveData
     },
     AssembleFormData() {
       return {
@@ -344,6 +350,10 @@ export default {
           if (Array.isArray(item.children)) this.updateDrawingList(newTag, item.children)
         })
       }
+    },
+    onDrop(event) {
+      event.preventDefault()
+      event.stopPropagation()
     }
   }
 }

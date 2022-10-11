@@ -435,3 +435,7 @@ export const trigger = {
   'el-date-picker': 'change',
   'el-rate': 'change'
 }
+
+export function findConfigByTag(tagName) {
+  return inputComponents.find((item) => item.tag === tagName) || selectComponents.find((item) => item.tag === tagName)
+}
