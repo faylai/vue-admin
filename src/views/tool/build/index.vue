@@ -149,7 +149,6 @@ export default {
     const defaultDrawingList = drawingDefault.map((item) => {
       const ret = lodash.cloneDeep(item)
       ret.renderKey = +new Date()
-      // ret.getParent = () => this.drawingList
       return ret
     })
     return {
