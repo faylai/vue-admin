@@ -146,6 +146,12 @@ export default {
     DraggableForm
   },
   data() {
+    const defaultDrawingList = drawingDefault.map((item) => {
+      const ret = lodash.cloneDeep(item)
+      ret.renderKey = +new Date()
+      // ret.getParent = () => this.drawingList
+      return ret
+    })
     return {
       logo,
       idGlobal: 100,
@@ -154,13 +160,9 @@ export default {
       selectComponents,
       layoutComponents,
       labelWidth: 100,
-      drawingList: drawingDefault.map(function(item) {
-        const ret = lodash.cloneDeep(item)
-        ret.renderKey = +new Date()
-        return ret
-      }),
-      activeId: drawingDefault[0].formId,
-      activeData: drawingDefault[0],
+      drawingList: defaultDrawingList,
+      activeId: defaultDrawingList[0].formId,
+      activeData: defaultDrawingList[0],
       oldActiveId: undefined,
       tempActiveData: undefined
     }
