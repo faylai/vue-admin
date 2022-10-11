@@ -714,7 +714,6 @@ export default {
       })
     },
     addTreeItem() {
-      ++this.idGlobal
       this.dialogVisible = true
       this.currentNode = this.activeData.options
     },
