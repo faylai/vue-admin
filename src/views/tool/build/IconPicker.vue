@@ -22,7 +22,7 @@ export default {
   },
   methods: {
     showDialog() {
-      const dialog = this.$dialog(IconsForm, {
+      this.$dialog(IconsForm, {
         current: this.value
       }, {
         title: () => {
@@ -36,14 +36,14 @@ export default {
                 clearable/>
           </div>)
         }
-      })
-      dialog.show({
+      }).show({
         title: '请选择图标',
         width: '980px'
-      }, (form) => {
+      }, (form, dialog) => {
         form.$on('select', (event) => {
           this.$emit('input', event)
           this.dispatch('ElFormItem', 'el.form.change', event)
+          dialog.close()
         })
       })
     }

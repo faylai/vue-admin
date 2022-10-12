@@ -42,7 +42,6 @@ export default {
     onSelect(icon) {
       this.active = icon
       this.$emit('select', icon)
-      this.$root.close()
     }
   },
   $dialogClass: ['icon-form-picker']

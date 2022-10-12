@@ -34,7 +34,6 @@ function install(Vue, config) {
     props: getDialogPropsDef(),
     /* eslint-disable indent */
     render(h) {
-      console.log('dialog render')
       const showParams = this[SHOW_PARAMS] || {}
       const slots = showParams.slots || this.componentConfig.slots
       const $dialogStyle = showParams.style || this.componentConfig.class.$dialogStyle || {}
@@ -185,7 +184,7 @@ function install(Vue, config) {
             this.$refs.dialog.$on('open', function() {
               if (callback) {
                 setTimeout(function() {
-                  callback.apply(that, [that.getComponentInstance()])
+                  callback.apply(that, [that.getComponentInstance(), that])
                 }, 100)
               }
             })
