@@ -310,23 +310,10 @@
                 <el-input v-model="activeData.childrenKey" placeholder="请输入子级键名"/>
               </el-form-item>
             </template>
+            <TreeDataEditor :value="activeData.options"
+                            v-if="activeData.dataType === 'static'"></TreeDataEditor>
 
-            <el-tree
-                v-if="activeData.dataType === 'static'"
-                draggable
-                :data="activeData.options"
-                node-key="id"
-                :expand-on-click-node="false"
-                :render-content="renderContent"/>
-            <div v-if="activeData.dataType === 'static'" style="margin-left: 20px">
-              <el-button
-                  style="padding-bottom: 0"
-                  icon="el-icon-circle-plus-outline"
-                  type="text"
-                  @click="addTreeItem">
-                添加父级
-              </el-button>
-            </div>
+
             <el-divider/>
           </template>
 
@@ -536,16 +523,12 @@
         </el-form>
       </div>
     </div>
-
-    <treeNode-dialog :visible.sync="dialogVisible" title="添加选项" @commit="addNode"/>
-
   </div>
 </template>
 
 <script>
 import { isArray } from 'lodash'
 import draggable from 'vuedraggable'
-import TreeNodeDialog from './TreeNodeDialog'
 import { isNumberStr } from '@/utils/index'
 import {
   inputComponents,
@@ -553,6 +536,7 @@ import {
 } from '@/views/tool/build/generator/config'
 
 import IconPicker from '@/views/tool/build/IconPicker'
+import TreeDataEditor from '@/views/tool/build/TreeDataEditor'
 
 const dateTimeFormat = {
   date: 'yyyy-MM-dd',
@@ -569,7 +553,7 @@ export default {
   components: {
     draggable,
     IconPicker,
-    TreeNodeDialog
+    TreeDataEditor
   },
   props: ['showField', 'activeData', 'formConf'],
   data() {
@@ -710,43 +694,6 @@ export default {
         label: '',
         value: ''
       })
-    },
-    addTreeItem() {
-      this.dialogVisible = true
-      this.currentNode = this.activeData.options
-    },
-    renderContent(h, { node, data, store }) {
-      return (
-          <div class="custom-tree-node">
-            <span>{node.label}</span>
-            <span class="node-operation">
-            <i on-click={() => this.append(data)}
-               class="el-icon-plus"
-               title="添加"
-            ></i>
-            <i on-click={() => this.remove(node, data)}
-               class="el-icon-delete"
-               title="删除"
-            ></i>
-          </span>
-          </div>
-      )
-    },
-    append(data) {
-      if (!data.children) {
-        this.$set(data, 'children', [])
-      }
-      this.dialogVisible = true
-      this.currentNode = data.children
-    },
-    remove(node, data) {
-      const { parent } = node
-      const children = parent.data.children || parent.data
-      const index = children.findIndex(d => d.id === data.id)
-      children.splice(index, 1)
-    },
-    addNode(data) {
-      this.currentNode.push(data)
     },
     setOptionValue(item, val) {
       item.value = isNumberStr(val) ? +val : val
