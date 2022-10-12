@@ -107,20 +107,17 @@
           <el-form-item v-if="activeData.append!==undefined" label="后缀">
             <el-input v-model="activeData.append" placeholder="请输入后缀"/>
           </el-form-item>
+
+
           <el-form-item v-if="activeData['prefix-icon']!==undefined" label="前图标">
-            <el-input v-model="activeData['prefix-icon']" placeholder="请输入前图标名称">
-              <el-button slot="append" icon="el-icon-thumb" @click="openIconsDialog('prefix-icon')">
-                选择
-              </el-button>
-            </el-input>
+            <IconPicker v-model="activeData['prefix-icon']" placeholder="请输入前图标名称" clearable></IconPicker>
           </el-form-item>
+
           <el-form-item v-if="activeData['suffix-icon'] !== undefined" label="后图标">
-            <el-input v-model="activeData['suffix-icon']" placeholder="请输入后图标名称">
-              <el-button slot="append" icon="el-icon-thumb" @click="openIconsDialog('suffix-icon')">
-                选择
-              </el-button>
-            </el-input>
+            <IconPicker v-model="activeData['suffix-icon']" placeholder="请输入后图标名称" clearable></IconPicker>
           </el-form-item>
+
+
           <el-form-item v-if="activeData.tag === 'el-cascader'" label="选项分隔符">
             <el-input v-model="activeData.separator" placeholder="请输入选项分隔符"/>
           </el-form-item>
@@ -541,7 +538,7 @@
     </div>
 
     <treeNode-dialog :visible.sync="dialogVisible" title="添加选项" @commit="addNode"/>
-    <icons-dialog :visible.sync="iconsVisible" :current="activeData[currentIconModel]" @select="setIcon"/>
+
   </div>
 </template>
 
@@ -550,11 +547,12 @@ import { isArray } from 'lodash'
 import draggable from 'vuedraggable'
 import TreeNodeDialog from './TreeNodeDialog'
 import { isNumberStr } from '@/utils/index'
-import IconsDialog from './IconsDialog'
 import {
   inputComponents,
   selectComponents
 } from '@/views/tool/build/generator/config'
+
+import IconPicker from '@/views/tool/build/IconPicker'
 
 const dateTimeFormat = {
   date: 'yyyy-MM-dd',
@@ -570,8 +568,8 @@ const dateTimeFormat = {
 export default {
   components: {
     draggable,
-    TreeNodeDialog,
-    IconsDialog
+    IconPicker,
+    TreeNodeDialog
   },
   props: ['showField', 'activeData', 'formConf'],
   data() {
@@ -824,13 +822,6 @@ export default {
       this.activeData.defaultValue = null
       this.activeData['show-alpha'] = val.indexOf('a') > -1
       this.activeData.renderKey = +new Date() // 更新renderKey,重新渲染该组件
-    },
-    openIconsDialog(model) {
-      this.iconsVisible = true
-      this.currentIconModel = model
-    },
-    setIcon(val) {
-      this.activeData[this.currentIconModel] = val
     },
     tagChange(tagIcon) {
       let target = inputComponents.find(item => item.tagIcon === tagIcon)

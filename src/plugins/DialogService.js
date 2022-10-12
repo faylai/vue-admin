@@ -13,6 +13,7 @@ const cancelButtonConfig = {
   // 调用包裹组件方法的名称
   trigger: 'cancel'
 }
+const SHOW_PARAMS = 'showParams'
 
 function install(Vue, config) {
   // const Dialog =Vue.options.components.ElDialog.extendOptions;
@@ -23,24 +24,29 @@ function install(Vue, config) {
         props = Object.assign(Object.assign({}, item.props), props)
       }
     })
+
     return props
   }
 
   const ElDialogConstructor = Vue.extend({
     name: 'ElDialogConstructor',
+    inheritAttrs: false,
     props: getDialogPropsDef(),
     /* eslint-disable indent */
     render(h) {
-      const slots = this.componentConfig.slots
+      console.log('dialog render')
+      const showParams = this[SHOW_PARAMS] || {}
+      const slots = showParams.slots || this.componentConfig.slots
+      const $dialogStyle = showParams.style || this.componentConfig.class.$dialogStyle || {}
+      const $dialogClass = showParams.class || this.componentConfig.class.$dialogClass || {}
       const $dialogButton = this.componentConfig.class.$dialogButton || {}
-      let { buttons, confirmButton, cancelButton } = this.componentConfig.props
+      let { buttons, confirmButton, cancelButton } = showParams
       if (!(buttons && buttons.length)) {
         buttons = $dialogButton.buttons || []
       }
       if (!confirmButton) {
         confirmButton = $dialogButton.confirmButton
       }
-
       if (!cancelButton) {
         cancelButton = $dialogButton.cancelButton
       }
@@ -122,13 +128,15 @@ function install(Vue, config) {
       }
       const children = [h(this.componentConfig.class, { props: this.componentConfig.props, ref: 'comp' })]
       for (const key of Object.keys(slots)) {
-        const vnode = slots[key]
-        vnode.context = this.$root
-        vnode.data = Object.assign(vnode.data || {}, { slot: key })
-        children.push(vnode)
+        const vNode = lodash.isFunction(slots[key]) ? slots[key]() : slots[key]
+        vNode.context = this.$root
+        vNode.data = Object.assign(vNode.data || {}, { slot: key })
+        children.push(vNode)
       }
       return h('el-dialog', {
         props: this._props,
+        style: $dialogStyle,
+        class: $dialogClass,
         on: { close: this.close },
         ref: 'dialog'
       }, children)
@@ -171,6 +179,7 @@ function install(Vue, config) {
             Object.keys(config).forEach(key => {
               this[key] = config[key]
             })
+            this[SHOW_PARAMS] = dialogProps
             this.$mount()
             const that = this
             this.$refs.dialog.$on('open', function() {
@@ -200,7 +209,8 @@ function install(Vue, config) {
           class: Component,
           props: props,
           slots: slots || {}
-        }
+        },
+        [SHOW_PARAMS]: {}
       }
     }, config || {}))
     return instance

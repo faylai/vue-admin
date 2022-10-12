@@ -192,8 +192,10 @@ export default {
       this.$refs.select.blur()
     },
     showDashBoard() {
-      const dialog = this.$dialog(dashboard)
-      dialog.show({
+      this.$dialog(dashboard, {}, {
+        title: (<span> just a test of title</span>),
+        footer: (<span> just a test of footer</span>)
+      }).show({
         title: '这是Service 形式打开的Dialog'
       })
     }
@@ -201,10 +203,11 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped >
+<style lang="scss" scoped>
 .components-container {
   padding: 10px;
-  h1{
+
+  h1 {
     font-size: 16px;
   }
 }
