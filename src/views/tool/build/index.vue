@@ -731,7 +731,7 @@ export default {
     box-sizing: border-box;
     border: 1px dashed #ccc;
     border-radius: 3px;
-    padding: 0 2px;
+    padding: 2px;
     margin-bottom: 15px;
 
     .drawing-row-item {

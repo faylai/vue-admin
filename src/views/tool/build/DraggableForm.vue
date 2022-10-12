@@ -25,7 +25,7 @@ const components = {
 const layouts = {
   colFormItem(h, element, index, parent) {
     const { activeItem } = this.listeners
-    let className = this.activeId === element.formId ? 'drawing-item active-from-item' : 'drawing-item'
+    let className = this.props.activeId === element.formId ? 'drawing-item active-from-item' : 'drawing-item'
     if (this.props.formConf.unFocusedComponentBorder) className += ' unfocus-bordered'
     return (
         <el-col span={element.span} class={className}
