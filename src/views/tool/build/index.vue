@@ -618,7 +618,6 @@ export default {
   .logo-wrapper {
     position: relative;
     height: 42px;
-    background: #fff;
     border-bottom: 1px solid #f1e8e8;
     box-sizing: border-box;
   }
