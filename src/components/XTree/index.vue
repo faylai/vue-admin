@@ -137,7 +137,7 @@ export default {
         <label class="fuzzy-search">
           <input type="text"
                  vModel_trim={this.keywords}
-                 vOn:keyup_enter={this.search}
+                 vOn:keydown_enter_stop={this.search}
                  vOn:focus={this.onInputFocus}
                  vOn:blur={this.onInputBlur}
                  class={[this.inputFocused && 'focus']}
