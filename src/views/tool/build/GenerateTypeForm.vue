@@ -27,7 +27,6 @@
 </template>
 <script>
 export default {
-  inheritAttrs: false,
   props: ['showFileName'],
   data() {
     return {

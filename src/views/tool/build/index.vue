@@ -107,7 +107,7 @@
       </div>
     </div>
 
-    <right-panel
+    <RightSettingPanel
         :active-data="activeData"
         :form-conf="formConf"
         :show-field="!!drawingList.length"
@@ -120,7 +120,7 @@
 import draggable from 'vuedraggable'
 import beautifier from 'js-beautify'
 import ClipboardJS from 'clipboard'
-import RightPanel from './RightPanel'
+import RightSettingPanel from '@/views/tool/build/RightSettingPanel'
 import {
   inputComponents,
   selectComponents,
@@ -137,12 +137,11 @@ import DraggableForm from './DraggableForm'
 import GenerateTypeForm from '@/views/tool/build/GenerateTypeForm'
 import lodash from 'lodash'
 import { off, on } from 'element-ui/lib/utils/dom'
-
 export default {
   name: 'FormBuilder',
   components: {
     draggable,
-    RightPanel,
+    RightSettingPanel,
     DraggableForm
   },
   data() {

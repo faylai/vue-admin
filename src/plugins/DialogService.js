@@ -30,7 +30,6 @@ function install(Vue, config) {
 
   const ElDialogConstructor = Vue.extend({
     name: 'ElDialogConstructor',
-    inheritAttrs: false,
     props: getDialogPropsDef(),
     /* eslint-disable indent */
     render(h) {

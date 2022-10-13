@@ -16,17 +16,15 @@ import iconList from '@/views/tool/build/generator/icon.json'
 const originList = iconList.map(name => `el-icon-${name}`)
 
 export default {
-  inheritAttrs: false,
-  props: ['current'],
+  props: ['current', 'keywords'],
   data() {
     return {
       iconList: originList,
-      active: null,
-      key: ''
+      active: null
     }
   },
   watch: {
-    key(val) {
+    keywords(val) {
       if (val) {
         this.iconList = originList.filter(name => name.indexOf(val) > -1)
       } else {
@@ -36,7 +34,6 @@ export default {
   },
   created() {
     this.active = this.current
-    this.key = ''
   },
   methods: {
     onSelect(icon) {
@@ -81,6 +78,7 @@ export default {
       }
     }
   }
+
   .el-dialog {
     border-radius: 8px;
     margin-bottom: 0;

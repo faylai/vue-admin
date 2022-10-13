@@ -22,13 +22,18 @@ export default {
   },
   methods: {
     showDialog() {
-      this.$dialog(IconsForm, {
-        current: this.value
+      const dialog = this.$dialog(IconsForm, {
+        current: this.value,
+        keywords: this.keywords
       }, {
         title: () => {
           return (<div><span>选择图标    </span>
             <el-input
-                vModel={this.keywords}
+                value={this.keywords}
+                vOn:input={(v) => {
+                  this.keywords = v
+                  dialog.componentConfig.props.keywords = v
+                }}
                 size="mini"
                 style={{ width: '260px' }}
                 placeholder="请输入图标名称"
