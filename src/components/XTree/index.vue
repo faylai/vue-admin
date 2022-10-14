@@ -309,62 +309,84 @@ export default {
     clearSelection() {
       this.$emit('change', '', [])
     },
+    clearAllNodeSelectedState(startNode) {
+      iterateTree(startNode || this.treeData || [], function(node) {
+        if (node.selected) {
+          node.selected = false
+          updateNodeSelectState(node)
+          return false
+        }
+      })
+    },
     // 把外部传递过来的 value 转换成为树的节点的选中状态,异步除外
     restoreSelection(startNode) {
+      let ids = []
+      let selectNodes = []
+      if (this.value) {
+        ids = this.value.split(',')
+      }
+
       if (this.async) {
         // 异步直接清空所有节点选中状态就行了
-        iterateTree(startNode || this.treeData || [], function(node) {
-          if (node.selected) {
-            node.selected = false
-            updateNodeSelectState(node)
-            return false
-          }
-        })
-      } else {
-        let ids = []
-        let selectNodes = []
-        if (this.value) {
-          ids = this.value.split(',')
-        }
-        // console.log('restoreSelection')
-        if (this.selectMode === 'multiple') {
+        if (ids.length === 0) {
+          this.clearAllNodeSelectedState(startNode)
+          return
+        } else {
+          const foundNodes = []
           iterateTree(startNode || this.treeData || [], function(node) {
             if (ids.indexOf(node.objectId) >= 0) {
-              node.selected = true
-              updateNodeSelectState(node)
+              foundNodes.push(node)
+            }
+            if (foundNodes.length === ids.length) {
               return false
-            } else {
-              if (node.selected) {
-                node.selected = false
-                updateNodeSelectState(node)
-              }
             }
           })
-          selectNodes = this.synMultiSelection(true)
-        } else {
-          let foundSelectedNode = false
-          let unsetSelectedNode = false
-          iterateTree(startNode || this.treeData || [], function(node) {
-            // 因为单选只有个选中，找到就不用再找了
-            if (foundSelectedNode && unsetSelectedNode) {
-              return false
-            } else if (ids.indexOf(node.objectId) >= 0) {
-              node.selected = true
-              foundSelectedNode = node
-              return false
-            } else {
-              if (node.selected) {
-                unsetSelectedNode = node
-                node.selected = false
-              }
-            }
-          })
-          if (foundSelectedNode) {
-            selectNodes = this.synSingleSelection(foundSelectedNode, true)
+          if (foundNodes.length !== ids.length) {
+            this.clearAllNodeSelectedState(startNode)
+            return
           }
         }
-        this.$emit('restore', ids.join(','), this.simplifyNode(selectNodes))
       }
+
+      // console.log('restoreSelection')
+      if (this.selectMode === 'multiple') {
+        iterateTree(startNode || this.treeData || [], function(node) {
+          if (ids.indexOf(node.objectId) >= 0) {
+            node.selected = true
+            updateNodeSelectState(node)
+            return false
+          } else {
+            if (node.selected) {
+              node.selected = false
+              updateNodeSelectState(node)
+            }
+          }
+        })
+        selectNodes = this.synMultiSelection(true)
+      } else {
+        let foundSelectedNode = false
+        let unsetSelectedNode = false
+        iterateTree(startNode || this.treeData || [], function(node) {
+          // 因为单选只有个选中，找到就不用再找了
+          if (foundSelectedNode && unsetSelectedNode) {
+            return false
+          } else if (ids.indexOf(node.objectId) >= 0) {
+            node.selected = true
+            foundSelectedNode = node
+            return false
+          } else {
+            if (node.selected) {
+              unsetSelectedNode = node
+              node.selected = false
+            }
+          }
+        })
+        if (foundSelectedNode) {
+          selectNodes = this.synSingleSelection(foundSelectedNode, true)
+        }
+      }
+      this.$emit('restore', ids.join(','), this.simplifyNode(selectNodes))
+
     },
     synSingleSelection(node, suppressChangeEvent) {
       const selectedNodes = [node]

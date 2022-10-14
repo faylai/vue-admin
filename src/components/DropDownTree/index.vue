@@ -171,7 +171,7 @@ export default {
     deleteTag(tag) {
       const node = tag.node
       this.checkedNodes.splice(this.checkedNodes.indexOf(node), 1)
-      this.presentTags.splice(this.presentTags.indexOf(tag), 1)
+      this.computePresentContent()
       this.emitChange(this.checkedNodes.map(node => node.objectId).join(','), this.checkedNodes)
     },
     treeChange(value, selection) {
