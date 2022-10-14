@@ -2,6 +2,7 @@
 import XTree from '@/components/XTree'
 import { addResizeListener, removeResizeListener } from 'element-ui/lib/utils/resize-event'
 import Emitter from 'element-ui/lib/mixins/emitter'
+import SmartCache from '@/components/SmartCache'
 
 const InputSizeMap = {
   medium: 36,
@@ -15,7 +16,8 @@ export default {
     event: 'change'
   },
   components: {
-    XTree
+    XTree,
+    SmartCache
   },
   mixins: [
     Emitter
@@ -319,13 +321,17 @@ export default {
         }
       </div>
       <el-dropdown-menu slot="dropdown" ref="panel">
-        <XTree scopedSlots={nodeScopeSlots}
-               ref="xtree"
-               vOn:change={this.treeChange}
-               vOn:restore={this.onTreeRestore}
-               value={this.value}
-               style={{ height: this.dropDownHeight }}
-               {...{ attrs: this.treeConfig }}> </XTree>
+        {/** 这里要注意 depProps 配置，depProps 里面变量的是否变动决定了xtree 是否重新渲染 */}
+        <SmartCache depProps={{ value: this.value, height: this.dropDownHeight }}
+                    nodeRender={() => {
+                      return (<XTree scopedSlots={nodeScopeSlots}
+                                     ref="xtree"
+                                     vOn:change={this.treeChange}
+                                     vOn:restore={this.onTreeRestore}
+                                     value={this.value}
+                                     style={{ height: this.dropDownHeight }}
+                                     {...{ attrs: this.treeConfig }}> </XTree>)
+                    }}/>
       </el-dropdown-menu>
     </el-dropdown>)
   }

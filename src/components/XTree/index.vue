@@ -1,5 +1,6 @@
 <script>
 import TreeNode from '@/components/XTree/TreeNode'
+import SmartCache from '@/components/SmartCache'
 import {
   iterateTree,
   formatTreeData,
@@ -21,7 +22,8 @@ import lodash from 'lodash'
 export default {
   name: 'XTree',
   components: {
-    TreeNode
+    TreeNode,
+    SmartCache
   },
   model: {
     prop: 'value',
@@ -131,7 +133,6 @@ export default {
         return ''
       }
     }
-    /* eslint-disable indent */
     return (<div class="bc-filter-object-tree">
       <div class="object-container-header" vShow={!this.hideSearchBar}>
         <label class="fuzzy-search">
@@ -148,21 +149,26 @@ export default {
         <span class="bc-brush-icon icon" vOn:click={this.clear}>< /span>
       </div>
       <div class="object-container-body" style={{ top: this.hideSearchBar ? '10px' : '40px' }}>
-        <ul class="bd-object-tree"
-            vShow={!this.noData && !this.dataError && !this.loading}>{
-          this.treeData.map((node) => {
-            return (<TreeNode node={node}
-                              scopedSlots={nodeScopeSlots}
-                              key={node.objectId}
-                              select-mode={this.selectMode}
-                              select-object-type={this.selectObjectType}
-                              vOn:update-more={this.loadMore}
-                              vOn:node-click={this.nodeClick}
-                              vOn:node-check={this.nodeCheck}
-                              vOn:update-expanded={this.expandChange}>
-            </TreeNode>)
-          })}
-        </ul>
+        {/** 这里要注意 ignoreProps 配置，ignoreProps 的变更不会影响 nodeRender 重新渲染 */}
+        <SmartCache
+            ignoreProps={{ inputFocused: this.inputFocused }}
+            nodeRender={() => {
+              return (<ul className="bd-object-tree"
+                          vShow={!this.noData && !this.dataError && !this.loading}>{
+                this.treeData.map((node) => {
+                  return (<TreeNode node={node}
+                                    scopedSlots={nodeScopeSlots}
+                                    key={node.objectId}
+                                    select-mode={this.selectMode}
+                                    select-object-type={this.selectObjectType}
+                                    vOn:update-more={this.loadMore}
+                                    vOn:node-click={this.nodeClick}
+                                    vOn:node-check={this.nodeCheck}
+                                    vOn:update-expanded={this.expandChange}>
+                  </TreeNode>)
+                })}
+              </ul>)
+            }}/>
 
         <div class="bc-control-info " vShow={this.noData}>
           <span>{this.words.noMatchResult}</span>
