@@ -294,10 +294,10 @@ export default {
           this.selectObjectType.split(',').indexOf(node.objectType) < 0) {
         return
       }
-      node.selected = true
       this._selectNodes.forEach(function(node) {
         node.selected = false
       })
+      node.selected = true
       this.synSingleSelection(node)
     },
     // 多选

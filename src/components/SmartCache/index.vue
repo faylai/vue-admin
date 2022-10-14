@@ -41,7 +41,8 @@ export default {
       if (this.$isUpdating) {
         return
       } else {
-        // 放入微任务后面执行
+        this.$isUpdating = true
+        // 把微任务放入当前宏任务后面执行
         Promise.resolve().then(() => {
           this.$isUpdating = false
           if (this.$foreUpdateStack.length) {
