@@ -284,7 +284,7 @@ export const exportDefault = 'export default '
 
 // 首字母大小
 export function titleCase(str) {
-  return str.replace(/( |^)[a-z]/g, L => L.toUpperCase())
+  return String(str).trim().replace(/^[a-z]/g, L => L.toUpperCase())
 }
 
 export function isNumberStr(str) {
