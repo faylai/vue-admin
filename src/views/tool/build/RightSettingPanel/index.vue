@@ -41,12 +41,7 @@
           <el-form-item v-if="activeData.placeholder!==undefined" label="占位提示">
             <el-input v-model="activeData.placeholder" placeholder="请输入占位提示"/>
           </el-form-item>
-          <el-form-item v-if="activeData['start-placeholder']!==undefined" label="开始占位">
-            <el-input v-model="activeData['start-placeholder']" placeholder="请输入占位提示"/>
-          </el-form-item>
-          <el-form-item v-if="activeData['end-placeholder']!==undefined" label="结束占位">
-            <el-input v-model="activeData['end-placeholder']" placeholder="请输入占位提示"/>
-          </el-form-item>
+
           <el-form-item v-if="activeData.span!==undefined" label="表单栅格">
             <el-slider v-model="activeData.span" :max="24" :min="1" :marks="{12:''}" @change="spanChange"/>
           </el-form-item>
@@ -96,9 +91,7 @@
           <el-form-item v-if="activeData.max !== undefined" label="最大值">
             <el-input-number v-model="activeData.max" placeholder="最大值"/>
           </el-form-item>
-          <el-form-item v-if="activeData.step !== undefined" label="步长">
-            <el-input-number v-model="activeData.step" placeholder="步数"/>
-          </el-form-item>
+
 
           <el-form-item v-if="activeData.maxlength !== undefined" label="最多输入">
             <el-input v-model="activeData.maxlength" placeholder="请输入字符长度">
@@ -107,153 +100,7 @@
               </template>
             </el-input>
           </el-form-item>
-          <el-form-item v-if="activeData['active-text'] !== undefined" label="开启提示">
-            <el-input v-model="activeData['active-text']" placeholder="请输入开启提示"/>
-          </el-form-item>
-          <el-form-item v-if="activeData['inactive-text'] !== undefined" label="关闭提示">
-            <el-input v-model="activeData['inactive-text']" placeholder="请输入关闭提示"/>
-          </el-form-item>
-          <el-form-item v-if="activeData['active-value'] !== undefined" label="开启值">
-            <el-input
-                :value="setDefaultValue(activeData['active-value'])"
-                placeholder="请输入开启值"
-                @input="onSwitchValueInput($event, 'active-value')"/>
-          </el-form-item>
-          <el-form-item v-if="activeData['inactive-value'] !== undefined" label="关闭值">
-            <el-input
-                :value="setDefaultValue(activeData['inactive-value'])"
-                placeholder="请输入关闭值"
-                @input="onSwitchValueInput($event, 'inactive-value')"/>
-          </el-form-item>
-          <el-form-item
-              v-if="activeData.type !== undefined && 'el-date-picker' === activeData.tag"
-              label="时间类型">
-            <el-select
-                v-model="activeData.type"
-                placeholder="请选择时间类型"
-                :style="{ width: '100%' }"
-                @change="dateTypeChange">
-              <el-option
-                  v-for="(item, index) in dateOptions"
-                  :key="index"
-                  :label="item.label"
-                  :value="item.value"/>
-            </el-select>
-          </el-form-item>
-          <el-form-item v-if="activeData.name !== undefined" label="文件字段名">
-            <el-input v-model="activeData.name" placeholder="请输入上传文件字段名"/>
-          </el-form-item>
-          <el-form-item v-if="activeData.accept !== undefined" label="文件类型">
-            <el-select
-                v-model="activeData.accept"
-                placeholder="请选择文件类型"
-                :style="{ width: '100%' }"
-                clearable>
-              <el-option label="图片" value="image/*"/>
-              <el-option label="视频" value="video/*"/>
-              <el-option label="音频" value="audio/*"/>
-              <el-option label="excel" value=".xls,.xlsx"/>
-              <el-option label="word" value=".doc,.docx"/>
-              <el-option label="pdf" value=".pdf"/>
-              <el-option label="txt" value=".txt"/>
-            </el-select>
-          </el-form-item>
-          <el-form-item v-if="activeData.fileSize !== undefined" label="文件大小">
-            <el-input v-model.number="activeData.fileSize" placeholder="请输入文件大小">
-              <el-select slot="append" v-model="activeData.sizeUnit" :style="{ width: '66px' }">
-                <el-option label="KB" value="KB"/>
-                <el-option label="MB" value="MB"/>
-                <el-option label="GB" value="GB"/>
-              </el-select>
-            </el-input>
-          </el-form-item>
-          <el-form-item v-if="activeData.action !== undefined" label="上传地址">
-            <el-input v-model="activeData.action" placeholder="请输入上传地址" clearable/>
-          </el-form-item>
-          <el-form-item v-if="activeData['list-type'] !== undefined" label="列表类型">
-            <el-radio-group v-model="activeData['list-type']" size="small">
-              <el-radio-button label="text">
-                text
-              </el-radio-button>
-              <el-radio-button label="picture">
-                picture
-              </el-radio-button>
-              <el-radio-button label="picture-card">
-                picture-card
-              </el-radio-button>
-            </el-radio-group>
-          </el-form-item>
-          <el-form-item
-              v-if="activeData.buttonText !== undefined"
-              v-show="'picture-card' !== activeData['list-type']"
-              label="按钮文字">
-            <el-input v-model="activeData.buttonText" placeholder="请输入按钮文字"/>
-          </el-form-item>
-          <el-form-item v-if="activeData['range-separator'] !== undefined" label="分隔符">
-            <el-input v-model="activeData['range-separator']" placeholder="请输入分隔符"/>
-          </el-form-item>
-          <el-form-item v-if="activeData['picker-options'] !== undefined" label="时间段">
-            <el-input
-                v-model="activeData['picker-options'].selectableRange"
-                placeholder="请输入时间段"/>
-          </el-form-item>
-          <el-form-item v-if="activeData.format !== undefined" label="时间格式">
-            <el-input
-                :value="activeData.format"
-                placeholder="请输入时间格式"
-                @input="setTimeValue($event)"/>
-          </el-form-item>
 
-          <el-form-item v-if="activeData.optionType !== undefined" label="选项样式">
-            <el-radio-group v-model="activeData.optionType">
-              <el-radio-button label="default">
-                默认
-              </el-radio-button>
-              <el-radio-button label="button">
-                按钮
-              </el-radio-button>
-            </el-radio-group>
-          </el-form-item>
-          <el-form-item v-if="activeData['active-color'] !== undefined" label="开启颜色">
-            <el-color-picker v-model="activeData['active-color']"/>
-          </el-form-item>
-          <el-form-item v-if="activeData['inactive-color'] !== undefined" label="关闭颜色">
-            <el-color-picker v-model="activeData['inactive-color']"/>
-          </el-form-item>
-
-          <el-form-item v-if="activeData['allow-half'] !== undefined" label="允许半选">
-            <el-switch v-model="activeData['allow-half']"/>
-          </el-form-item>
-          <el-form-item v-if="activeData['show-text'] !== undefined" label="辅助文字">
-            <el-switch v-model="activeData['show-text']" @change="rateTextChange"/>
-          </el-form-item>
-          <el-form-item v-if="activeData['show-score'] !== undefined" label="显示分数">
-            <el-switch v-model="activeData['show-score']" @change="rateScoreChange"/>
-          </el-form-item>
-          <el-form-item v-if="activeData['show-stops'] !== undefined" label="显示间断点">
-            <el-switch v-model="activeData['show-stops']"/>
-          </el-form-item>
-          <el-form-item v-if="activeData.range !== undefined" label="范围选择">
-            <el-switch v-model="activeData.range" @change="rangeChange"/>
-          </el-form-item>
-          <el-form-item
-              v-if="activeData.border !== undefined && activeData.optionType === 'default'"
-              label="是否带边框">
-            <el-switch v-model="activeData.border"/>
-          </el-form-item>
-          <el-form-item v-if="activeData.tag === 'el-color-picker'" label="颜色格式">
-            <el-select
-                v-model="activeData['color-format']"
-                placeholder="请选择颜色格式"
-                :style="{ width: '100%' }"
-                @change="colorFormatChange">
-              <el-option
-                  v-for="(item, index) in colorFormatOptions"
-                  :key="index"
-                  :label="item.label"
-                  :value="item.value"/>
-            </el-select>
-          </el-form-item>
           <el-form-item
               v-if="activeData.size !== undefined &&
               (activeData.optionType === 'button' ||
@@ -272,6 +119,8 @@
               </el-radio-button>
             </el-radio-group>
           </el-form-item>
+
+
           <el-form-item v-if="activeData['show-word-limit'] !== undefined" label="输入统计">
             <el-switch v-model="activeData['show-word-limit']"/>
           </el-form-item>
@@ -283,24 +132,14 @@
           <el-form-item v-if="activeData.showTip !== undefined" label="显示提示">
             <el-switch v-model="activeData.showTip"/>
           </el-form-item>
-          <el-form-item v-if="activeData.multiple !== undefined" label="多选文件">
-            <el-switch v-model="activeData.multiple"/>
-          </el-form-item>
-          <el-form-item v-if="activeData['auto-upload'] !== undefined" label="自动上传">
-            <el-switch v-model="activeData['auto-upload']"/>
-          </el-form-item>
+
           <el-form-item v-if="activeData.readonly !== undefined" label="是否只读">
             <el-switch v-model="activeData.readonly"/>
           </el-form-item>
           <el-form-item v-if="activeData.disabled !== undefined" label="是否禁用">
             <el-switch v-model="activeData.disabled"/>
           </el-form-item>
-          <el-form-item v-if="activeData.tag === 'el-select'" label="是否可搜索">
-            <el-switch v-model="activeData.filterable"/>
-          </el-form-item>
-          <el-form-item v-if="activeData.tag === 'el-select'" label="是否多选">
-            <el-switch v-model="activeData.multiple" @change="multipleChange"/>
-          </el-form-item>
+
           <el-form-item v-if="activeData.required !== undefined" label="是否必填">
             <el-switch v-model="activeData.required"/>
           </el-form-item>
@@ -362,17 +201,6 @@ reqCustomFormField.keys().forEach((key) => {
   customFormFieldSettingsComponentsKeys[name] = true
 })
 
-const dateTimeFormat = {
-  date: 'yyyy-MM-dd',
-  week: 'yyyy 第 WW 周',
-  month: 'yyyy-MM',
-  year: 'yyyy',
-  datetime: 'yyyy-MM-dd HH:mm:ss',
-  daterange: 'yyyy-MM-dd',
-  monthrange: 'yyyy-MM',
-  datetimerange: 'yyyy-MM-dd HH:mm:ss'
-}
-
 export default {
   components: {
     draggable,
@@ -384,68 +212,6 @@ export default {
   data() {
     return {
       currentTab: 'field',
-      currentNode: null,
-      dialogVisible: false,
-      iconsVisible: false,
-      currentIconModel: null,
-      dateTypeOptions: [
-        {
-          label: '日(date)',
-          value: 'date'
-        },
-        {
-          label: '周(week)',
-          value: 'week'
-        },
-        {
-          label: '月(month)',
-          value: 'month'
-        },
-        {
-          label: '年(year)',
-          value: 'year'
-        },
-        {
-          label: '日期时间(datetime)',
-          value: 'datetime'
-        }
-      ],
-      dateRangeTypeOptions: [
-        {
-          label: '日期范围(daterange)',
-          value: 'daterange'
-        },
-        {
-          label: '月范围(monthrange)',
-          value: 'monthrange'
-        },
-        {
-          label: '日期时间范围(datetimerange)',
-          value: 'datetimerange'
-        }
-      ],
-      colorFormatOptions: [
-        {
-          label: 'hex',
-          value: 'hex'
-        },
-        {
-          label: 'rgb',
-          value: 'rgb'
-        },
-        {
-          label: 'rgba',
-          value: 'rgba'
-        },
-        {
-          label: 'hsv',
-          value: 'hsv'
-        },
-        {
-          label: 'hsl',
-          value: 'hsl'
-        }
-      ],
       customFormFieldSettingsComponentsKeys: customFormFieldSettingsComponentsKeys
     }
   },
@@ -459,18 +225,6 @@ export default {
           this.activeData.document ||
           'https://element.eleme.cn/#/zh-CN/component/installation'
       )
-    },
-    dateOptions() {
-      if (
-          this.activeData.type !== undefined &&
-          this.activeData.tag === 'el-date-picker'
-      ) {
-        if (this.activeData['start-placeholder'] === undefined) {
-          return this.dateTypeOptions
-        }
-        return this.dateRangeTypeOptions
-      }
-      return []
     },
     tagList() {
       return [
@@ -524,45 +278,8 @@ export default {
         )
       }
     },
-    onSwitchValueInput(val, name) {
-      if (['true', 'false'].indexOf(val) > -1) {
-        this.$set(this.activeData, name, JSON.parse(val))
-      } else {
-        this.$set(this.activeData, name, isNumberStr(val) ? +val : val)
-      }
-    },
-    setTimeValue(val, type) {
-      const valueFormat = type === 'week' ? dateTimeFormat.date : val
-      this.$set(this.activeData, 'defaultValue', null)
-      this.$set(this.activeData, 'value-format', valueFormat)
-      this.$set(this.activeData, 'format', val)
-    },
     spanChange(val) {
       this.formConf.span = val
-    },
-    multipleChange(val) {
-      this.$set(this.activeData, 'defaultValue', val ? [] : '')
-    },
-    dateTypeChange(val) {
-      this.setTimeValue(dateTimeFormat[val], val)
-    },
-    rangeChange(val) {
-      this.$set(
-          this.activeData,
-          'defaultValue',
-          val ? [this.activeData.min, this.activeData.max] : this.activeData.min
-      )
-    },
-    rateTextChange(val) {
-      if (val) this.activeData['show-score'] = false
-    },
-    rateScoreChange(val) {
-      if (val) this.activeData['show-text'] = false
-    },
-    colorFormatChange(val) {
-      this.activeData.defaultValue = null
-      this.activeData['show-alpha'] = val.indexOf('a') > -1
-      this.activeData.renderKey = +new Date() // 更新renderKey,重新渲染该组件
     },
     tagChange(tagIcon) {
       let target = inputComponents.find(item => item.tagIcon === tagIcon)

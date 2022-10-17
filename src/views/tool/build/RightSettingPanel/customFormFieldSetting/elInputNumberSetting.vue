@@ -3,6 +3,9 @@
     <el-form-item label="严格步数">
       <el-switch v-model="activeData['step-strictly']"/>
     </el-form-item>
+    <el-form-item label="步长" v-if="activeData['step-strictly']">
+      <el-input-number v-model="activeData.step" placeholder="步数"/>
+    </el-form-item>
     <el-form-item label="精度">
       <el-input-number v-model="activeData.precision" :min="0" placeholder="精度"/>
     </el-form-item>
