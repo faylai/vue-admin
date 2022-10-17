@@ -50,15 +50,8 @@
           <el-form-item v-if="activeData.span!==undefined" label="表单栅格">
             <el-slider v-model="activeData.span" :max="24" :min="1" :marks="{12:''}" @change="spanChange"/>
           </el-form-item>
-          <el-form-item v-if="activeData.layout==='rowFormItem'" label="栅格间隔">
-            <el-input-number v-model="activeData.gutter" :min="0" placeholder="栅格间隔"/>
-          </el-form-item>
-          <el-form-item v-if="activeData.layout==='rowFormItem'" label="布局模式">
-            <el-radio-group v-model="activeData.type">
-              <el-radio-button label="default"/>
-              <el-radio-button label="flex"/>
-            </el-radio-group>
-          </el-form-item>
+
+
           <el-form-item v-if="activeData.justify!==undefined&&activeData.type==='flex'" label="水平排列">
             <el-select v-model="activeData.justify" placeholder="请选择水平排列" :style="{width: '100%'}">
               <el-option
@@ -428,21 +421,8 @@
             <el-switch v-model="activeData.required"/>
           </el-form-item>
 
-          <template v-if="activeData.layoutTree">
-            <el-divider>布局结构树</el-divider>
-            <el-tree
-                :data="[activeData]"
-                :props="layoutTreeProps"
-                node-key="renderKey"
-                default-expand-all
-                draggable>
-              <span slot-scope="{ node, data }">
-                <span class="node-label">
-                  <svg-icon class="node-icon" :icon-class="data.tagIcon"/>
-                  {{ node.label }}
-                </span>
-              </span>
-            </el-tree>
+          <template v-if="customFormFieldSettingsComponentsKeys[customFormFieldSettingKey]">
+            <component :is="customFormFieldSettingKey" :activeData="activeData"></component>
           </template>
 
           <template v-if="activeData.layout === 'colFormItem' && activeData.tag !== 'el-button'">
@@ -476,7 +456,7 @@
 </template>
 
 <script>
-import { isArray } from 'lodash'
+import { isArray, camelCase } from 'lodash'
 import draggable from 'vuedraggable'
 import { isNumberStr } from '@/utils/index'
 import {
@@ -487,6 +467,17 @@ import {
 import IconPicker from '@/views/tool/build/IconPicker'
 import TreeDataEditor from '@/views/tool/build/TreeDataEditor'
 import FormSetting from '@/views/tool/build/RightSettingPanel/formSetting'
+
+// 从整个文件夹导入所有组件
+const reqCustomFormField = require.context('./customFormFieldSetting', true, /\.(js|vue)$/i)
+const customFormFieldSettingsComponents = {}
+const customFormFieldSettingsComponentsKeys = {}
+reqCustomFormField.keys().forEach((key) => {
+  const name = key.match(/\w+/)[0]
+  console.log(name, key)
+  customFormFieldSettingsComponents[name] = reqCustomFormField(key).default
+  customFormFieldSettingsComponentsKeys[name] = true
+})
 
 const dateTimeFormat = {
   date: 'yyyy-MM-dd',
@@ -504,7 +495,8 @@ export default {
     draggable,
     IconPicker,
     FormSetting,
-    TreeDataEditor
+    TreeDataEditor,
+    ...customFormFieldSettingsComponents
   },
   props: ['showField', 'activeData', 'formConf'],
   data() {
@@ -594,14 +586,15 @@ export default {
           value: 'space-between'
         }
       ],
-      layoutTreeProps: {
-        label(data, node) {
-          return data.componentName || `${data.label}: ${data.vModel}`
-        }
-      }
+      customFormFieldSettingsComponentsKeys: customFormFieldSettingsComponentsKeys
     }
   },
   computed: {
+    customFormFieldSettingKey() {
+      const key = (this.activeData.tag || this.activeData.layout) + 'Setting'
+      console.log(camelCase(key))
+      return camelCase(key)
+    },
     documentLink() {
       return (
           this.activeData.document ||
