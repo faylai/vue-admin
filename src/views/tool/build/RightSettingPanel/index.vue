@@ -65,20 +65,7 @@
                 placeholder="请输入默认值"
                 @input="onDefaultValueInput"/>
           </el-form-item>
-          <el-form-item v-if="activeData.tag==='el-checkbox-group'" label="至少应选">
-            <el-input-number
-                :value="activeData.min"
-                :min="0"
-                placeholder="至少应选"
-                @input="$set(activeData, 'min', $event?$event:undefined)"/>
-          </el-form-item>
-          <el-form-item v-if="activeData.tag==='el-checkbox-group'" label="最多可选">
-            <el-input-number
-                :value="activeData.max"
-                :min="0"
-                placeholder="最多可选"
-                @input="$set(activeData, 'max', $event?$event:undefined)"/>
-          </el-form-item>
+
           <el-form-item v-if="activeData.prepend!==undefined" label="前缀">
             <el-input v-model="activeData.prepend" placeholder="请输入前缀"/>
           </el-form-item>
@@ -96,9 +83,7 @@
           </el-form-item>
 
 
-          <el-form-item v-if="activeData.tag === 'el-cascader'" label="选项分隔符">
-            <el-input v-model="activeData.separator" placeholder="请输入选项分隔符"/>
-          </el-form-item>
+
           <el-form-item v-if="activeData.autosize !== undefined" label="最小行数">
             <el-input-number v-model="activeData.autosize.minRows" :min="1" placeholder="最小行数"/>
           </el-form-item>
@@ -218,70 +203,6 @@
                 placeholder="请输入时间格式"
                 @input="setTimeValue($event)"/>
           </el-form-item>
-          <template v-if="['el-checkbox-group', 'el-radio-group', 'el-select'].indexOf(activeData.tag) > -1">
-            <el-divider>选项</el-divider>
-            <draggable
-                :list="activeData.options"
-                :animation="340"
-                group="selectItem"
-                handle=".option-drag">
-              <div v-for="(item, index) in activeData.options" :key="index" class="select-item">
-                <div class="select-line-icon option-drag">
-                  <i class="el-icon-s-operation"/>
-                </div>
-                <el-input v-model="item.label" placeholder="选项名" size="small"/>
-                <el-input
-                    placeholder="选项值"
-                    size="small"
-                    :value="item.value"
-                    @input="setOptionValue(item, $event)"/>
-                <div class="close-btn select-line-icon" @click="activeData.options.splice(index, 1)">
-                  <i class="el-icon-remove-outline"/>
-                </div>
-              </div>
-            </draggable>
-            <div style="margin-left: 20px;">
-              <el-button
-                  style="padding-bottom: 0"
-                  icon="el-icon-circle-plus-outline"
-                  type="text"
-                  @click="addSelectItem">
-                添加选项
-              </el-button>
-            </div>
-            <el-divider/>
-          </template>
-
-          <template v-if="['el-cascader'].indexOf(activeData.tag) > -1">
-            <el-divider>选项</el-divider>
-            <el-form-item label="数据类型">
-              <el-radio-group v-model="activeData.dataType" size="small">
-                <el-radio-button label="dynamic">
-                  动态数据
-                </el-radio-button>
-                <el-radio-button label="static">
-                  静态数据
-                </el-radio-button>
-              </el-radio-group>
-            </el-form-item>
-
-            <template v-if="activeData.dataType === 'dynamic'">
-              <el-form-item label="标签键名">
-                <el-input v-model="activeData.labelKey" placeholder="请输入标签键名"/>
-              </el-form-item>
-              <el-form-item label="值键名">
-                <el-input v-model="activeData.valueKey" placeholder="请输入值键名"/>
-              </el-form-item>
-              <el-form-item label="子级键名">
-                <el-input v-model="activeData.childrenKey" placeholder="请输入子级键名"/>
-              </el-form-item>
-            </template>
-            <TreeDataEditor :value="activeData.options"
-                            v-if="activeData.dataType === 'static'"></TreeDataEditor>
-
-
-            <el-divider/>
-          </template>
 
           <el-form-item v-if="activeData.optionType !== undefined" label="选项样式">
             <el-radio-group v-model="activeData.optionType">
@@ -355,15 +276,7 @@
             <el-switch v-model="activeData['show-word-limit']"/>
           </el-form-item>
 
-          <el-form-item v-if="activeData.tag === 'el-cascader'" label="是否多选">
-            <el-switch v-model="activeData.props.props.multiple"/>
-          </el-form-item>
-          <el-form-item v-if="activeData.tag === 'el-cascader'" label="展示全路径">
-            <el-switch v-model="activeData['show-all-levels']"/>
-          </el-form-item>
-          <el-form-item v-if="activeData.tag === 'el-cascader'" label="可否筛选">
-            <el-switch v-model="activeData.filterable"/>
-          </el-form-item>
+
           <el-form-item v-if="activeData.clearable !== undefined" label="能否清空">
             <el-switch v-model="activeData.clearable"/>
           </el-form-item>
@@ -436,7 +349,7 @@ import {
 } from '@/views/tool/build/generator/config'
 
 import IconPicker from '@/views/tool/build/IconPicker'
-import TreeDataEditor from '@/views/tool/build/TreeDataEditor'
+
 import FormSetting from '@/views/tool/build/RightSettingPanel/formSetting'
 
 // 从整个文件夹导入所有组件
@@ -465,7 +378,6 @@ export default {
     draggable,
     IconPicker,
     FormSetting,
-    TreeDataEditor,
     ...customFormFieldSettingsComponents
   },
   props: ['showField', 'activeData', 'formConf'],
@@ -580,15 +492,6 @@ export default {
         message: ''
       })
     },
-    addSelectItem() {
-      this.activeData.options.push({
-        label: '',
-        value: ''
-      })
-    },
-    setOptionValue(item, val) {
-      item.value = isNumberStr(val) ? +val : val
-    },
     setDefaultValue(val) {
       if (Array.isArray(val)) {
         return val.join(',')
@@ -691,39 +594,7 @@ export default {
   }
 }
 
-.select-item {
-  display: flex;
-  border: 1px dashed #fff;
-  box-sizing: border-box;
 
-  & .close-btn {
-    cursor: pointer;
-    color: #f56c6c;
-  }
-
-  & .el-input + .el-input {
-    margin-left: 4px;
-  }
-}
-
-.select-item + .select-item {
-  margin-top: 4px;
-}
-
-.select-item.sortable-chosen {
-  border: 1px dashed #409eff;
-}
-
-.select-line-icon {
-  line-height: 32px;
-  font-size: 22px;
-  padding: 0 4px;
-  color: #777;
-}
-
-.option-drag {
-  cursor: move;
-}
 
 .time-range {
   .el-date-editor {
