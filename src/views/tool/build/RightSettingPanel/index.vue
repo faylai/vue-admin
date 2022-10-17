@@ -52,22 +52,7 @@
           </el-form-item>
 
 
-          <el-form-item v-if="activeData.justify!==undefined&&activeData.type==='flex'" label="水平排列">
-            <el-select v-model="activeData.justify" placeholder="请选择水平排列" :style="{width: '100%'}">
-              <el-option
-                  v-for="(item, index) in justifyOptions"
-                  :key="index"
-                  :label="item.label"
-                  :value="item.value"/>
-            </el-select>
-          </el-form-item>
-          <el-form-item v-if="activeData.align!==undefined&&activeData.type==='flex'" label="垂直排列">
-            <el-radio-group v-model="activeData.align">
-              <el-radio-button label="top"/>
-              <el-radio-button label="middle"/>
-              <el-radio-button label="bottom"/>
-            </el-radio-group>
-          </el-form-item>
+
           <el-form-item v-if="activeData.labelWidth!==undefined" label="标签宽度">
             <el-input v-model.number="activeData.labelWidth" type="number" placeholder="请输入标签宽度"/>
           </el-form-item>
@@ -129,19 +114,7 @@
           <el-form-item v-if="activeData.step !== undefined" label="步长">
             <el-input-number v-model="activeData.step" placeholder="步数"/>
           </el-form-item>
-          <el-form-item v-if="activeData.tag === 'el-input-number'" label="精度">
-            <el-input-number v-model="activeData.precision" :min="0" placeholder="精度"/>
-          </el-form-item>
-          <el-form-item v-if="activeData.tag === 'el-input-number'" label="按钮位置">
-            <el-radio-group v-model="activeData['controls-position']">
-              <el-radio-button label="">
-                默认
-              </el-radio-button>
-              <el-radio-button label="right">
-                右侧
-              </el-radio-button>
-            </el-radio-group>
-          </el-form-item>
+
           <el-form-item v-if="activeData.maxlength !== undefined" label="最多输入">
             <el-input v-model="activeData.maxlength" placeholder="请输入字符长度">
               <template slot="append">
@@ -381,9 +354,7 @@
           <el-form-item v-if="activeData['show-word-limit'] !== undefined" label="输入统计">
             <el-switch v-model="activeData['show-word-limit']"/>
           </el-form-item>
-          <el-form-item v-if="activeData.tag === 'el-input-number'" label="严格步数">
-            <el-switch v-model="activeData['step-strictly']"/>
-          </el-form-item>
+
           <el-form-item v-if="activeData.tag === 'el-cascader'" label="是否多选">
             <el-switch v-model="activeData.props.props.multiple"/>
           </el-form-item>
@@ -474,7 +445,6 @@ const customFormFieldSettingsComponents = {}
 const customFormFieldSettingsComponentsKeys = {}
 reqCustomFormField.keys().forEach((key) => {
   const name = key.match(/\w+/)[0]
-  console.log(name, key)
   customFormFieldSettingsComponents[name] = reqCustomFormField(key).default
   customFormFieldSettingsComponentsKeys[name] = true
 })
@@ -564,35 +534,12 @@ export default {
           value: 'hsl'
         }
       ],
-      justifyOptions: [
-        {
-          label: 'start',
-          value: 'start'
-        },
-        {
-          label: 'end',
-          value: 'end'
-        },
-        {
-          label: 'center',
-          value: 'center'
-        },
-        {
-          label: 'space-around',
-          value: 'space-around'
-        },
-        {
-          label: 'space-between',
-          value: 'space-between'
-        }
-      ],
       customFormFieldSettingsComponentsKeys: customFormFieldSettingsComponentsKeys
     }
   },
   computed: {
     customFormFieldSettingKey() {
       const key = (this.activeData.tag || this.activeData.layout) + 'Setting'
-      console.log(camelCase(key))
       return camelCase(key)
     },
     documentLink() {

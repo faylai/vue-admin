@@ -11,6 +11,26 @@
       </el-radio-group>
     </el-form-item>
 
+    <el-form-item v-if="activeData.justify!==undefined&&activeData.type==='flex'" label="水平排列">
+      <el-select v-model="activeData.justify" placeholder="请选择水平排列" :style="{width: '100%'}">
+        <el-option
+            v-for="(item, index) in justifyOptions"
+            :key="index"
+            :label="item.label"
+            :value="item.value"/>
+      </el-select>
+    </el-form-item>
+
+
+    <el-form-item v-if="activeData.align!==undefined&&activeData.type==='flex'" label="垂直排列">
+      <el-radio-group v-model="activeData.align">
+        <el-radio-button label="top"/>
+        <el-radio-button label="middle"/>
+        <el-radio-button label="bottom"/>
+      </el-radio-group>
+    </el-form-item>
+
+
     <el-divider>布局结构树</el-divider>
     <el-tree
         :data="[activeData]"
@@ -38,6 +58,28 @@ export default {
   },
   data() {
     return {
+      justifyOptions: [
+        {
+          label: 'start',
+          value: 'start'
+        },
+        {
+          label: 'end',
+          value: 'end'
+        },
+        {
+          label: 'center',
+          value: 'center'
+        },
+        {
+          label: 'space-around',
+          value: 'space-around'
+        },
+        {
+          label: 'space-between',
+          value: 'space-between'
+        }
+      ],
       layoutTreeProps: {
         label(data, node) {
           return data.componentName || `${data.label}: ${data.vModel}`
