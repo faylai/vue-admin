@@ -112,14 +112,12 @@
         :form-conf="formConf"
         :show-field="!!drawingList.length"
         @tag-change="tagChange"/>
-    <input id="copyNode" type="hidden" ref="copyNode">
   </div>
 </template>
 
 <script>
 import draggable from 'vuedraggable'
 import beautifier from 'js-beautify'
-import ClipboardJS from 'clipboard'
 import RightSettingPanel from '@/views/tool/build/RightSettingPanel'
 import {
   inputComponents,
@@ -137,6 +135,8 @@ import DraggableForm from './DraggableForm'
 import GenerateTypeForm from '@/views/tool/build/GenerateTypeForm'
 import lodash from 'lodash'
 import { off, on } from 'element-ui/lib/utils/dom'
+import clipboard from '@/views/tool/build/mixins/clipboard'
+
 export default {
   name: 'FormBuilder',
   components: {
@@ -144,6 +144,9 @@ export default {
     RightSettingPanel,
     DraggableForm
   },
+  mixins: [
+    clipboard
+  ],
   data() {
     const defaultDrawingList = drawingDefault.map((item) => {
       const ret = lodash.cloneDeep(item)
@@ -190,22 +193,6 @@ export default {
       },
       immediate: true
     }
-  },
-  mounted() {
-    const clipboard = new ClipboardJS('#copyNode', {
-      text: trigger => {
-        const codeStr = this.generateCode(this.$refs.copyNode.generateConf)
-        this.$notify({
-          title: '成功',
-          message: '代码已复制到剪切板，可粘贴。',
-          type: 'success'
-        })
-        return codeStr
-      }
-    })
-    clipboard.on('error', e => {
-      this.$message.error('代码复制失败')
-    })
   },
   methods: {
     activeFormItem(element) {
@@ -323,8 +310,14 @@ export default {
         width: '500px'
       }, (form) => {
         form.$on('confirm', (generateConf) => {
-          this.$refs.copyNode.generateConf = generateConf
-          document.getElementById('copyNode').click()
+          const codeStr = this.generateCode(generateConf)
+          this.$clipboard(codeStr, () => {
+            this.$notify({
+              title: '成功',
+              message: '代码已复制到剪切板，可粘贴。',
+              type: 'success'
+            })
+          })
         })
       })
     },
