@@ -1,10 +1,6 @@
 <script>
-export default {
+const TreeNode = {
   name: 'TreeNode',
-  // 自己引入自己
-  components: {
-    NestedNode: () => import('./TreeNode.vue')
-  },
   props: {
     node: {
       type: Object,
@@ -72,7 +68,7 @@ export default {
           return <ul>
             {this.node.childNodes.map((child) => {
               return (
-                  <NestedNode node={child}
+                  <TreeNode node={child}
                               scopedSlots={nodeScopeSlots}
                               key={child.objectId}
                               select-mode={this.selectMode}
@@ -80,7 +76,7 @@ export default {
                               vOn:update-more={($event) => this.$emit('update-more', $event)}
                               vOn:node-click={($event) => this.$emit('node-click', $event)}
                               vOn:node-check={($event) => this.$emit('node-check', $event)}
-                              vOn:update-expanded={($event) => this.$emit('update-expanded', $event)}></NestedNode>)
+                              vOn:update-expanded={($event) => this.$emit('update-expanded', $event)}></TreeNode>)
             })}
             {(() => {
               if (this.node.childNodes.length < this.node.objectCount) {
@@ -108,6 +104,7 @@ export default {
     }
   }
 }
+export default TreeNode
 </script>
 
 
