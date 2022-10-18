@@ -90,3 +90,11 @@ export default {
 }
 </script>
 
+<style lang="scss" scoped>
+.node-label {
+  font-size: 14px;
+}
+.node-icon {
+  color: #bebfc3;
+}
+</style>

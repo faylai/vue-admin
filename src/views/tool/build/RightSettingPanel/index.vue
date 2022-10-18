@@ -61,30 +61,11 @@
                 @input="onDefaultValueInput"/>
           </el-form-item>
 
-          <el-form-item v-if="activeData.prepend!==undefined" label="前缀">
-            <el-input v-model="activeData.prepend" placeholder="请输入前缀"/>
-          </el-form-item>
-          <el-form-item v-if="activeData.append!==undefined" label="后缀">
-            <el-input v-model="activeData.append" placeholder="请输入后缀"/>
-          </el-form-item>
-
-
-          <el-form-item v-if="activeData['prefix-icon']!==undefined" label="前图标">
-            <IconPicker v-model="activeData['prefix-icon']" placeholder="请输入前图标名称" clearable></IconPicker>
-          </el-form-item>
-
-          <el-form-item v-if="activeData['suffix-icon'] !== undefined" label="后图标">
-            <IconPicker v-model="activeData['suffix-icon']" placeholder="请输入后图标名称" clearable></IconPicker>
-          </el-form-item>
 
 
 
-          <el-form-item v-if="activeData.autosize !== undefined" label="最小行数">
-            <el-input-number v-model="activeData.autosize.minRows" :min="1" placeholder="最小行数"/>
-          </el-form-item>
-          <el-form-item v-if="activeData.autosize !== undefined" label="最大行数">
-            <el-input-number v-model="activeData.autosize.maxRows" :min="1" placeholder="最大行数"/>
-          </el-form-item>
+
+
           <el-form-item v-if="activeData.min !== undefined" label="最小值">
             <el-input-number v-model="activeData.min" placeholder="最小值"/>
           </el-form-item>
@@ -101,24 +82,7 @@
             </el-input>
           </el-form-item>
 
-          <el-form-item
-              v-if="activeData.size !== undefined &&
-              (activeData.optionType === 'button' ||
-                activeData.border ||
-                activeData.tag === 'el-color-picker')"
-              label="选项尺寸">
-            <el-radio-group v-model="activeData.size">
-              <el-radio-button label="medium">
-                中等
-              </el-radio-button>
-              <el-radio-button label="small">
-                较小
-              </el-radio-button>
-              <el-radio-button label="mini">
-                迷你
-              </el-radio-button>
-            </el-radio-group>
-          </el-form-item>
+
 
 
           <el-form-item v-if="activeData['show-word-limit'] !== undefined" label="输入统计">
@@ -187,7 +151,7 @@ import {
   selectComponents
 } from '@/views/tool/build/generator/config'
 
-import IconPicker from '@/views/tool/build/IconPicker'
+
 
 import FormSetting from '@/views/tool/build/RightSettingPanel/formSetting'
 
@@ -204,7 +168,6 @@ reqCustomFormField.keys().forEach((key) => {
 export default {
   components: {
     draggable,
-    IconPicker,
     FormSetting,
     ...customFormFieldSettingsComponents
   },
@@ -340,11 +303,4 @@ export default {
   font-size: 18px;
 }
 
-.node-label {
-  font-size: 14px;
-}
-
-.node-icon {
-  color: #bebfc3;
-}
 </style>
