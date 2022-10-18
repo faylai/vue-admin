@@ -11,7 +11,7 @@
   </ul>
 </template>
 <script>
-import iconList from '@/views/tool/build/generator/icon.json'
+import iconList from '@/views/tool/build/iconsForm/icon.json'
 
 const originList = iconList.map(name => `el-icon-${name}`)
 

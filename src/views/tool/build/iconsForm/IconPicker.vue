@@ -1,5 +1,5 @@
 <script>
-import IconsForm from '@/views/tool/build/IconsForm'
+import IconsForm from '@/views/tool/build/iconsForm/IconsForm'
 import Emitter from 'element-ui/lib/mixins/emitter'
 
 export default {

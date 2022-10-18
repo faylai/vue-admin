@@ -27,7 +27,7 @@
 </template>
 
 <script>
-import IconPicker from '@/views/tool/build/IconPicker'
+import IconPicker from '@/views/tool/build/iconsForm/IconPicker'
 
 export default {
   name: 'ElInputNumberSetting',
