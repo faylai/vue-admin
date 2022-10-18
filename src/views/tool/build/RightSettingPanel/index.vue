@@ -47,7 +47,6 @@
           </el-form-item>
 
 
-
           <el-form-item v-if="activeData.labelWidth!==undefined" label="标签宽度">
             <el-input v-model.number="activeData.labelWidth" type="number" placeholder="请输入标签宽度"/>
           </el-form-item>
@@ -60,10 +59,6 @@
                 placeholder="请输入默认值"
                 @input="onDefaultValueInput"/>
           </el-form-item>
-
-
-
-
 
 
           <el-form-item v-if="activeData.min !== undefined" label="最小值">
@@ -81,8 +76,6 @@
               </template>
             </el-input>
           </el-form-item>
-
-
 
 
           <el-form-item v-if="activeData['show-word-limit'] !== undefined" label="输入统计">
@@ -150,8 +143,6 @@ import {
   inputComponents,
   selectComponents
 } from '@/views/tool/build/generator/config'
-
-
 
 import FormSetting from '@/views/tool/build/RightSettingPanel/formSetting'
 
@@ -273,7 +264,6 @@ export default {
     height: 100%;
   }
 }
-
 
 
 .time-range {
