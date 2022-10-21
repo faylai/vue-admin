@@ -33,7 +33,9 @@ export default {
         </el-option>
       })
     }
-    return h(EnforceSlotSelect, context.data, normalizeSlots(slots))
+    const data = Object.assign(context.data)
+    data.on = context.listeners
+    return h(EnforceSlotSelect, data, normalizeSlots(slots))
   }
 }
 </script>
