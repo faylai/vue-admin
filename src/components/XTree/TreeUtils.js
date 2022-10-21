@@ -59,16 +59,16 @@ export function formatTreeData(nodes, parent) {
       // TODO 添加节点图标样式
       node.iconCls = ''
       node.level = level
-      if (_.isUndefined(node.objectType)) {
+      if (_.isNil(node.objectType)) {
         node.objectType = ''
       }
-      if (_.isUndefined(node.children)) {
+      if (_.isNil(node.children)) {
         node.children = []
       }
-      if (node.children.length && _.isUndefined(node.objectCount)) {
+      if (node.children.length && _.isNil(node.objectCount)) {
         node.objectCount = node.children.length
       }
-      if (_.isUndefined(node.objectCount)) {
+      if (_.isNil(node.objectCount)) {
         node.objectCount = node.children.length || 0
       }
       node.expanded = node.expanded || false
