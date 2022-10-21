@@ -21,7 +21,7 @@
           <DropDownTree
               v-model="dropDownValue"
               :multiple="true"
-              :collapseTags="true"
+              :collapseTags="false"
               :clearable="true"
               :tree-config="{localSearch:true,fetchTreePromiseFn:fetchSyncTreePromiseFn,onlyLeaf:true}">
             <template v-slot:node="node">
