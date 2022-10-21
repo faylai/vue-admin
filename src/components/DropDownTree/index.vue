@@ -322,7 +322,7 @@ export default {
       </div>
       <el-dropdown-menu slot="dropdown" ref="panel">
         {/** 这里要注意 depProps 配置，depProps 里面变量的是否变动决定了xtree 是否重新渲染 */}
-        <SmartCache depProps={{ value: this.value, height: this.dropDownHeight }}
+        <SmartCache depProps={{ value: this.value, height: this.dropDownHeight, params: this.treeConfig.params }}
                     nodeRender={() => {
                       return (<XTree scopedSlots={nodeScopeSlots}
                                      ref="xtree"
