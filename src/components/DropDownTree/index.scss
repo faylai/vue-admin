@@ -6,7 +6,7 @@
   position: relative;
   font-size: $--font-size-base;
   line-height: $--input-height;
-
+  width: 100%;
   &:not(.is-disabled):hover {
     .el-input__inner {
       cursor: pointer;
