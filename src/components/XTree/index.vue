@@ -138,12 +138,12 @@ export default {
         <label class="fuzzy-search">
           <input type="text"
                  vModel_trim={this.keywords}
-                 vOn:keydown_enter_stop={this.search}
+                 vOn:keydown_enter_stop={this.onSearch}
                  vOn:focus={this.onInputFocus}
                  vOn:blur={this.onInputBlur}
                  class={[this.inputFocused && 'focus']}
                  ref="input"/>
-          <span class="bc-query-icon icon" vOn:click={this.search}></span>
+          <span class="bc-query-icon icon" vOn:click={this.onSearch}></span>
         </label>
         <span class="bc-refresh-icon icon" vOn:click={this.refresh}></span>
         <span class="bc-brush-icon icon" vOn:click={this.clear}>< /span>
@@ -209,6 +209,9 @@ export default {
     },
     refresh: function() {
       this.search(true)
+    },
+    onSearch() {
+      this.search(false)
     },
     search: function(isRefresh) {
       const keywords = String(this.keywords || '').trim()
