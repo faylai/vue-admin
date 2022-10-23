@@ -192,8 +192,8 @@ export default {
         }, {
           field: 'sex',
           title: '性别',
-          formatter: function(value) {
-            if (String(value) === '1') {
+          formatter: function(params) {
+            if (String(params.cellValue) === '1') {
               return '男'
             } else {
               return '女'
