@@ -204,6 +204,7 @@ export default {
     },
     onSearch() {
       this.search(false)
+      this.$nextTick(this.focusInput)
     },
     search: function(isRefresh) {
       const keywords = String(this.keywords || '').trim()
