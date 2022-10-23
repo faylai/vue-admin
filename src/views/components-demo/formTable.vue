@@ -57,7 +57,7 @@ export default {
         table: [
           {
             type: 'table',
-            required:true,
+            required: true,
             trigger: 'change'
           }
         ],
