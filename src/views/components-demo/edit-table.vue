@@ -3,7 +3,7 @@
     <template #header>
       <BaseFilterPanel :form-config="formConfig" @query="handleQuery">
         <FilterItem>
-          <el-button @click="showFormDialog">打开窗口</el-button>
+          <el-button @click="showFormDialog">表单验证</el-button>
         </FilterItem>
         <FilterItem prop="name1">
           <DropDownTree
@@ -56,10 +56,10 @@
           <span> {{ row.name }}</span>
         </template>
         <template #sex_edit="{ row }">
-          <vxe-select v-model="row.sex" transfer>
-            <vxe-option v-for="item in sexOptions" :key="item.value" :value="item.value"
-                        :label="item.label"></vxe-option>
-          </vxe-select>
+          <el-select v-model="row.sex" transfer>
+            <el-option v-for="item in sexOptions" :key="item.value" :value="item.value"
+                       :label="item.label"></el-option>
+          </el-select>
         </template>
       </FieldGrid>
     </template>
@@ -75,8 +75,8 @@ import ExtStaticSelect from '@/components/ExtStaticSelect'
 import ExtRemoteSelect from '@/components/ExtRemoteSelect'
 import DropDownTree from '@/components/DropDownTree'
 import service from '@/api/service'
-import UserForm from '@/views/components-demo/user/form'
 import formTable from '@/views/components-demo/formTable'
+
 export default {
   name: 'EditTable',
   components: {
@@ -192,6 +192,13 @@ export default {
         }, {
           field: 'sex',
           title: '性别',
+          formatter: function(value) {
+            if (String(value) === '1') {
+              return '男'
+            } else {
+              return '女'
+            }
+          },
           editRender: {},
           slots: { edit: 'sex_edit' }
         }, {

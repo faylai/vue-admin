@@ -76,7 +76,7 @@ export default {
         keepSource: true,
         showOverflow: 'title',
         height: 'auto',
-        pagerConfig: true,
+        pagerConfig: false, // 不分页
         toolbarConfig: {
           buttons: [{
             code: 'addMe',
