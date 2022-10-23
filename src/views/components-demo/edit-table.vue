@@ -228,7 +228,7 @@ export default {
       }
     },
     toolbarButtonClickEvent({ code }) {
-      const instance = this.$refs.xGrid.instance
+      const instance = this.$refs.xGrid
       if (code === 'refreshMe') {
         this.gridOptions.params = {
           a: new Date().getTime()
@@ -238,12 +238,7 @@ export default {
           name: ''
         })
       } else if (code === 'deleteMe') {
-        const rows = instance.getCheckboxRecords()
-        if (rows.length === 0) {
-          this.$message.info('请选择要删除的行')
-        } else {
-          rows.forEach((row) => instance.remove(row))
-        }
+        instance.remove()
       } else if (code === 'saveMe') {
         // const {
         //   insertRecords,
