@@ -2,6 +2,9 @@
   <FilterListLayout>
     <template #header>
       <BaseFilterPanel :form-config="formConfig" @query="handleQuery">
+        <FilterItem>
+          <el-button @click="showFormDialog">打开窗口</el-button>
+        </FilterItem>
         <FilterItem prop="name1">
           <DropDownTree
               v-model="formConfig.model.name1"
@@ -39,6 +42,7 @@
                            request-key="example.getPersonList"></ExtRemoteSelect>
 
         </FilterItem>
+
       </BaseFilterPanel>
     </template>
     <template #content>
@@ -46,7 +50,6 @@
           ref="xGrid"
           :gridOptions="gridOptions"
           :query-promise-function="queryOptions.queryPromiseFunction"
-          :params="queryOptions.params"
           @toolbar-button-click="toolbarButtonClickEvent">
         <template #name="{ row }">
           <span>@</span>
@@ -72,7 +75,8 @@ import ExtStaticSelect from '@/components/ExtStaticSelect'
 import ExtRemoteSelect from '@/components/ExtRemoteSelect'
 import DropDownTree from '@/components/DropDownTree'
 import service from '@/api/service'
-
+import UserForm from '@/views/components-demo/user/form'
+import formTable from '@/views/components-demo/formTable'
 export default {
   name: 'EditTable',
   components: {
@@ -206,12 +210,19 @@ export default {
         }]
       },
       queryOptions: {
-        queryPromiseFunction: this.createQuery,
-        params: {}
+        queryPromiseFunction: this.createQuery
       }
     }
   },
   methods: {
+    showFormDialog() {
+      this.$dialog(formTable, {
+        form: {}
+      }).show({
+        title: '物料入库',
+        width: '600px'
+      })
+    },
     fetchSyncTreePromiseFn: function(params) {
       return service.requestByKey('example.getSyncTree', params)
     },

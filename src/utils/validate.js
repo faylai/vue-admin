@@ -1,7 +1,5 @@
 import AsyncValidator from 'async-validator'
 import _ from 'lodash'
-import { validObjEmpty } from '@/utils'
-import { translate } from '@/utils/i18n'
 
 /**
  * @param {string} path
@@ -56,14 +54,17 @@ AsyncValidator.register('rangeNumber', (rule, value, callback) => {
 })
 
 // 编辑表格验证
-AsyncValidator.register('fieldGrid', (rule, value, callback) => {
+AsyncValidator.register('table', (rule, value, callback) => {
+  const ruleHasMin = _.has(rule, 'min')
   if (value && value.error) {
-    const message = rule.gridMsg || translate('table.tableFillErrorTip')
+    const message = rule.msg || '编辑表格填写有误'
     callback(new Error(message))
   } else {
-    if (rule.hasOwn('minRow') && rule.minRow >= 1) {
-      if (value && value.all && value.all.filter(item => !validObjEmpty(item)).length < rule.minRow) {
-        callback(new Error(rule.message || translate('table.leastAddRowTip', [rule.minRow])))
+    if (rule.required || (ruleHasMin && rule.min >= 1)) {
+      if (ruleHasMin && (value.total || 0) < rule.min) {
+        callback(new Error('至少要填写行数：' + rule.min))
+      } else if (rule.required && (value.total || 0) === 0) {
+        callback(new Error('至少要填写行数：1'))
       } else {
         callback()
       }

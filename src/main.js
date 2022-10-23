@@ -15,6 +15,7 @@ import '@/permission' // permission control
 import DialogService from '@/plugins/DialogService'
 import $download from '@/plugins/download'
 import './components/vxe/install.js'
+import '@/utils/validate.js'
 import lodash from 'lodash'
 
 window.$ = window.jQuery = require('jquery')

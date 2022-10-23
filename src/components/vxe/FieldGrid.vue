@@ -35,10 +35,16 @@ export default {
     }
   },
   methods: {
-    emitChange() {
-      console.log('change')
-      this.$emit('change', this.getValue())
-      this.dispatch('ElFormItem', 'el.form.change', this.getValue())
+    emitChange(error) {
+      let value = {}
+      if (error) {
+        value.error = error
+        value.total = 0
+      } else {
+        value = this.getValue()
+      }
+      this.$emit('change', value)
+      this.dispatch('ElFormItem', 'el.form.change', value)
     },
     onActive: function() {
       this.editType = inner
@@ -70,7 +76,7 @@ export default {
     },
     getValue() {
       const ret = this.instance.getRecordset()
-      ret.total = this.getTableData().length
+      ret.total = this.getTableData().tableData.length
       return ret
     },
     getRecordset() {
@@ -84,9 +90,7 @@ export default {
     },
     onBlur() {
       this.validate((err) => {
-        if (!err) {
-          this.emitChange()
-        }
+        this.emitChange(err)
       })
     },
     // expose validate api for outer invoke
