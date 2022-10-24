@@ -509,6 +509,13 @@ export default {
       const nodes = lodash.isArray(node) ? node : [node]
       return lodash.map(nodes, function(node) {
         const plainNode = lodash.assign({}, node)
+        Object.defineProperties(plainNode, {
+          _node: {
+            enumerable: false,
+            configurable: false,
+            value: node.parentNode
+          }
+        })
         delete plainNode.parentNode
         delete plainNode.children
         delete plainNode.childNodes
