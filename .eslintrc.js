@@ -97,6 +97,7 @@ module.exports = {
       'allowLoop': false,
       'allowSwitch': false
     }],
+    'object-curly-space':'off',
     'no-lone-blocks': 2,
     'no-mixed-spaces-and-tabs': 2,
     'no-multi-spaces': 2,
