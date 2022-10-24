@@ -513,7 +513,7 @@ export default {
           _node: {
             enumerable: false,
             configurable: false,
-            value: node.parentNode
+            value: node
           }
         })
         delete plainNode.parentNode
