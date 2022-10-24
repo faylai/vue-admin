@@ -52,7 +52,6 @@
           :query-promise-function="queryOptions.queryPromiseFunction"
           @toolbar-button-click="toolbarButtonClickEvent">
         <template #name="{ row }">
-          <span>@</span>
           <span> {{ row.name }}</span>
         </template>
         <template #sex_edit="{ row }">
@@ -60,6 +59,28 @@
             <el-option v-for="item in sexOptions" :key="item.value" :value="item.value"
                        :label="item.label"></el-option>
           </el-select>
+        </template>
+        <template #role_edit="{ row }">
+          <ExtRemoteSelect v-model.trim="row.role"
+                           :clearable="true"
+                           :show-page="true"
+                           :collapse-tags="true"
+                           placeholder="请选择角色"
+                           value-key="no"
+                           label-key="name"
+                           request-key="example.getPersonList">
+          </ExtRemoteSelect>
+        </template>
+        <template #org_edit="{ row }">
+          <DropDownTree
+              v-model="row.org"
+              placeholder="请选择组织"
+              :collapseTags="true"
+              v-on:change="onOrgChange(arguments,row)"
+              :clearable="true"
+              :multiple="false"
+              :tree-config="{localSearch:true,fetchTreePromiseFn:fetchSyncTreePromiseFn}">
+          </DropDownTree>
         </template>
       </FieldGrid>
     </template>
@@ -186,9 +207,13 @@ export default {
           slots: { default: 'name' },
           editRender: { name: 'input' }
         }, {
-          field: 'nickname',
-          title: '昵称',
-          editRender: { name: 'input' }
+          field: 'org',
+          title: '组织',
+          formatter(params) {
+            return params.row.orgName
+          },
+          editRender: {},
+          slots: { edit: 'org_edit' }
         }, {
           field: 'sex',
           title: '性别',
@@ -210,7 +235,11 @@ export default {
         }, {
           field: 'role',
           title: '角色',
-          editRender: { name: 'input' }
+          editRender: {},
+          slots: { edit: 'role_edit' },
+          formatter(params) {
+            return params.row.roleName
+          }
         }, {
           field: 'address',
           title: '地址'
@@ -273,6 +302,11 @@ export default {
         this.printReview()
       }
     },
+    onOrgChange(rawArgs, row) {
+      if (rawArgs[1].length) {
+        row.orgName = rawArgs[1][0].objectName
+      }
+    },
     createQuery: function(params) {
       return new Promise(resolve => {
         setTimeout(() => {
@@ -283,8 +317,10 @@ export default {
               data: [{
                 id: 10001,
                 name: 'Test1',
-                nickname: 'T1',
-                role: 'Develop',
+                org: '722FF1B7692F44C59A8EE344F34C823F',
+                orgName: '安蓝环保',
+                role: 'ald0030040',
+                roleName: '倪祖华',
                 sex: '1',
                 age: 28,
                 address: 'Shenzhen 88888888888888888888888888888888888'
