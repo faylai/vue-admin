@@ -419,9 +419,17 @@ export default {
       selectNodes.push.apply(selectNodes, branches)
       selectNodes.push.apply(selectNodes, leaves)
       if (this.selectObjectType) {
-        selectNodes = lodash.filter(selectNodes, (node) => {
-          return this.selectObjectType.split(',').indexOf(node.objectType) >= 0
-        })
+        if (this.selectObjectType) {
+          const matchTypeNodes = []
+          lodash.each(selectNodes, (node) => {
+            iterateTree(node, (selectedNode) => {
+              if (this.selectObjectType.split(',').indexOf(selectedNode.objectType) >= 0) {
+                matchTypeNodes.push(selectedNode)
+              }
+            })
+          })
+          selectNodes = matchTypeNodes
+        }
       }
 
       this._selectNodes = selectNodes
