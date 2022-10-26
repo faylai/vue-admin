@@ -58,7 +58,7 @@ AsyncValidator.register('table', (rule, value, callback) => {
   const ruleHasMin = _.has(rule, 'min')
   if (value && value.error) {
     console.log('value.error', value.error)
-    const message = rule.msg || '编辑表格填写有误'
+    const message = `${rule.label || '表格'}填写有误`
     callback(new Error(message))
   } else {
     console.log('value', value)
