@@ -9,7 +9,7 @@ const confirmButtonConfig = {
 }
 
 const cancelButtonConfig = {
-  text: '取消',
+  text: '关 闭',
   // 调用包裹组件方法的名称
   trigger: 'cancel'
 }
@@ -70,7 +70,8 @@ function install(Vue, config) {
                                       console.error(`请定义${copyConfirmButtonConfig.text} 按钮触发的方法:${copyConfirmButtonConfig.trigger}`)
                                     }
                                   }
-                                }}>{copyConfirmButtonConfig.text}</el-button>
+                                }}
+              >{copyConfirmButtonConfig.text}</el-button>
             }
 
           })()}
@@ -94,7 +95,8 @@ function install(Vue, config) {
                                       this.close()
                                     }
                                   }
-                                }}>{copyCancelButtonConfig.text}</el-button>
+                                }}
+              >{copyCancelButtonConfig.text}</el-button>
             }
 
           })()}
@@ -119,7 +121,8 @@ function install(Vue, config) {
                                       }
                                     }
                                   }
-                                }}>{item.text}</el-button>
+                                }}
+              >{item.text}</el-button>
             })
           }
         </div>)
@@ -148,10 +151,7 @@ function install(Vue, config) {
         }
       },
       close() {
-        const beforeClose = this.beforeClose || function() {
-          return true
-        }
-        if (beforeClose()) {
+        if (this.onClose()) {
           this.visible = false
           this.$nextTick(function() {
             this.$destroy()
@@ -203,6 +203,9 @@ function install(Vue, config) {
     const instance = new ElDialogConstructor(Object.assign({
       el: document.createElement('div'),
       data: {
+        onClose: function() {
+          return true
+        },
         componentConfig: {
           class: Component,
           props: props,

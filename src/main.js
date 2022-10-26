@@ -12,7 +12,7 @@ import router from './router'
 import i18n from './lang'
 import '@/icons' // icon
 import '@/permission' // permission control
-import DialogService from '@/plugins/DialogService'
+import DialogService from '@/plugins/dialogService'
 import $download from '@/plugins/download'
 import './components/vxe/install.js'
 import '@/utils/validate.js'
