@@ -46,6 +46,9 @@ export default {
         userName: [
           { required: true, message: '用户名称不能为空', trigger: 'blur' },
           { min: 2, max: 20, message: '用户名称长度必须介于 2 和 20 之间', trigger: 'blur' }
+        ],
+        table: [
+          { required: true, type: 'table', min: 1, msg: '物料填写有误', trigger: 'change' }
         ]
       },
       gridOptions: {

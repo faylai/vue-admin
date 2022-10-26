@@ -57,9 +57,11 @@ AsyncValidator.register('rangeNumber', (rule, value, callback) => {
 AsyncValidator.register('table', (rule, value, callback) => {
   const ruleHasMin = _.has(rule, 'min')
   if (value && value.error) {
+    console.log('value.error', value.error)
     const message = rule.msg || '编辑表格填写有误'
     callback(new Error(message))
   } else {
+    console.log('value', value)
     if (rule.required || (ruleHasMin && rule.min >= 1)) {
       if (ruleHasMin && (value.total || 0) < rule.min) {
         callback(new Error('至少要填写行数：' + rule.min))

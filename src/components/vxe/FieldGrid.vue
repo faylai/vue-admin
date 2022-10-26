@@ -3,13 +3,15 @@ import elEmitter from 'element-ui/lib/mixins/emitter'
 import { normalizeSlots } from '@/utils'
 import XGrid from './XGrid'
 import lodash from 'lodash'
+import clickoutside from 'element-ui/lib/utils/clickoutside'
 
-const inner = 'inner'
-const outer = 'outer'
 export default {
   name: 'FieldGrid',
   mixins: [elEmitter],
   inheritAttrs: false,
+  directives: {
+    clickoutside
+  },
   model: {
     prop: 'value',
     event: 'change'
@@ -30,9 +32,7 @@ export default {
     }
   },
   data() {
-    return {
-      editType: outer
-    }
+    return {}
   },
   methods: {
     emitChange(error) {
@@ -47,36 +47,21 @@ export default {
       this.dispatch('ElFormItem', 'el.form.change', value)
     },
     onActive: function() {
-      this.editType = inner
-    },
-    setInnerType() {
-      this.editType = inner
-    },
-    setOuterType() {
-      this.editType = outer
+      // 看以后有什么用处
     },
     /**
      * 处理自动触发验证的逻辑，只要再编辑里面切换行就验证
      * @param params
      */
     onEditClosed(params) {
-      // 触发数据同步
-      const $table = $(this.$el).find('.vxe-table')
-      if (params.$event && params.$event.target && $.contains($table, params.$event.target)) {
-        this.setInnerType()
-      } else {
-        if (this.editType === inner) {
-          this.onBlur()
-        }
-        this.setOuterType()
-      }
+      // 看以后有什么用处
     },
     getTableData() {
       return this.instance.getTableData()
     },
     getValue() {
       const ret = this.instance.getRecordset()
-      ret.total = this.getTableData().tableData.length
+      ret.total = (this.getTableData().tableData || []).length
       return ret
     },
     getRecordset() {
@@ -97,10 +82,10 @@ export default {
     showIfError() {
       this.validate(this.getTableData())
     },
-    insert(obj, isValid = false) {
+    insert(obj) {
       this.instance.insert(obj || {}).then((meta) => {
         this.instance.setActiveRow(meta.row)
-        isValid && this.onBlur()
+        this.onBlur()
       })
     },
     getCheckboxRecords() {
@@ -134,6 +119,14 @@ export default {
     const listeners = this.applyListeners(this.$listeners)
     return h(XGrid, {
       props: this.$props,
+      directives: [
+        {
+          name: 'clickoutside',
+          value: () => {
+            this.onBlur()
+          }
+        }
+      ],
       attrs: this.attrs,
       scopedSlots: this.$scopedSlots,
       on: listeners
