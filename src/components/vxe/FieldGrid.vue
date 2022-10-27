@@ -40,6 +40,16 @@ export default {
       if (error) {
         value.error = error
         value.total = 0
+        Object.defineProperties(value, {
+          total: {
+            value: 0,
+            enumerable: false
+          },
+          error: {
+            value: error,
+            enumerable: false
+          }
+        })
       } else {
         value = this.getValue()
       }
@@ -60,8 +70,14 @@ export default {
       return this.instance.getTableData()
     },
     getValue() {
-      const ret = this.instance.getRecordset()
-      ret.total = (this.getTableData().tableData || []).length
+      const ret = lodash.cloneDeep(this.instance.getRecordset())
+      const total = (this.getTableData().tableData || []).length
+      Object.defineProperties(ret, {
+        total: {
+          value: total,
+          enumerable: false
+        }
+      })
       return ret
     },
     getRecordset() {
