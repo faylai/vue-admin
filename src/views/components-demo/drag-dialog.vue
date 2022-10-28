@@ -199,6 +199,13 @@ export default {
         title: '这是Service 形式打开的Dialog'
       })
     }
+  },
+  mounted() {
+    setTimeout(() => {
+      this.dropDownValueAsync = '3193DF41119F47CBA4535074146E9AAA,1FE29AD581784006A0A3E5454B406397'
+      this.dropDownLabelAsync = '苏E89C3E,苏U95G00'
+      this.dropDownValue = '1FE29AD581784006A0A3E5454B406397'
+    }, 3000)
   }
 }
 </script>
