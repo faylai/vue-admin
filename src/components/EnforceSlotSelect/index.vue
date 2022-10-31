@@ -365,10 +365,10 @@ export default {
   },
   created() {
     this.$emit('created', this)
+    this.resetEnforceScope()
     if (this.remote === true && this.requestKey) {
       this.requestMethod('')
     }
-    this.resetEnforceScope()
   },
   // 用来截获选中的值用以保证分页的时候的选中
   mounted() {
