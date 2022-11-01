@@ -19,11 +19,13 @@
                            :items="CONSTANCE.userStatus"></ExtStaticSelect>
         </FilterItem>
         <FilterItem prop="name3">
-          <ExtStaticSelect v-model="formConfig.model.name3"
-                           clearable
-                           placeholder="请选择性别"
-                           :items="CONSTANCE.sex">
-          </ExtStaticSelect>
+          <DropDownGrid v-model="formConfig.model.name3"
+                        clearable
+                        value-key="userId"
+                        label-key="userName"
+                        :grid-config="{gridOptions:dropGridOptions, queryPromiseFunction:fetchUserListFunction}"
+                        placeholder="表格选择">
+          </DropDownGrid>
         </FilterItem>
         <FilterItem prop="name4">
           <ExtRemoteSelect v-model.trim="formConfig.model.name4"
@@ -70,6 +72,8 @@ import constance from './constance'
 import UserForm from './form'
 import XPopConfirm from '@/components/XPopConfirm'
 
+import DropDownGrid from '@/components/DropDownGrid'
+
 export default {
   name: 'UserList',
   components: {
@@ -80,6 +84,7 @@ export default {
     ExtRemoteSelect,
     DropDownTree,
     XGrid,
+    DropDownGrid,
     XPopConfirm
   },
   mixins: [constance],
@@ -98,6 +103,28 @@ export default {
             { required: true, message: '请选择组织', trigger: 'change' }
           ]
         }
+      },
+      dropGridOptions: {
+        params: {},
+        pagerConfig: true,
+        id: 'userId',
+        columns: [{
+          type: 'seq',
+          title: '序号',
+          width: 60
+        }, {
+          field: 'userId',
+          title: '用户编号'
+        }, {
+          field: 'userName',
+          title: '用户名称'
+        }, {
+          field: 'nickName',
+          title: '用户昵称'
+        }, {
+          field: 'dept.deptName',
+          title: '部门'
+        }]
       },
       gridOptions: {
         params: {},
