@@ -114,16 +114,15 @@ export default {
           width: 60
         }, {
           field: 'userId',
-          title: '用户编号'
+          title: '用户编号',
+          width: 80
         }, {
           field: 'userName',
-          title: '用户名称'
+          title: '用户名称',
+          width: 80
         }, {
           field: 'nickName',
           title: '用户昵称'
-        }, {
-          field: 'dept.deptName',
-          title: '部门'
         }]
       },
       gridOptions: {

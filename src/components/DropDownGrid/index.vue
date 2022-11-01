@@ -272,6 +272,7 @@ export default {
   },
   created() {
     this.gridOptions = cloneDeep(this.gridConfig.gridOptions || {})
+    this.gridOptions.border = false
   },
   render(h) {
     const nodeScopeSlots = {
@@ -372,7 +373,7 @@ export default {
         })()
         }
       </div>
-      <el-dropdown-menu slot="dropdown" ref="panel">
+      <el-dropdown-menu slot="dropdown" ref="panel" class="dropdown-grid-menu">
         {/** 这里要注意 depProps 配置，depProps 里面变量的是否变动决定了xtree 是否重新渲染 */}
         <SmartCache
             depProps={{ height: this.dropDownHeight, params: this.gridOptions.params }}
