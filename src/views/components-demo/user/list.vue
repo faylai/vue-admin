@@ -24,7 +24,7 @@
                         value-key="userId"
                         label-key="userName"
                         :grid-config="{gridOptions:dropGridOptions, queryPromiseFunction:fetchUserListFunction}"
-                        placeholder="表格选择">
+                        placeholder="请选择">
           </DropDownGrid>
         </FilterItem>
         <FilterItem prop="name4">
@@ -201,6 +201,7 @@ export default {
       console.log('remove')
     },
     fetchUserListFunction: function(params) {
+      console.log('loading')
       return service.requestByKey('example.getUserList', params)
     },
     fetchSyncTreePromiseFn: function(params) {

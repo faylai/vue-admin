@@ -79,7 +79,8 @@ export default {
       dropDownVisible: false,
       presentTags: [],
       checkedNodes: [],
-      keyword: ''
+      keyword: '',
+      gridOptions: {}
     }
   },
   computed: {
@@ -269,22 +270,24 @@ export default {
       immediate: true
     }
   },
+  created() {
+    this.gridOptions = cloneDeep(this.gridConfig.gridOptions || {})
+  },
   render(h) {
     const nodeScopeSlots = {
       node: this.$scopedSlots.node || function emptyScopeNode() {
         return ''
       }
     }
-    const gridOptions = cloneDeep(this.gridConfig.gridOptions || {})
-    if (gridOptions.columns) {
+    if (this.gridOptions.columns) {
       if (this.multiple) {
-        gridOptions.columns.unshift({
+        this.gridOptions.columns.unshift({
           type: 'checkbox',
           width: 50
         })
       }
     }
-    gridOptions.rowConfig = {
+    this.gridOptions.rowConfig = {
       isCurrent: true,
       isHover: true
     }
@@ -300,12 +303,10 @@ export default {
            vOn:keyup_enter={($event) => {
              this.$refs.popper.show()
              const keyword = String(this.keyword).trim()
-             if (keyword.length) {
-               const params = Object.assign({}, gridOptions.params)
-               params.keyword = keyword
-               gridOptions.params = params
-               console.log('trigger search ')
-             }
+             const params = Object.assign({}, this.gridOptions.params)
+             params.keyword = keyword
+             this.gridOptions.params = params
+             console.log('trigger search ')
            }}
            vOn:click_stop={() => {
              this.$refs.popper.show()
@@ -374,14 +375,14 @@ export default {
       <el-dropdown-menu slot="dropdown" ref="panel">
         {/** 这里要注意 depProps 配置，depProps 里面变量的是否变动决定了xtree 是否重新渲染 */}
         <SmartCache
-            depProps={{ value: this.value, height: this.dropDownHeight, params: this.gridConfig.gridOptions.params }}
+            depProps={{ height: this.dropDownHeight, params: this.gridOptions.params }}
             nodeRender={() => {
               return (<XGrid scopedSlots={nodeScopeSlots}
                              ref="xGrid"
                              style={{ height: this.dropDownHeight }}
                              vOn:current-change={this.gridChange}
                              queryPromiseFunction={this.gridConfig.queryPromiseFunction}
-                             gridOptions={gridOptions}> </XGrid>)
+                             gridOptions={this.gridOptions}> </XGrid>)
             }}/>
       </el-dropdown-menu>
     </el-dropdown>)
