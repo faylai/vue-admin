@@ -5,12 +5,10 @@ export default {
   extends: Grid,
   name: 'ExtendsFromVxeGrid',
   created() {
-    this.$$$currentIndex = 0
+    this.$$$currentIndex = -1
     const unwatchQueryParams = this.$watch('params', function() {
-      this.$$$currentIndex = 0
-      this.commitProxy('reload').then(() => {
-        this.$nextTick(this.selectNextRow)
-      })
+      this.$$$currentIndex = -1
+      this.commitProxy('reload')
     }, { deep: true })
     this.$on('hook:beforeDestroy', function() {
       unwatchQueryParams()
@@ -18,7 +16,7 @@ export default {
   },
   methods: {
     selectNextRow(direction) {
-      this.$$$currentIndex = this.$$$currentIndex + 1 * (direction || 0)
+      this.$$$currentIndex = this.$$$currentIndex + 1 * (direction || 1)
       if (this.$$$currentIndex < 0) {
         this.$$$currentIndex = 0
       }

@@ -110,7 +110,10 @@ export default {
     },
     visibleChange(visible) {
       this.dropDownVisible = visible
-      this.keyword = ''
+      if (!visible) {
+        this.keyword = ''
+      }
+
     },
     keywordInput(v) {
       this.keyword = v
@@ -187,7 +190,7 @@ export default {
       this.computePresentContent()
       this.emitChange(this.checkedNodes.map(node => node.objectId).join(','), this.checkedNodes)
     },
-    gridChange({ newValue, oldValue, row, rowIndex, $rowIndex, column, columnIndex, $columnIndex, $event }) {
+    gridChange({ row }) {
       let rows = []
       if (this.multiple) {
         this.$refs.xGrid.toggleCheckboxRow(row)
@@ -206,6 +209,11 @@ export default {
       this.checkedNodes = checkedNodes
       this.emitChange(value, checkedNodes)
       this.computePresentContent()
+      if (!this.multiple) {
+        this.$nextTick(function() {
+          this.$refs.popper.hide()
+        })
+      }
     },
     onTreeRestore(value, selection) {
       const values = String(value || '').trim().split(',')
@@ -236,6 +244,36 @@ export default {
       this.checkedNodes = values.map(function(value, index) {
         return { objectId: value, objectName: labels[index] }
       })
+    },
+    onInputEnter() {
+      this.$refs.popper.show()
+      const keyword = String(this.keyword).trim()
+      const params = Object.assign({}, this.gridOptions.params)
+      if (params.keyword === keyword) {
+        const row = this.$refs.xGrid.getCurrentRecord()
+        if (row) {
+          this.gridChange({ row })
+        }
+        console.log('trigger select ')
+      } else {
+        params.keyword = keyword
+        this.gridOptions.params = params
+        console.log('trigger search ')
+      }
+    },
+    onInputKeyArrow(event) {
+      switch (event.keyCode) {
+        case 38:
+          this.$refs.xGrid.selectNextRow(-1)
+          event.preventDefault()
+          event.stopPropagation()
+          break
+        case 40:
+          this.$refs.xGrid.selectNextRow(1)
+          event.preventDefault()
+          event.stopPropagation()
+          break
+      }
     }
   },
   mounted() {
@@ -252,6 +290,14 @@ export default {
     this.$on('hook:beforeDestroy', () => {
       removeResizeListener(this.$el, this.updateStyle)
     })
+
+    this.$refs.popper.resetTabindex = function resetTabindex(ele) {
+      // 下次tab时组件聚焦元素
+      this.removeTabindex()
+      if (ele.setAttribute) {
+        ele.setAttribute('tabindex', '0') // 下次期望的聚焦元素
+      }
+    }
   },
   watch: {
     presentTags(val, oldVal) {
@@ -272,6 +318,8 @@ export default {
   },
   created() {
     this.gridOptions = cloneDeep(this.gridConfig.gridOptions || {})
+    this.gridOptions.params = this.gridOptions.params || {}
+    this.gridOptions.params.keyword = ''
     this.gridOptions.border = false
   },
   render(h) {
@@ -301,18 +349,12 @@ export default {
         ref="popper"
         trigger="none">
       <div slot="default"
-           vOn:keyup_enter={($event) => {
-             this.$refs.popper.show()
-             const keyword = String(this.keyword).trim()
-             const params = Object.assign({}, this.gridOptions.params)
-             params.keyword = keyword
-             this.gridOptions.params = params
-             console.log('trigger search ')
-           }}
+           vOn:keyup_enter={this.onInputEnter}
            vOn:click_stop={() => {
              this.$refs.popper.show()
              return false
            }}
+           vOn:keydown={this.onInputKeyArrow}
            class={[
              'el-drop-down-grid',
              this.realSize && ('el-drop-down-grid--' + this.realSize),
