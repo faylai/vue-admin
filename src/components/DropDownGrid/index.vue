@@ -254,11 +254,9 @@ export default {
         if (row) {
           this.gridChange({ row })
         }
-        console.log('trigger select ')
       } else {
         params.keyword = keyword
         this.gridOptions.params = params
-        console.log('trigger search ')
       }
     },
     onInputKeyArrow(event) {
@@ -291,13 +289,8 @@ export default {
       removeResizeListener(this.$el, this.updateStyle)
     })
 
-    this.$refs.popper.resetTabindex = function resetTabindex(ele) {
-      // 下次tab时组件聚焦元素
-      this.removeTabindex()
-      if (ele.setAttribute) {
-        ele.setAttribute('tabindex', '0') // 下次期望的聚焦元素
-      }
-    }
+    this.$refs.popper.triggerElm.removeEventListener('keydown', this.$refs.popper.handleTriggerKeyDown)
+
   },
   watch: {
     presentTags(val, oldVal) {

@@ -200,7 +200,6 @@ export default {
       console.log('remove')
     },
     fetchUserListFunction: function(params) {
-      console.log('loading')
       return service.requestByKey('example.getUserList', params)
     },
     fetchSyncTreePromiseFn: function(params) {
