@@ -143,7 +143,7 @@ export default {
           }
         }
       ],
-      attrs: this.attrs,
+      attrs: this.$attrs,
       scopedSlots: this.$scopedSlots,
       on: listeners
     }, children)
