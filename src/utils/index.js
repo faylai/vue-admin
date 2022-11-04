@@ -21,6 +21,18 @@ export const createScope = (function() {
   }
 })()
 
+
+export function getComponentPropsDef(Component) {
+  let props = Object.assign({}, Component.props);
+  (Component.mixins || []).forEach(function(item) {
+    if (item.props) {
+      props = Object.assign(Object.assign({}, item.props), props)
+    }
+  })
+  return props
+}
+
+
 // empty function
 export function noop() {
 }
