@@ -46,6 +46,12 @@ export default {
       type: String,
       default: '350px'
     },
+    displayNameFormat: {
+      type: Function,
+      default(node) {
+        return node.objectName
+      }
+    },
     treeConfig: {
       type: Object,
       default() {
@@ -135,7 +141,7 @@ export default {
     computePresentText() {
       if (this.checkedNodes.length) {
         const node = this.checkedNodes[0]
-        this.presentText = node.objectName
+        this.presentText = this.displayNameFormat(node)
       } else {
         this.presentText = ''
       }
@@ -146,7 +152,7 @@ export default {
       const genTag = node => ({
         node,
         key: node.objectId,
-        text: node.objectName,
+        text: this.displayNameFormat(node),
         hitState: false,
         closable: !isDisabled && !node.isDisabled
       })
