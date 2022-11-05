@@ -208,16 +208,13 @@ export default {
       this.checkedNodes = values.map(function(value, index) {
         return { objectId: value, objectName: labels[index] }
       })
+      this.computePresentContent()
     }
   },
   mounted() {
     const { input } = this.$refs
     if (input && input.$el) {
       this.inputInitialHeight = input.$el.offsetHeight || InputSizeMap[this.realSize] || 40
-    }
-
-    if (!String(this.value || '').trim() !== '') {
-      this.computePresentContent()
     }
 
     addResizeListener(this.$el, this.updateStyle)
