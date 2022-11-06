@@ -381,3 +381,36 @@ export function getSelectedLeaves(tree) {
     leaves: leaves
   }
 }
+
+export function buildTreeFromList(list, idKey, parentIdKey) {
+  list = list || []
+  idKey = idKey || 'id'
+  parentIdKey = parentIdKey || 'parentId'
+  const root = {
+    [idKey]: '$$$root',
+    [parentIdKey]: undefined,
+    children: []
+  }
+  const cache = {
+    [root[idKey]]: root
+  }
+  for (let i = 0; i < list.length; i++) {
+    const node = list[i]
+    const id = node[idKey]
+    const parentId = node[parentIdKey] || root[idKey]
+    node.children = []
+
+    if (cache[parentId]) {
+      cache[parentId].children.push(node)
+    } else {
+      cache[parentId] = { id: parentId, children: [] }
+    }
+    if (cache[id]) {
+      node.children = cache[id].children
+      cache[id] = node
+    } else {
+      cache[id] = node
+    }
+  }
+  return root.children
+}
