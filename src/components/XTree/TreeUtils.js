@@ -395,7 +395,7 @@ export function buildTreeFromList(list, idKey, parentIdKey) {
     [root[idKey]]: root
   }
   for (let i = 0; i < list.length; i++) {
-    const node = list[i]
+    const node = Object.assign({}, list[i])
     const id = node[idKey]
     const parentId = node[parentIdKey] || root[idKey]
     node.children = []
