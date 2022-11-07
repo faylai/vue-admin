@@ -382,9 +382,12 @@ export function getSelectedLeaves(tree) {
   }
 }
 
-export function buildTreeFromList(list, idKey, parentIdKey) {
+export function buildTreeFromList(list, idKey, parentIdKey, formater) {
   list = list || []
   idKey = idKey || 'id'
+  formater = formater || function(node) {
+    return node
+  }
   parentIdKey = parentIdKey || 'parentId'
   const root = {
     [idKey]: '$$$root',
@@ -395,9 +398,9 @@ export function buildTreeFromList(list, idKey, parentIdKey) {
     [root[idKey]]: root
   }
   for (let i = 0; i < list.length; i++) {
-    const node = Object.assign({}, list[i])
-    const id = node[idKey]
-    const parentId = node[parentIdKey] || root[idKey]
+    const node = formater(Object.assign({}, list[i]))
+    const id = String(node[idKey])
+    const parentId = String(node[parentIdKey] || root[idKey])
     node.children = []
 
     if (cache[parentId]) {
