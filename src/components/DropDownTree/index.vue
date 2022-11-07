@@ -24,7 +24,7 @@ export default {
   ],
   props: {
     value: {
-      type: String,
+      type: [String, Number],
       default: ''
     },
     label: {
@@ -254,7 +254,6 @@ export default {
     if (this.multiple) {
       this.treeConfig.selectMode = 'multiple'
     }
-    this.treeConfig.value = this.value
     // console.log('this.treeConfig', this.treeConfig)
     /* eslint-disable indent */
     return (<el-dropdown
@@ -331,7 +330,7 @@ export default {
                                      ref="xtree"
                                      vOn:change={this.treeChange}
                                      vOn:restore={this.onTreeRestore}
-                                     value={this.value}
+                                     value={String(this.value)}
                                      style={{ height: this.dropDownHeight }}
                                      {...{ attrs: this.treeConfig }}> </XTree>)
                     }}/>
