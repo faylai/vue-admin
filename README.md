@@ -67,7 +67,7 @@ information
 
 ## Demo
 
-![demo](https://github.com/PanJiaChen/PanJiaChen.github.io/blob/master/images/demo.gif)
+- [demo](http://admin.apizen.cn/)
 
 ## Extra
 
