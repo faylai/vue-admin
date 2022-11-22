@@ -280,8 +280,8 @@ export default {
     }
   },
   watch: {
-    'params': function() {
-      if (this.remote) {
+    'params': function(nv, ov) {
+      if (this.remote && !lodash.isEqual(nv, ov)) {
         this.resetEnforceScope()
         this.requestMethod('')
       }
