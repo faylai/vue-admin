@@ -132,7 +132,7 @@ export default {
   },
   render(h) {
     const children = normalizeSlots(this.$slots)
-    const listeners = this.applyListeners(this.$listeners)
+    const listeners = this.applyListeners(Object.assign({}, this.$listeners))
     return h(XGrid, {
       props: this.$props,
       directives: [
