@@ -16,6 +16,15 @@
               :gridOptions="gridOptions"
               :query-promise-function="queryOptions.queryPromiseFunction"
               @toolbar-button-click="toolbarButtonClickEvent">
+            <template #name_edit="{ row }">
+              <DropDownGrid v-model="row.name"
+                            clearable
+                            value-key="userName"
+                            label-key="userName"
+                            :grid-config="{gridOptions:dropGridOptions, queryPromiseFunction:fetchUserListFunction}"
+                            placeholder="请选择">
+              </DropDownGrid>
+            </template>
           </FieldGrid>
         </el-form-item>
       </el-col>
@@ -27,11 +36,14 @@
 <script>
 import constance from './user/constance'
 import FieldGrid from '@/components/vxe/FieldGrid'
+import DropDownGrid from '@/components/DropDownGrid'
+import service from '@/api/service'
 
 export default {
   name: 'UserForm',
   components: {
-    FieldGrid
+    FieldGrid,
+    DropDownGrid
   },
   mixins: [constance],
   props: {},
@@ -97,7 +109,8 @@ export default {
         }, {
           field: 'name',
           title: '物料名称',
-          editRender: { name: 'input' }
+          editRender: {},
+          slots: { edit: 'name_edit' }
         }, {
           field: 'sex',
           title: '个数'
@@ -105,10 +118,34 @@ export default {
       },
       queryOptions: {
         queryPromiseFunction: this.createQuery
+      },
+      dropGridOptions: {
+        params: {},
+        pagerConfig: true,
+        id: 'userId',
+        columns: [{
+          type: 'seq',
+          title: '序号',
+          width: 60
+        }, {
+          field: 'userId',
+          title: '用户编号',
+          width: 80
+        }, {
+          field: 'userName',
+          title: '用户名称',
+          width: 80
+        }, {
+          field: 'nickName',
+          title: '用户昵称'
+        }]
       }
     }
   },
   methods: {
+    fetchUserListFunction: function(params) {
+      return service.requestByKey('example.getUserList', params)
+    },
     confirm(dialog) {
       this.$refs.form.validate(valid => {
         if (valid) {
