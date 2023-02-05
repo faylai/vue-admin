@@ -136,6 +136,9 @@ export default {
       this.presentTags = []
       this.keyword = ''
       this.emitChange('', [])
+      if (this.$refs.xGrid) {
+        this.$refs.xGrid.clearCurrentRow()
+      }
     },
     computePresentContent() {
       // nextTick is required, because checked nodes may not change right now
@@ -214,13 +217,6 @@ export default {
           this.$refs.popper.hide()
         })
       }
-    },
-    onTreeRestore(value, selection) {
-      const values = String(value || '').trim().split(',')
-      this.checkedNodes = (selection || []).filter(function(node) {
-        return values.indexOf(node.objectId) > -1
-      })
-      this.computePresentContent()
     },
     updateStyle() {
       const { inputInitialHeight } = this
