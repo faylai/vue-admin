@@ -3,7 +3,7 @@
     <template #header>
       <BaseFilterPanel :form-config="formConfig" @query="handleQuery">
         <FilterItem>
-          <el-button @click="showFormDialog">表单验证</el-button>
+          <el-button @click="showFormDialog">物料入库</el-button>
         </FilterItem>
         <FilterItem prop="name1">
           <DropDownTree
