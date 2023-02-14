@@ -16,8 +16,10 @@
           </DropDownTree>
         </FilterItem>
         <FilterItem prop="name2">
-          <ExtRemoteSelect v-model="formConfig.model.name2"
-                           request-key="example.getSelectList1"></ExtRemoteSelect>
+          <SmartCache :dep-props="{value:formConfig.model.name2}">
+            <ExtRemoteSelect v-model="formConfig.model.name2"
+                             request-key="example.getSelectList1"></ExtRemoteSelect>
+          </SmartCache>
         </FilterItem>
         <FilterItem prop="name3">
           <ExtStaticSelect v-model="formConfig.model.name3"
@@ -76,7 +78,7 @@
               v-model="row.org"
               placeholder="请选择组织"
               :collapseTags="true"
-              v-on:change="onOrgChange(arguments,row)"
+              @change="onOrgChange(arguments,row)"
               :clearable="true"
               :multiple="false"
               :tree-config="{localSearch:true,fetchTreePromiseFn:fetchSyncTreePromiseFn}">
@@ -97,6 +99,7 @@ import ExtRemoteSelect from '@/components/ExtRemoteSelect'
 import DropDownTree from '@/components/DropDownTree'
 import service from '@/api/service'
 import formTable from '@/views/components-demo/formTable'
+import SmartCache from '@/components/SmartCache'
 
 export default {
   name: 'EditTable',
@@ -107,7 +110,8 @@ export default {
     BaseFilterPanel,
     FilterListLayout,
     ExtRemoteSelect,
-    DropDownTree
+    DropDownTree,
+    SmartCache
   },
   data() {
     return {

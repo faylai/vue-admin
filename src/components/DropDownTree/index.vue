@@ -74,7 +74,8 @@ export default {
       presentText: '',
       dropDownVisible: false,
       presentTags: [],
-      checkedNodes: []
+      checkedNodes: [],
+      dropDownDisabled: false
     }
   },
   computed: {
@@ -94,8 +95,8 @@ export default {
       }
       /* eslint-disable indent */
       return this.multiple
-          ? !!this.checkedNodes.filter(node => !node.isDisabled).length
-          : !!this.presentText
+        ? !!this.checkedNodes.filter(node => !node.isDisabled).length
+        : !!this.presentText
     }
   },
   methods: {
@@ -184,6 +185,9 @@ export default {
       this.checkedNodes = selection
       this.emitChange(value, selection)
       this.computePresentContent()
+      if (!this.multiple && selection.length) {
+        this.$refs.popper.hide()
+      }
     },
     onTreeRestore(value, selection) {
       const values = String(value || '').trim().split(',')
@@ -191,6 +195,13 @@ export default {
         return values.indexOf(node.objectId) > -1
       })
       this.computePresentContent()
+      this.$emit('restore', value, selection)
+    },
+    onTreeFirstLoad() {
+      // 处理disable的情况
+      this.$nextTick(function() {
+        this.dropDownDisabled = this.disabled
+      })
     },
     updateStyle() {
       const { inputInitialHeight } = this
@@ -243,6 +254,11 @@ export default {
         }
       },
       immediate: true
+    },
+    disabled(v, o) {
+      if (o !== undefined && v !== o) {
+        this.dropDownDisabled = v
+      }
     }
   },
   render(h) {
@@ -251,16 +267,20 @@ export default {
         return ''
       }
     }
+
     if (this.multiple) {
       this.treeConfig.selectMode = 'multiple'
     }
     // console.log('this.treeConfig', this.treeConfig)
     /* eslint-disable indent */
     return (<el-dropdown
-        hide-on-click={false}
-        vOn:visible-change={this.visibleChange}
-        placement="bottom-start"
-        trigger="click">
+      hide-on-click={false}
+      ref="popper"
+      vOn:visible-change={this.visibleChange}
+      placement="bottom-start"
+      disabled={this.dropDownDisabled}
+      trigger="click"
+    >
       <div slot="default"
            class={[
              'el-drop-down-tree',
@@ -268,23 +288,26 @@ export default {
              this.isDisabled && 'is-disabled'
            ]}
            vOn:mouseenter={() => this.setInputHover(true)}
-           vOn:mouseleave={() => this.setInputHover(false)}>
+           vOn:mouseleave={() => this.setInputHover(false)}
+      >
         <el-input
-            ref="input"
-            value={this.presentText}
-            size={this.realSize}
-            placeholder={this.checkedNodes && this.checkedNodes.length ? '' : this.placeholder}
-            readonly={true}
-            disabled={this.isDisabled}
-            validate-event={false}
-            class={[this.dropDownVisible && 'is-focus']}
-            vOn:focus={this.handleFocus}
-            vOn:blur={this.handleBlur}>{(() => {
+          ref="input"
+          value={this.presentText}
+          size={this.realSize}
+          placeholder={this.checkedNodes && this.checkedNodes.length ? '' : this.placeholder}
+          readonly={true}
+          disabled={this.isDisabled}
+          validate-event={false}
+          class={[this.dropDownVisible && 'is-focus']}
+          vOn:focus={this.handleFocus}
+          vOn:blur={this.handleBlur}
+        >{(() => {
           if (this.clearBtnVisible) {
             return <i slot="suffix"
                       key="clear"
                       class="el-input__icon el-icon-circle-close"
-                      vOn:click_stop={this.handleClear}></i>
+                      vOn:click_stop={this.handleClear}
+            ></i>
           } else {
             return <i slot="suffix"
                       key="arrow-down"
@@ -292,7 +315,8 @@ export default {
                         'el-input__icon',
                         'el-icon-arrow-down',
                         this.dropDownVisible && 'is-reverse'
-                      ]}></i>
+                      ]}
+            ></i>
           }
         })()
         }
@@ -303,14 +327,15 @@ export default {
               {
                 this.presentTags.map((tag) => {
                   return (<el-tag
-                      key={tag.key}
-                      type="info"
-                      size={this.tagSize}
-                      hit={tag.hitState}
-                      closable={tag.closable}
-                      disable-transitions
-                      class={[this.collapseTags && 'collapse-tag']}
-                      vOn:close={() => this.deleteTag(tag)}>
+                    key={tag.key}
+                    type="info"
+                    size={this.tagSize}
+                    hit={tag.hitState}
+                    closable={tag.closable}
+                    disable-transitions
+                    class={[this.collapseTags && 'collapse-tag']}
+                    vOn:close={() => this.deleteTag(tag)}
+                  >
                     <span title={tag.text}>{tag.text}</span>
                   </el-tag>)
                 })
@@ -324,16 +349,25 @@ export default {
       </div>
       <el-dropdown-menu slot="dropdown" ref="panel">
         {/** 这里要注意 depProps 配置，depProps 里面变量的是否变动决定了xtree 是否重新渲染 */}
-        <SmartCache depProps={{ value: this.value, height: this.dropDownHeight, params: this.treeConfig.params }}
+        <SmartCache depProps={{
+          value: this.value,
+          height: this.dropDownHeight,
+          params: this.treeConfig.params,
+          selectObjectType: this.treeConfig.selectObjectType
+        }}
                     nodeRender={() => {
                       return (<XTree scopedSlots={nodeScopeSlots}
                                      ref="xtree"
                                      vOn:change={this.treeChange}
                                      vOn:restore={this.onTreeRestore}
+                                     vOn:firstLoad={this.onTreeFirstLoad}
                                      value={String(this.value)}
                                      style={{ height: this.dropDownHeight }}
-                                     {...{ attrs: this.treeConfig }}> </XTree>)
-                    }}/>
+                                     {...{ attrs: this.treeConfig }}>
+                        <template slot="rightbar">{this.$slots.rightbar}</template>
+                      </XTree>)
+                    }}
+        />
       </el-dropdown-menu>
     </el-dropdown>)
   }

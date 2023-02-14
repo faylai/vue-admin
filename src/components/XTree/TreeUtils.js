@@ -71,6 +71,7 @@ export function formatTreeData(nodes, parent) {
       if (_.isNil(node.objectCount)) {
         node.objectCount = node.children.length || 0
       }
+      node.objectId = String(node.objectId)
       node.expanded = node.expanded || false
       node.checkState = node.checkState || 0
       node.selected = node.selected || false
@@ -213,15 +214,18 @@ export function buildTreeFromListNode(data) {
   return rootList
 }
 
-export function searchTree(data, keywords) {
+export function searchTree(data, keywords, searcher) {
   data = data || []
   if (!_.isArray(data)) {
     data = [data]
   }
   const treeList = []
   const formattedData = formatTreeData(data, null)
+  searcher = searcher || function(node) {
+    return (node.objectName + '').toLowerCase().indexOf((keywords + '').toLowerCase()) >= 0
+  }
   iterateTree(formattedData, function(node) {
-    if ((node.objectName + '').toLowerCase().indexOf((keywords + '').toLowerCase()) >= 0) {
+    if (searcher(node)) {
       treeList.push(node)
     }
   })

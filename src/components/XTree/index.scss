@@ -31,50 +31,60 @@
 
   .object-container-header {
     height: 40px;
-    line-height: 40px;
     padding-left: 9px;
     padding-right: 9px;
     position: relative;
-
-    input[type="text"] {
-      height: 28px;
-      padding-left: 5px;
-      padding-right: 28px;
-      width: 100%;
-      outline: none;
-
-    }
+    display: flex;
+    align-items: center;
 
     .fuzzy-search {
-      display: block;
-      margin-right: 52px;
+      flex: 1;
       font-weight: normal;
       position: relative;
-    }
 
-    .fuzzy-search input[type="text"] {
-      line-height: 26px;
-      border: 1px solid #c9c9c9;
-      border-radius: 4px;
-      font-size: 12px;
-      &.focus {
-        border: 1px solid #409EFF;
+      &::before {
+        content: '';
+        line-height: 40px;
+        font-size: 0px !important;
+        vertical-align: middle;
+      }
+
+      input[type="text"] {
+        height: 28px;
+        padding-left: 5px;
+        padding-right: 28px;
+        width: 100%;
+        outline: none;
+        line-height: 26px;
+        border: 1px solid #c9c9c9;
+        border-radius: 4px;
+        font-size: 12px;
+        vertical-align: middle;
+
+        &.focus {
+          border: 1px solid #409EFF;
+        }
+
       }
     }
 
     @mixin fuzzy-search-icon {
-      position: absolute;
       cursor: pointer;
       line-height: 16px;
+      width: 26px;
+      vertical-align: middle;
+      text-align: center;
       &:hover {
         color: #409eff;
       }
     }
 
     .bc-query-icon {
-      top: 12px;
-      right: 5px;
       @include fuzzy-search-icon;
+      position: absolute;
+      right: 0;
+      top: 50%;
+      margin-top: -8px;
 
       &:before {
         content: "\e778";
@@ -82,8 +92,6 @@
     }
 
     .bc-refresh-icon {
-      top: 12px;
-      right: 34px;
       @include fuzzy-search-icon;
 
       &:before {
@@ -92,8 +100,6 @@
     }
 
     .bc-brush-icon {
-      top: 12px;
-      right: 8px;
       @include fuzzy-search-icon;
 
       &:before {
@@ -101,6 +107,12 @@
       }
     }
 
+    .bc-expand-icon {
+      @include fuzzy-search-icon;
+      &:before {
+        content: "\e6d2";
+      }
+    }
 
   }
 

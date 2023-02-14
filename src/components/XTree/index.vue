@@ -102,7 +102,11 @@ export default {
       default: false
     },
     // 多选的时候，只选择叶子节点，和 selectObjectType 配合使用
-    onlyLeaf: Boolean
+    onlyLeaf: Boolean,
+    expandAll: {
+      type: Boolean,
+      default: false
+    }
   },
   data() {
     return {
@@ -113,6 +117,7 @@ export default {
       dataError: false,
       isSearched: false,
       inputFocused: false,
+      isExpandAll: this.expandAll,
       words: {
         noMatchResult: '没有查询到数据',
         dataErrorTip: '数据加载出错',
@@ -133,22 +138,26 @@ export default {
     }
     return (<div class="bc-filter-object-tree">
       <div class="object-container-header" vShow={!this.hideSearchBar}>
-        <label class="fuzzy-search">
+        <div class="fuzzy-search">
           <input type="text"
                  vModel_trim={this.keywords}
                  vOn:keydown_enter_stop={this.onSearch}
                  vOn:focus={this.onInputFocus}
                  vOn:blur={this.onInputBlur}
                  class={[this.inputFocused && 'focus']}
-                 ref="input"/>
+                 ref="input"
+          />
           <span class="bc-query-icon icon" vOn:click={this.onSearch}></span>
-        </label>
+        </div>
         <span class="bc-refresh-icon icon" vOn:click={this.refresh}></span>
         <span class="bc-brush-icon icon" vOn:click={this.clear}>< /span>
+        <span class="bc-expand-icon icon" vOn:click={this.toggleExpandAll} vShow={!this.async}>< /span>
+        {this.$slots.rightbar}
       </div>
       <div class="object-container-body" style={{ top: this.hideSearchBar ? '10px' : '40px' }}>
-        <ul className="bd-object-tree"
-            vShow={!this.noData && !this.dataError && !this.loading}>{
+        <ul class="bd-object-tree"
+            vShow={!this.noData && !this.dataError && !this.loading}
+        >{
           this.treeData.map((node) => {
             return (<TreeNode node={node}
                               scopedSlots={nodeScopeSlots}
@@ -158,7 +167,8 @@ export default {
                               vOn:update-more={this.loadMore}
                               vOn:node-click={this.nodeClick}
                               vOn:node-check={this.nodeCheck}
-                              vOn:update-expanded={this.expandChange}>
+                              vOn:update-expanded={this.expandChange}
+            >
             </TreeNode>)
           })}
         </ul>
@@ -173,6 +183,7 @@ export default {
         <div class="bc-control-loading" vShow={this.loading}>
           <span>{this.words.loadingTip}</span>
         </div>
+
       </div>
     </div>)
   },
@@ -180,10 +191,19 @@ export default {
     value(newValue) {
       const newIds = String(newValue || '').split(',')
       const oldIds = this._selectNodes.map(item => item.objectId)
-      // console.log('watch:', newValue, oldValue)
+      // console.log('watch:', newValue, oldIds)
       if (!lodash.isEqual(newIds, oldIds)) {
         this.$nextTick(this.restoreSelection)
       }
+    },
+    expandAll: {
+      immediate: true,
+      handler(v) {
+        this.isExpandAll = v
+      }
+    },
+    params() {
+      this.refresh()
     }
   },
   methods: {
@@ -208,9 +228,16 @@ export default {
     },
     search: function(isRefresh) {
       const keywords = String(this.keywords || '').trim()
+      let resolve = lodash.noop()
+      let reject = lodash.noop()
+      const promise = new Promise(function(_resolve, _reject) {
+        resolve = _resolve
+        reject = _reject
+      })
       const me = this
       if (this.minKeywordLength > 0 && keywords.length > 0 && keywords.length < this.minKeywordLength) {
         me.$emit('keywords-min-error', keywords)
+        reject('keywords-min-error')
       } else {
         this.noData = false
         this.dataError = false
@@ -219,7 +246,13 @@ export default {
           me.handleSelectAfterSearch(isRefresh)
           // 为了美观默认展开第一个节点
           if (me.treeData.length) {
-            me.treeData[0].expanded = true
+            if (me.isExpandAll) {
+              iterateTree(me.treeData || [], function(node) {
+                node.expanded = true
+              })
+            } else {
+              me.treeData[0].expanded = true
+            }
           }
         }
         const localSearchTree = function(data) {
@@ -229,6 +262,7 @@ export default {
         }
         if (this.couldLocalSearch && !isRefresh) {
           initTreeAndHandleSelection(localSearchTree(JSON.parse(this._data._treeJsonString)))
+          resolve()
         } else {
           this.fetchTreeData(this.getFetchParams(), (data) => {
             if (this.couldLocalSearch && this.keywords.trim() !== '') {
@@ -236,9 +270,11 @@ export default {
             } else {
               initTreeAndHandleSelection(data)
             }
+            resolve()
           })
         }
       }
+      return promise
     },
     clear: function() {
       this.keywords = ''
@@ -381,6 +417,7 @@ export default {
           selectNodes = this.synSingleSelection(foundSelectedNode, true)
         }
       }
+      this._selectNodes = selectNodes
       this.$emit('restore', ids.join(','), this.simplifyNode(selectNodes))
 
     },
@@ -418,18 +455,17 @@ export default {
       }
       selectNodes.push.apply(selectNodes, branches)
       selectNodes.push.apply(selectNodes, leaves)
+
       if (this.selectObjectType) {
-        if (this.selectObjectType) {
-          const matchTypeNodes = []
-          lodash.each(selectNodes, (node) => {
-            iterateTree(node, (selectedNode) => {
-              if (this.selectObjectType.split(',').indexOf(selectedNode.objectType) >= 0) {
-                matchTypeNodes.push(selectedNode)
-              }
-            })
+        const matchTypeNodes = []
+        lodash.each(selectNodes, (node) => {
+          iterateTree(node, (selectedNode) => {
+            if (this.selectObjectType.split(',').indexOf(selectedNode.objectType) >= 0) {
+              matchTypeNodes.push(selectedNode)
+            }
           })
-          selectNodes = matchTypeNodes
-        }
+        })
+        selectNodes = matchTypeNodes
       }
 
       this._selectNodes = selectNodes
@@ -534,6 +570,15 @@ export default {
       if (this.$refs.input) {
         this.$refs.input.focus()
       }
+    },
+    toggleExpandAll() {
+      this.isExpandAll = !this.isExpandAll
+      iterateTree(this.treeData || [], (node) => {
+        node.expanded = this.isExpandAll
+      })
+      if (!this.isExpandAll && this.treeData.length) {
+        this.treeData[0].expanded = true
+      }
     }
   },
   computed: {
@@ -548,7 +593,11 @@ export default {
   created: function() {
     // 初始化数据
     this._selectNodes = []
-    this.search(true)
+    this.search(true).then(() => {
+      this.$emit('firstLoad')
+    }).catch(function(e) {
+      console.error(e)
+    })
   }
 }
 </script>
