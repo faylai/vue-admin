@@ -19,6 +19,7 @@
             <template #name_edit="{ row }">
               <DropDownGrid v-model="row.name"
                             clearable
+                            :label="row.name"
                             value-key="userName"
                             label-key="userName"
                             :grid-config="{gridOptions:dropGridOptions, queryPromiseFunction:fetchUserListFunction}"
