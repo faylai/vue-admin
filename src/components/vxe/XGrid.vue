@@ -4,6 +4,12 @@ import lodash from 'lodash'
 import settings from '@/settings'
 import { normalizeSlots } from '@/utils'
 
+function trimArray(array) {
+  return lodash.filter(array, function(item) {
+    return !(lodash.isNil(item) || String(item).trim() === '')
+  })
+}
+
 const paginationConfig = settings.paginationConfig
 export default {
   name: 'XGrid',
@@ -38,32 +44,35 @@ export default {
         pageSizes: paginationConfig.pageSizes
       })
     }
+
+    const proxyProps = {
+      result: trimArray([paginationConfig.responseRootName, paginationConfig.responseRecordListKey]).join('.'),
+      message: trimArray([paginationConfig.responseRootName, paginationConfig.responseMsgName]).join('.'),
+      list: trimArray([paginationConfig.responseRootName, paginationConfig.responseRecordListKey]).join('.'),
+      total: trimArray([paginationConfig.responseRootName, paginationConfig.responseTotalCountKey]).join('.')
+    }
+    // console.log(proxyProps)
     if (context.props.queryPromiseFunction) {
       gridOptions.proxyConfig = gridOptions.proxyConfig || {}
       lodash.defaultsDeep(gridOptions.proxyConfig, {
         seq: true,
-        props: {
-          result: [paginationConfig.responseRootName, paginationConfig.responseRecordListKey].join('.'),
-          message: [paginationConfig.responseRootName, paginationConfig.responseMsgName].join('.'),
-          list: [paginationConfig.responseRootName, paginationConfig.responseRecordListKey].join('.'),
-          total: [paginationConfig.responseRootName, paginationConfig.responseTotalCountKey].join('.')
-        },
+        autoLoad: false,
+        props: gridOptions.treeConfig ? undefined : proxyProps,
         ajax: {
           query: ({ page }) => {
             const params = {
-              page: page.currentPage,
-              pageIndex: page.currentPage,
-              pageSize: page.pageSize
+              [paginationConfig.pageIndexParamKey]: page.currentPage,
+              [paginationConfig.pageSizeParamKey]: page.pageSize
             }
             lodash.defaultsDeep(params, gridOptions.params || {})
             return context.props.queryPromiseFunction(params)
           }
         }
       })
+      gridOptions.proxyConfig.autoLoad = false
     }
     lodash.defaultsDeep(gridOptions, {
-      border: true,
-      resizable: true,
+      resizable: false,
       keepSource: true,
       showOverflow: 'title',
       height: 'auto'

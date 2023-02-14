@@ -1,9 +1,8 @@
 import Vue from 'vue'
-import elementPlugin from './element-plugin'
 import './override.scss'
-import './element-plugin.scss'
 import config from './config'
 import initFormat from './format'
+import elementPlugin from './element-plugin'
 import {
   // 全局对象
   VXETable,

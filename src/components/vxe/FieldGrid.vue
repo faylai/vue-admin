@@ -24,7 +24,15 @@ export default {
         all:  所有数据
         error: 错误的数据
        */
-    value: Object
+    value: {},
+    ignoreUpdate: {
+      type: Boolean,
+      default: false
+    },
+    editable: {
+      type: Boolean,
+      default: true
+    }
   }, XGrid.props),
   computed: {
     instance: function() {
@@ -38,8 +46,6 @@ export default {
     emitChange(error) {
       let value = {}
       if (error) {
-        value.error = error
-        value.total = 0
         Object.defineProperties(value, {
           total: {
             value: 0,
@@ -53,8 +59,13 @@ export default {
       } else {
         value = this.getValue()
       }
-      this.$emit('change', value)
-      this.dispatch('ElFormItem', 'el.form.change', value)
+      const defaultValue = { 'insertRecords': [], 'removeRecords': [], 'updateRecords': [], total: 0 }
+      const currentValue = lodash.cloneDeep(this.value || defaultValue)
+      currentValue.total = value.total
+      if (!lodash.isEqual(currentValue, lodash.cloneDeep(value))) {
+        this.$emit('change', value)
+        this.dispatch('ElFormItem', 'el.form.change', value)
+      }
     },
     onActive: function() {
       // 看以后有什么用处
@@ -69,9 +80,25 @@ export default {
     getTableData() {
       return this.instance.getTableData()
     },
+    deleteXRowKey(list) {
+      (list || []).forEach(function(item) {
+        delete item._X_ROW_KEY
+      })
+      return list
+    },
     getValue() {
-      const ret = lodash.cloneDeep(this.instance.getRecordset())
-      const total = (this.getTableData().tableData || []).length
+      let ret = []
+      const allDate = (this.getTableData().tableData || [])
+      if (this.ignoreUpdate) {
+        ret = lodash.cloneDeep(allDate)
+        this.deleteXRowKey(ret)
+      } else {
+        ret = lodash.cloneDeep(this.instance.getRecordset())
+        Object.keys(ret).forEach((key) => {
+          this.deleteXRowKey(ret[key])
+        })
+      }
+      const total = allDate.length
       Object.defineProperties(ret, {
         total: {
           value: total,
@@ -87,10 +114,10 @@ export default {
       this.instance.fullValidate.apply(this.instance, [].slice.call(arguments, 0))
     },
     validate(cb) {
-      this.instance.validate().then(cb)
+      this.instance.validate(true).then(cb)
     },
     onBlur() {
-      this.validate((err) => {
+      this.canValidate && this.validate((err) => {
         this.emitChange(err)
       })
     },
@@ -98,8 +125,8 @@ export default {
     showIfError() {
       this.validate(this.getTableData())
     },
-    insert(obj) {
-      this.instance.insert(obj || {}).then((meta) => {
+    insert(obj, isAppend) {
+      this.instance[isAppend === true ? 'insertAt' : 'insert'](obj || {}, -1).then((meta) => {
         this.instance.setActiveRow(meta.row)
         this.onBlur()
       })
@@ -107,8 +134,18 @@ export default {
     getCheckboxRecords() {
       return this.instance.getCheckboxRecords()
     },
-    remove() {
-      const rows = this.getCheckboxRecords()
+    onLoaded() {
+      const data = this.getTableData().tableData || []
+      if (data.length) {
+        this.onBlur()
+      }
+    },
+    removeAll() {
+      const rows = this.getTableData().tableData || []
+      rows.forEach((row) => this.instance.remove(row))
+    },
+    remove(row) {
+      const rows = (lodash.isNil(row) ? this.getCheckboxRecords() : lodash.isArray(row) ? row : [row])
       if (rows.length === 0) {
         this.$message.info('请选择要删除的行')
       } else {
@@ -116,25 +153,59 @@ export default {
       }
     },
     applyListeners(config) {
-      const onEditClose = config['edit-closed'] || lodash.noop
-      const onEditActived = config['edit-actived'] || lodash.noop
+      const listeners = Object.assign({}, config)
+      const onEditClose = listeners['edit-closed'] || lodash.noop
+      const onEditActived = listeners['edit-actived'] || lodash.noop
+      const onLoaded = listeners['loaded'] || lodash.noop
       const that = this
-      config['edit-closed'] = function() {
+      listeners['edit-closed'] = function() {
         that.onEditClosed.apply(this, [].slice.call(arguments, 0))
         onEditClose.apply(this, [].slice.call(arguments, 0))
+        that.onBlur()
       }
-      config['edit-actived'] = function() {
+      listeners['edit-actived'] = function() {
         that.onActive.apply(this, [].slice.call(arguments, 0))
         onEditActived.apply(this, [].slice.call(arguments, 0))
       }
-      return config
+      listeners['loaded'] = function() {
+        that.onLoaded.apply(this, [].slice.call(arguments, 0))
+        onLoaded.apply(this, [].slice.call(arguments, 0))
+      }
+      return listeners
+    },
+    filterEditable($props) {
+      if (!this.editable) {
+        const props = lodash.cloneDeep($props)
+        if (props.gridOptions && props.gridOptions.columns) {
+          props.gridOptions.columns = props.gridOptions.columns.map(function(item) {
+            const newItem = lodash.cloneDeep(item)
+            delete newItem.editRender
+            return newItem
+          })
+          return props
+        } else {
+          return $props
+        }
+      } else {
+        return $props
+      }
+    },
+    disableValidate() {
+      this.canValidate = false
+    },
+    enableValidate() {
+      this.canValidate = true
+      this.onBlur()
     }
+  },
+  created() {
+    this.canValidate = true
   },
   render(h) {
     const children = normalizeSlots(this.$slots)
-    const listeners = this.applyListeners(Object.assign({}, this.$listeners))
+    const listeners = this.applyListeners(this.$listeners)
     return h(XGrid, {
-      props: this.$props,
+      props: this.filterEditable(this.$props),
       directives: [
         {
           name: 'clickoutside',

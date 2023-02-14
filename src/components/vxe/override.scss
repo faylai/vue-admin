@@ -1,3 +1,14 @@
+$vxe-primary-color: #13c2c2 !default;
+button.vxe-button.type--button.theme--primary:not(.is--disabled) {
+  background-color: $vxe-primary-color;
+  border-color: $vxe-primary-color;
+
+  &:hover {
+    background-color: lighten($vxe-primary-color, 3%);
+    border-color: lighten($vxe-primary-color, 3%);
+  }
+}
+
 .vxe-grid {
   .vxe-toolbar {
     .toolbar-tip {
@@ -78,11 +89,13 @@
   font-size: 12px;
 }
 
-.vxe-pager{
-  .vxe-pager--wrapper{
-    button{
+.vxe-pager {
+  .vxe-pager--wrapper {
+    button {
       font-size: 12px;
       font-weight: normal;
     }
   }
 }
+
+
