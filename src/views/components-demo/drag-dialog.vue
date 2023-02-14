@@ -189,7 +189,7 @@ export default {
   methods: {
     // v-el-drag-dialog onDrag callback function
     handleDrag() {
-      this.$refs.select.blur()
+      // this.$refs.select.blur()
     },
     showDashBoard() {
       this.$dialog(dashboard, {}, {
