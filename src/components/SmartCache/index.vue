@@ -1,5 +1,5 @@
 <script>
-import { isEqual, sortBy } from 'lodash'
+import { isEqual, sortBy, isFunction } from 'lodash'
 
 /**
  * 用来缓存VNode 节点 减少render 执行的次数提高运行效率
@@ -10,8 +10,7 @@ export default {
   name: 'SmartCache',
   props: {
     nodeRender: {
-      type: Function,
-      required: true
+      type: Function
     },
     depProps: {
       type: Object,
@@ -28,12 +27,13 @@ export default {
   },
   data() {
     return {
-      foreUpdate: true
+      counter: 0
     }
   },
   created() {
     this.$foreUpdateStack = []
     this.$isUpdating = false
+    this.$lastCounter = this.counter
   },
   methods: {
     schedulerUpdating(updatingCommand) {
@@ -47,9 +47,14 @@ export default {
           this.$isUpdating = false
           if (this.$foreUpdateStack.length) {
             // console.log('this.$foreUpdateStack.length', this.$foreUpdateStack.length)
+            let foreUpdate = false
             sortBy(this.$foreUpdateStack, ['p']).reverse().forEach((command) => {
-              this.foreUpdate = command.foreUpdate
+              foreUpdate = command.foreUpdate
             })
+            if (foreUpdate) {
+              // trigger update
+              this.counter = this.counter + 1
+            }
             this.$foreUpdateStack = []
           }
         })
@@ -97,10 +102,23 @@ export default {
     }
   },
   render(h) {
-    // console.log('foreUpdate', this.foreUpdate)
-    if (!this.$$cacheNode || this.foreUpdate) {
-      this.$$cacheNode = this.nodeRender()
+    const foreUpdate = this.counter > this.$lastCounter
+    if (isFunction(this.nodeRender)) {
+      if (!this.$$cacheNode || foreUpdate) {
+        this.$$cacheNode = this.nodeRender()
+        // console.log('force update nodeRender')
+      } else {
+        // console.log('get from cached nodeRender $$cacheNode')
+      }
+    } else if (this.$slots.default) {
+      if (!this.$$cacheNode || foreUpdate) {
+        this.$$cacheNode = this.$slots.default
+        // console.log('get from $slots.default $$cacheNode')
+      } else {
+        // console.log('get from $slots.default')
+      }
     }
+    this.$lastCounter = this.counter
     return this.$$cacheNode
   }
 }
