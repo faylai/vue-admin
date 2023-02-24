@@ -136,13 +136,10 @@
 </template>
 
 <script>
-import { isArray, camelCase } from 'lodash'
+import { camelCase, isArray } from 'lodash'
 import draggable from 'vuedraggable'
 import { isNumberStr } from '@/utils/index'
-import {
-  inputComponents,
-  selectComponents
-} from '@/views/tool/build/generator/config'
+import { inputComponents, selectComponents } from '@/views/tool/build/generator/config'
 
 import FormSetting from '@/views/tool/build/RightSettingPanel/formSetting'
 

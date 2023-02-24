@@ -119,14 +119,9 @@
 import draggable from 'vuedraggable'
 import beautifier from 'js-beautify'
 import RightSettingPanel from '@/views/tool/build/RightSettingPanel'
-import {
-  inputComponents,
-  selectComponents,
-  layoutComponents,
-  formConf
-} from '@/views/tool/build/generator/config'
+import { formConf, inputComponents, layoutComponents, selectComponents } from '@/views/tool/build/generator/config'
 import { beautifierConf } from '@/utils/index'
-import { makeUpHtml, vueTemplate, vueScript, cssStyle } from '@/views/tool/build/generator/html'
+import { cssStyle, makeUpHtml, vueScript, vueTemplate } from '@/views/tool/build/generator/html'
 import { makeUpJs } from '@/views/tool/build/generator/js'
 import { makeUpCss } from '@/views/tool/build/generator/css'
 import drawingDefault from '@/views/tool/build/generator/drawingDefault'

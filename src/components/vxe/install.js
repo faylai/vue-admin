@@ -4,45 +4,22 @@ import config from './config'
 import initFormat from './format'
 import elementPlugin from './element-plugin'
 import {
-  // 全局对象
-  VXETable,
-  // 功能模块
-  // Filter,
-  // Menu,
+  Button,
+  Column,
   Edit,
   Export,
-  // Keyboard,
-  Validator,
-
-  // 可选组件
-  Icon,
-  Column,
-  // Colgroup,
   Grid,
-  Toolbar,
-  Pager,
-  // Checkbox,
-  // CheckboxGroup,
-  // Radio,
-  // RadioGroup,
-  // RadioButton,
+  Icon,
   Input,
-  // Textarea,
-  Button,
-  // Modal,
-  // Tooltip,
-  // Form,
-  // FormItem,
-  // FormGather,
-  Select,
-  // Optgroup,
   Option,
-  // Switch,
-  // List,
-  // Pulldown,
-  // 表格
-  Table
+  Pager,
+  Select,
+  Table,
+  Toolbar,
+  Validator,
+  VXETable
 } from 'vxe-table'
+
 VXETable.use(elementPlugin)
 // 按需加载的方式默认是不带国际化的，自定义国际化需要自行解析占位符 '{0}'，例如：
 VXETable.setup(config)

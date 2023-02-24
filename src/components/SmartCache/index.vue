@@ -1,5 +1,5 @@
 <script>
-import { isEqual, sortBy, isFunction } from 'lodash'
+import { isEqual, isFunction, sortBy } from 'lodash'
 
 /**
  * 用来缓存VNode 节点 减少render 执行的次数提高运行效率

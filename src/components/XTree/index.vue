@@ -1,14 +1,14 @@
 <script>
 import TreeNode from '@/components/XTree/TreeNode'
 import {
-  iterateTree,
   formatTreeData,
-  updateNodeSelectState,
-  updateAllChildrenNodeState,
-  searchTree,
   getAllSelectedBranchesAndLeaves,
+  getSelectedLeaves,
   getTopSelectedBranchesAndLeaves,
-  getSelectedLeaves
+  iterateTree,
+  searchTree,
+  updateAllChildrenNodeState,
+  updateNodeSelectState
 } from './TreeUtils'
 import { enablePromiseFnVersionControl } from '@/utils'
 import lodash from 'lodash'

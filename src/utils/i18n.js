@@ -1,4 +1,5 @@
 import i18n from '@/lang'
+
 // translate router.meta.title, be used in breadcrumb sidebar tagsview
 export function generateTitle(title) {
   // 注意：$t :this method from vue-i18n, inject in @/lang/index.js 只能用在.vue文件中(vue实例)

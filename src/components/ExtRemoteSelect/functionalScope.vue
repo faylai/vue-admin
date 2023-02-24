@@ -1,12 +1,11 @@
 <script>
 import service from '@/api/service'
-import { normalizeSlots, createScope } from '@/utils'
+import { beforeFunction, createScope, normalizeSlots } from '@/utils'
 import settings from '@/settings'
 import lodash from 'lodash'
 // EnforceSlotSelect 修改了 el-select 的template 模板用以支持 bottom 插槽（放分页组件）
 // 注意：升级element-ui 的时候可能也需要升级 EnforceSlotSelect 的模板
 import EnforceSlotSelect from '@/components/EnforceSlotSelect'
-import { beforeFunction } from '@/utils'
 
 const paginationConfig = settings.paginationConfig
 export default {
