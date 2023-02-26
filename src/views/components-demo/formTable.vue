@@ -95,9 +95,9 @@ export default {
             required: true,
             message: '物料名称必填'
           }, {
-            min: 3,
+            min: 1,
             max: 50,
-            message: '名称长度在 3 到 50 个字符'
+            message: '名称长度在 1 到 50 个字符'
           }]
         },
         columns: [{
