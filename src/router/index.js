@@ -186,7 +186,7 @@ export const asyncRoutes = [
     },
     children: [
       {
-        path: 'drag-dialog',
+        path: 'tree',
         component: () => import('@/views/components-demo/drag-dialog'),
         name: 'DragDialogDemo',
         meta: { title: '树的示例', icon: 'tree' }
