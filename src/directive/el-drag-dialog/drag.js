@@ -73,5 +73,10 @@ export default {
         document.onmouseup = null
       }
     }
+  },
+  unbind(el) {
+    const dialogHeaderEl = el.querySelector('.el-dialog__header')
+    dialogHeaderEl.onmousedown = null
+    console.log('unbind', 'el-dialog-drag')
   }
 }
